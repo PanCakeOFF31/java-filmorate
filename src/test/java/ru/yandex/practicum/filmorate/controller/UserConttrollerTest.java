@@ -20,7 +20,7 @@ class UserConttrollerTest {
     }
 
     @Test
-    public void T0010_PS01_updateValidation() {
+    public void test_T0010_PS01_updateValidation() {
         user = new User();
 
         user.setLogin("dolore");
@@ -40,7 +40,7 @@ class UserConttrollerTest {
     }
 
     @Test
-    public void T0010_NS01_updateValidation_noId() {
+    public void test_T0010_NS01_updateValidation_noId() {
         User user = new User();
 
         user.setLogin("dolore");
@@ -58,7 +58,7 @@ class UserConttrollerTest {
     }
 
     @Test
-    public void T0010_NS02_updateValidation_incorrectId() {
+    public void test_T0010_NS02_updateValidation_incorrectId() {
         User user = new User();
 
         user.setLogin("dolore");

@@ -21,7 +21,7 @@ class FilmControllerTest {
 
 
     @Test
-    public void T0011_PS01_addValidation() {
+    public void test_T0011_PS01_addValidation() {
         film = new Film();
 
         film.setName("some name");
@@ -41,7 +41,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void T0011_NS01_addValidation_releaseDate() {
+    public void test_T0011_NS01_addValidation_releaseDate() {
         film = new Film();
 
         film.setName("some name");
@@ -58,7 +58,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void T0011_NS02_addValidation_negativeDuration() {
+    public void test_T0011_NS02_addValidation_negativeDuration() {
         film = new Film();
 
         film.setName("some name");
@@ -75,7 +75,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void T0010_PS01_updateValidation() {
+    public void test_T0010_PS01_updateValidation() {
         film = new Film();
 
         film.setName("some name");
@@ -91,7 +91,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void T0010_NS01_updateValidation_noId() {
+    public void test_T0010_NS01_updateValidation_noId() {
         film = new Film();
 
         film.setName("some name");
@@ -111,7 +111,7 @@ class FilmControllerTest {
     }
 
     @Test
-    public void T0010_NS02_updateValidation_incorrectId() {
+    public void test_T0010_NS02_updateValidation_incorrectId() {
         film = new Film();
 
         film.setName("some name");
