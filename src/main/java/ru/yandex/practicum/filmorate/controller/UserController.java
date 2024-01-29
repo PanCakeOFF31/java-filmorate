@@ -21,7 +21,7 @@ public class UserController {
     private int generateId = 1;
 
     @GetMapping
-    public List<User> receiveUsers(){
+    public List<User> receiveUsers() {
         log.debug("/users - GET: getUsers()");
         log.info("Возвращен список пользователей в количестве: " + users.size());
 
