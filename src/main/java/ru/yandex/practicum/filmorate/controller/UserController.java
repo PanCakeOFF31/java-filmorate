@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,12 +15,13 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("/users")
-public class UserConttroller {
+public class UserController {
+    @Getter
     private final Map<Integer, User> users = new HashMap<>();
     private int generateId = 1;
 
     @GetMapping
-    public List<User> getUsers() {
+    public List<User> receiveUsers() {
         log.debug("/users - GET: getUsers()");
         log.info("Возвращен список пользователей в количестве: " + users.size());
         return new ArrayList<>(users.values());
@@ -31,6 +33,8 @@ public class UserConttroller {
 
         user.setId(generateId());
         users.put(generateId, user);
+
+        correctName(user);
 
         log.info("Пользователь добавлен: " + user);
         log.info("Количество пользователей: " + users.size());
@@ -63,13 +67,22 @@ public class UserConttroller {
             return false;
         }
 
-        if (users.containsKey(user.getId())) {
-            log.info("Успешное окончание updateValidation() валидации пользователя: " + user);
-            return true;
-        } else {
+        if (!users.containsKey(user.getId())) {
             log.warn("Валидация на существование пользователя по id не пройдена: " + user);
             return false;
         }
+
+        log.info("Успешное окончание updateValidation() валидации пользователя: " + user);
+        return true;
+    }
+
+    private User correctName(final User user) {
+        if (user.getName().isBlank()) {
+            user.setName(user.getLogin());
+            log.info("Имя пользователя указано в качестве логина");
+        }
+
+        return user;
     }
 
     private int generateId() {
@@ -78,6 +91,5 @@ public class UserConttroller {
 
         return this.generateId;
     }
-
 
 }

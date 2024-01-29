@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -18,11 +19,12 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/films")
 public class FilmController {
+    @Getter
     private final Map<Integer, Film> films = new HashMap<>();
     private int generateId = 1;
 
     @GetMapping
-    public List<Film> getFimls() {
+    public List<Film> receiveFilms() {
         log.debug("/films - GET: getFilms()");
         log.info("Возвращен список фильмов в количестве: " + films.size());
 
@@ -64,22 +66,6 @@ public class FilmController {
         return film;
     }
 
-    public boolean updateValidation(final Film film) {
-        log.debug("Начало updateValidation() валидации фильма: " + film);
-
-        if (film.getId() == null) {
-            log.warn("У фильма не id, валидация не пройдена: " + film);
-            return false;
-        }
-
-        if (films.containsKey(film.getId())) {
-            log.info("Успешное окончание updateValidation() валидации фильма: " + film);
-            return true;
-        } else {
-            log.warn("Валидация на существование фильма по id не пройдена: " + film);
-            return false;
-        }
-    }
 
     public boolean addValidation(final Film film) {
         log.debug("Начало addValidation() валидации фильма: " + film);
@@ -88,21 +74,38 @@ public class FilmController {
         final Duration duration = film.getDuration();
 
         boolean validReleaseDate = releaseDate.isAfter(LocalDate.of(1895, Month.DECEMBER, 28));
-        if (!validReleaseDate)
+
+        if (!validReleaseDate) {
             log.warn("Валидация по дате выхода фильма не пройдена: " + film);
+            return false;
+        }
 
         boolean validDuration = duration.getSeconds() > 0;
-        if (!validDuration)
-            log.warn("Валидация на положительную продолжительность фильма не пройдена: " + film);
 
-        boolean result = validReleaseDate && validDuration;
-        if (!result) {
-            log.warn("Валидация фильма не пройдена: " + film);
-            return result;
+        if (!validDuration) {
+            log.warn("Валидация на положительную продолжительность фильма не пройдена: " + film);
+            return false;
         }
 
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
-        return result;
+        return true;
+    }
+
+    public boolean updateValidation(final Film film) {
+        log.debug("Начало updateValidation() валидации фильма: " + film);
+
+        if (film.getId() == null) {
+            log.warn("У фильма не id, валидация не пройдена: " + film);
+            return false;
+        }
+
+        if (!films.containsKey(film.getId())) {
+            log.warn("Валидация на существование фильма по id не пройдена: " + film);
+            return false;
+        }
+
+        log.info("Успешное окончание updateValidation() валидации фильма: " + film);
+        return true;
     }
 
     private int generateId() {

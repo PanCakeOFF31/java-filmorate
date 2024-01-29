@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserConttrollerTest {
 
-    private UserConttroller userConttroller;
+    private UserController userConttroller;
     private User user;
 
     @BeforeEach
-    private void initialize() {
-        userConttroller = new UserConttroller();
+    public void initialize() {
+        userConttroller = new UserController();
     }
 
     @Test
@@ -29,10 +29,14 @@ class UserConttrollerTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
         userConttroller.createUser(user);
-        assertEquals(1, user.getId());
+        assertNotNull(user.getId());
 
         boolean actual = userConttroller.updateValidation(user);
         assertTrue(actual);
+
+        assertEquals(1, userConttroller.getUsers().size());
+        userConttroller.updateUser(user);
+        assertEquals(1, userConttroller.getUsers().size());
     }
 
     @Test
@@ -45,10 +49,12 @@ class UserConttrollerTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
         assertNull(user.getId());
-        assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
-
         boolean actual = userConttroller.updateValidation(user);
         assertFalse(actual);
+
+        assertEquals(0, userConttroller.getUsers().size());
+        assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
+        assertEquals(0, userConttroller.getUsers().size());
     }
 
     @Test
@@ -61,9 +67,11 @@ class UserConttrollerTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
         user.setId(9999);
-        assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
-
         boolean actual = userConttroller.updateValidation(user);
         assertFalse(actual);
+
+        assertEquals(0, userConttroller.getUsers().size());
+        assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
+        assertEquals(0, userConttroller.getUsers().size());
     }
 }

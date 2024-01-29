@@ -13,12 +13,15 @@ public class User {
     private String email;
     @NotNull
     @NotBlank
-    @NotEmpty
     private String login;
-    @NotNull
-    private String name;
     @NotNull
     @Past
     private LocalDate birthday;
+    private String name;
 
+//    Последний тест от Яндекс "POST Create user with empty name" почему-то не содержит поле name
+//    Использую блок инициализации объекта для явности
+    {
+        name = "";
+    }
 }
