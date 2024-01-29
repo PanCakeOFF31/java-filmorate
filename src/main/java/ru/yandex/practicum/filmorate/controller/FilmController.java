@@ -88,6 +88,7 @@ public class FilmController {
         }
 
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
+
         return true;
     }
 
@@ -105,6 +106,7 @@ public class FilmController {
         }
 
         log.info("Успешное окончание updateValidation() валидации фильма: " + film);
+
         return true;
     }
 

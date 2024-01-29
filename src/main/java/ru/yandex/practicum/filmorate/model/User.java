@@ -17,11 +17,6 @@ public class User {
     @NotNull
     @Past
     private LocalDate birthday;
-    private String name;
-
-//    Последний тест от Яндекс "POST Create user with empty name" почему-то не содержит поле name
-//    Использую блок инициализации объекта для явности
-    {
-        name = "";
-    }
+    //    Последний тест от Яндекс "POST Create user with empty name" почему-то не содержит поле name
+    private String name = "";
 }
