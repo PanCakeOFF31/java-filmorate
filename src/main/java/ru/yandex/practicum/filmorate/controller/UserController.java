@@ -24,6 +24,7 @@ public class UserController {
     public List<User> receiveUsers() {
         log.debug("/users - GET: getUsers()");
         log.info("Возвращен список пользователей в количестве: " + users.size());
+
         return new ArrayList<>(users.values());
     }
 
@@ -73,6 +74,7 @@ public class UserController {
         }
 
         log.info("Успешное окончание updateValidation() валидации пользователя: " + user);
+
         return true;
     }
 
