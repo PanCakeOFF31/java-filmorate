@@ -21,7 +21,7 @@ public class UserController {
     private int generateId = 1;
 
     @GetMapping
-    public List<User> receiveUsers() {
+    public List<User> receiveUsers(){
         log.debug("/users - GET: getUsers()");
         log.info("Возвращен список пользователей в количестве: " + users.size());
 
@@ -78,13 +78,11 @@ public class UserController {
         return true;
     }
 
-    private User correctName(final User user) {
+    private void correctName(final User user) {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Имя пользователя указано в качестве логина");
         }
-
-        return user;
     }
 
     private int generateId() {
