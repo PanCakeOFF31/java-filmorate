@@ -32,12 +32,12 @@ class FilmControllerTest {
         boolean actual = filmController.addValidation(film);
         assertTrue(actual);
 
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
 
         filmController.addFilm(film);
         assertNotNull(film.getId());
 
-        assertEquals(1, filmController.getFilms().size());
+        assertEquals(1, filmController.getFilmsSize());
     }
 
     @Test
@@ -52,9 +52,9 @@ class FilmControllerTest {
         boolean actual = filmController.addValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
         assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
     }
 
     @Test
@@ -69,9 +69,9 @@ class FilmControllerTest {
         boolean actual = filmController.addValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
         assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
     }
 
     @Test
@@ -104,9 +104,9 @@ class FilmControllerTest {
         boolean actual = filmController.updateValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
         assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
 
     }
 
@@ -124,9 +124,9 @@ class FilmControllerTest {
         boolean actual = filmController.updateValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
         assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
-        assertEquals(0, filmController.getFilms().size());
+        assertEquals(0, filmController.getFilmsSize());
 
     }
 }

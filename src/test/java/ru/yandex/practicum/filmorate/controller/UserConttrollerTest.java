@@ -34,9 +34,9 @@ class UserConttrollerTest {
         boolean actual = userConttroller.updateValidation(user);
         assertTrue(actual);
 
-        assertEquals(1, userConttroller.getUsers().size());
+        assertEquals(1, userConttroller.getUsersSize());
         userConttroller.updateUser(user);
-        assertEquals(1, userConttroller.getUsers().size());
+        assertEquals(1, userConttroller.getUsersSize());
     }
 
     @Test
@@ -52,9 +52,9 @@ class UserConttrollerTest {
         boolean actual = userConttroller.updateValidation(user);
         assertFalse(actual);
 
-        assertEquals(0, userConttroller.getUsers().size());
+        assertEquals(0, userConttroller.getUsersSize());
         assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
-        assertEquals(0, userConttroller.getUsers().size());
+        assertEquals(0, userConttroller.getUsersSize());
     }
 
     @Test
@@ -70,8 +70,8 @@ class UserConttrollerTest {
         boolean actual = userConttroller.updateValidation(user);
         assertFalse(actual);
 
-        assertEquals(0, userConttroller.getUsers().size());
+        assertEquals(0, userConttroller.getUsersSize());
         assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
-        assertEquals(0, userConttroller.getUsers().size());
+        assertEquals(0, userConttroller.getUsersSize());
     }
 }

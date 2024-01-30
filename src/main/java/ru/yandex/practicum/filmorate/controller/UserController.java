@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -16,9 +15,12 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
-    @Getter
     private final Map<Integer, User> users = new HashMap<>();
     private int generateId = 1;
+
+    public int getUsersSize() {
+        return users.size();
+    }
 
     @GetMapping
     public List<User> receiveUsers() {
@@ -79,7 +81,7 @@ public class UserController {
     }
 
     private void correctName(final User user) {
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Имя пользователя указано в качестве логина");
         }
