@@ -14,6 +14,7 @@ public class GeneralControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRunTimeException(final RuntimeException exception) {
         log.debug("GeneralControllerAdvice - handleRunTimeException()");
+        log.warn(exception.getClass().toString());
         return new ErrorResponse("RuntimeException", "Не предвиденная ошибка, которую не предвидели.");
     }
 }

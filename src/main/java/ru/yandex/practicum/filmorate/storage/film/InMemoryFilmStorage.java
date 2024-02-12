@@ -17,17 +17,19 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public int getFilmsQuantity() {
+        log.debug("InMemoryFilmStorage - films.getFilmsQuantity().");
         return films.size();
     }
 
     @Override
     public List<Film> getFilms() {
+        log.debug("InMemoryFilmStorage - films.getFilms().");
         return new ArrayList<>(films.values());
     }
 
     @Override
     public Integer addFilm(Film film) {
-        log.debug("InMemoryFilmStorage");
+        log.debug("InMemoryFilmStorage - films.addFilm().");
         Integer generatedId = generateId();
 
         film.setId(generatedId);
@@ -39,6 +41,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void updateFilm(Film film) {
+        log.debug("InMemoryFilmStorage - films.updateFilm().");
         Integer key = film.getId();
         Film updated = films.put(key, film);
 
@@ -47,10 +50,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public boolean containsFilm(Film film) {
+        log.debug("InMemoryFilmStorage - films.containsFilm().");
         return films.containsKey(film.getId());
     }
 
     private int generateId() {
+        log.debug("InMemoryFilmStorage - films.generatedId().");
         while (films.containsKey(generateId))
             ++generateId;
 

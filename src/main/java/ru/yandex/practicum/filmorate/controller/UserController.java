@@ -25,16 +25,13 @@ public class UserController {
     @GetMapping
     public List<User> receiveUsers(@RequestParam(defaultValue = "10") int count) {
         log.debug("/users - GET: getUsers()");
-//        return service.receiveUsers();
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+        return service.receiveUsers(count);
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody final User user) {
         log.debug("/users - POST: createUser()");
-//        return service.createUser(user);
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
-
+        return service.createUser(user);
     }
 
     @PutMapping

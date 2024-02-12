@@ -14,6 +14,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,10 +39,10 @@ public class FilmService {
         if (count > storage.getFilmsQuantity())
             count = storage.getFilmsQuantity();
 
-        log.info("Возвращен список фильмов в количестве: " + count);
-
         List<Film> films = new ArrayList<>(storage.getFilms());
         Collections.shuffle(films);
+
+        log.info("Возвращен список фильмов в количестве: " + count);
 
         return films.stream()
                 .limit(count)
@@ -53,10 +54,11 @@ public class FilmService {
         addValidation(film);
 
         Integer id = storage.addFilm(film);
+        film.setLikes(new HashSet<>());
 
         log.info("Добавлен фильм с Id: " + id);
         log.info(film.toString());
-        log.info("Количество фильмов: " + storage.getFilmsQuantity());
+        log.info("Количество фильмов теперь: " + storage.getFilmsQuantity());
 
         return film;
     }

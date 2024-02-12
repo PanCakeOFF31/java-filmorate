@@ -6,6 +6,8 @@ import lombok.Data;
 import javax.validation.constraints.*;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -20,4 +22,6 @@ public class Film {
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
+    @Null
+    private Set<Integer> likes;
 }
