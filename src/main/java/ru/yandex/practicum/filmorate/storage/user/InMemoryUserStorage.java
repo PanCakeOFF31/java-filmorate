@@ -48,7 +48,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void udpateUser() {
+    public void udpateUser(User user) {
 
     }
 }

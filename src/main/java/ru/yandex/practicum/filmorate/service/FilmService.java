@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
-import ru.yandex.practicum.filmorate.exception.film.FilmNullValueException;
+import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
@@ -13,7 +13,9 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -25,11 +27,25 @@ public class FilmService {
         this.storage = storage;
     }
 
-    public List<Film> receiveFilms() {
+    public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
-        log.info("Возвращен список фильмов в количестве: " + storage.getFilmsQuantity());
 
-        return new ArrayList<>(storage.getFilms());
+        if (count < 0) {
+            log.info("Возвращен список фильмов в количестве: " + storage.getFilmsQuantity());
+            return new ArrayList<>(storage.getFilms());
+        }
+
+        if (count > storage.getFilmsQuantity())
+            count = storage.getFilmsQuantity();
+
+        log.info("Возвращен список фильмов в количестве: " + count);
+
+        List<Film> films = new ArrayList<>(storage.getFilms());
+        Collections.shuffle(films);
+
+        return films.stream()
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public Film addFilm(final Film film) {
@@ -39,6 +55,7 @@ public class FilmService {
         Integer id = storage.addFilm(film);
 
         log.info("Добавлен фильм с Id: " + id);
+        log.info(film.toString());
         log.info("Количество фильмов: " + storage.getFilmsQuantity());
 
         return film;
@@ -58,6 +75,7 @@ public class FilmService {
     }
 
     public Film like(int filmId, int userId) {
+        log.debug("FilmService - service.getFilms()");
         return null;
     }
 
@@ -97,13 +115,13 @@ public class FilmService {
         if (film.getId() == null) {
             String message = "У фильма нет id, валидация не пройдена: " + film;
             log.warn(message);
-            throw new FilmNullValueException(message);
+            throw new FilmNullValueValidationException(message);
         }
 
         if (!storage.containsFilm(film)) {
             String message = "Валидация на существование фильма по id не пройдена: " + film;
             log.warn(message);
-            throw new FilmNullValueException(message);
+            throw new FilmNullValueValidationException(message);
         }
 
         log.info("Успешное окончание updateValidation() валидации фильма: " + film);

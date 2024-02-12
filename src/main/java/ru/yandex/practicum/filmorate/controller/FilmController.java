@@ -23,9 +23,9 @@ public class FilmController {
     }
 
     @GetMapping()
-    public List<Film> receiveFilms(@RequestParam(defaultValue = "10") Integer number) {
+    public List<Film> receiveFilms(@RequestParam(defaultValue = "10") int count) {
         log.debug("/films - GET: getFilms()");
-        return service.receiveFilms();
+        return service.receiveFilms(count);
     }
 
     @PostMapping
@@ -41,19 +41,22 @@ public class FilmController {
     }
 
     @PutMapping(value = "/{id}/like/{userId}")
-    public Film like(@PathVariable int id,
+    public Film like(@PathVariable(name = "id") int filmId,
                      @PathVariable int userId) {
+        log.debug("/films/{id}/like/{userId} - PUT: like()");
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 
     @DeleteMapping(value = "/{id}/like/{userId}")
     public Film unlike(@PathVariable(name = "id") int filmId,
                        @PathVariable(name = "userId") int userId) {
+        log.debug("/films/{id}/like/{userId} - DELETE: unlike()");
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 
     @GetMapping(value = "/popular")
     public List<Film> getTop(@RequestParam(name = "count", defaultValue = "10") int count) {
+        log.debug("/films/popular - GET: getTop()");
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 }

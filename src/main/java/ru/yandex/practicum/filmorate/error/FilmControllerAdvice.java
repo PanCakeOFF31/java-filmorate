@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.film.FilmNullValueException;
+import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
@@ -25,7 +25,8 @@ public class FilmControllerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleSkippedValidationException(final ValidationException exception) {
         log.debug(CLASS_NAME + "handleSkippedValidationException");
-        return new ErrorResponse("ValidationException", "Пропущен обработчик исключений валидации ValidationException");
+        return new ErrorResponse("ValidationException"
+                , "Пропущен обработчик исключений валидации ValidationException");
     }
 
     //    На тот случай, если где-то забуду реализовать @ExceptionHandler для ObjectNotFoundException
@@ -56,8 +57,8 @@ public class FilmControllerAdvice {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleFilmNullValueException(final FilmNullValueException exception) {
-        log.debug(CLASS_NAME + "handleFilmNullValueException");
+    public ErrorResponse handleFilmNullValueValidationException(final FilmNullValueValidationException exception) {
+        log.debug(CLASS_NAME + "handleFilmNullValueValidationException");
         return new ErrorResponse("Ошибка null значение"
                 , "Не должно быть указанного null значения."
                 , exception.getMessage());

@@ -3,8 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.exception.user.UserNullValueException;
+import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -29,31 +28,27 @@ public class UserService {
     }
 
     public User createUser(final User user) {
-        log.debug("(UserService) service.createUser()");
+        log.debug("UserService service.createUser()");
 
-        user.setId(generateId());
-        users.put(generateId, user);
+        Integer id = storage.addUser(user);
 
         correctName(user);
 
-        log.info("Пользователь добавлен: " + user);
-        log.info("Количество пользователей: " + users.size());
+        log.info("Пользователь добавлен с Id: " + id);
+        log.info(user.toString());
+        log.info("Количество пользователей: " + storage.getUsersQuantity());
 
         return user;
     }
 
     public User updateUser(final User user) {
-        log.debug("(UserService) service.updateUser()");
+        log.debug("UserService service.updateUser()");
+        updateValidation(user);
 
-        if (!updateValidation(user)) {
-            log.warn("Пользователь не обновлен, так как не прошел валидацию");
-            throw new ValidationException();
-        }
-
-        users.put(user.getId(), user);
+        storage.udpateUser(user);
 
         log.info("Пользователь обновлен: " + user);
-        log.info("Количество пользователей: " + users.size());
+        log.info("Количество пользователей: " + storage.getUsersQuantity());
 
         return user;
     }
@@ -65,13 +60,13 @@ public class UserService {
         if (user.getId() == null) {
             String message = "У пользователя нет id, валидация не пройдена: " + user;
             log.warn(message);
-            throw new UserNullValueException(message);
+            throw new UserNullValueValidationException(message);
         }
 
         if (!storage.containsUser(user)) {
             String message = "Валидация на существование пользователя по id не пройдена: " + user;
             log.warn(message);
-            throw new UserNullValueException(message);
+            throw new UserNullValueValidationException(message);
         }
 
         log.info("Успешное окончание updateValidation() валидации пользователя: " + user);

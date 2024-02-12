@@ -9,5 +9,5 @@ public interface UserStorage {
     List<User> getUsers();
     Integer addUser(User user);
     boolean containsUser(User user);
-    void udpateUser();
+    void udpateUser(User user);
 }

@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
-@RestControllerAdvice(value = "ru.yandex.practicum.filmorate")
+
+@RestControllerAdvice("ru.yandex.practicum.filmorate")
 @Slf4j
 public class GeneralControllerAdvice {
     @ExceptionHandler

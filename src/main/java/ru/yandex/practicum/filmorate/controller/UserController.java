@@ -23,43 +23,52 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> receiveUsers() {
+    public List<User> receiveUsers(@RequestParam(defaultValue = "10") int count) {
         log.debug("/users - GET: getUsers()");
-        return service.receiveUsers();
+//        return service.receiveUsers();
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody final User user) {
         log.debug("/users - POST: createUser()");
-        return service.createUser(user);
+//        return service.createUser(user);
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody final User user) {
         log.debug("/users - PUT: updateUser()");
-        return service.updateUser(user);
+//        return service.updateUser(user);
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 
     @PutMapping(value = "/{id}/friends/{friendId}")
     public void addToFriend(@PathVariable(name = "id") int userId,
                             @PathVariable int friendId) {
+        log.debug("/users/{id}/friends/{friendId}} - PUT: addToFriend()");
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
 
     }
 
     @DeleteMapping(value = "/{id}/friends/{friendId}")
     public void deleteFromFriend(@PathVariable(name = "id") int userId,
                                  @PathVariable int friendId) {
-
+        log.debug("/users/{id}/friends/{friendId}} - DELETE: deleteFromFriend()");
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 
     @GetMapping(value = "/{id}/friends")
     public List<User> getUserFriends(@PathVariable int id) {
+        log.debug("/users/{id}/friends - GET: getUserFriends()");
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 
     @GetMapping(value = "/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable(name = "id") int userID,
-                                       @PathVariable(name = "userId") int otherUserId) {
+                                       @PathVariable(name = "otherId") int otherUserId) {
+        log.debug("/users/{id}/friends/common/{otherId}} - GET: getCommonFriends()");
         throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
     }
 }
