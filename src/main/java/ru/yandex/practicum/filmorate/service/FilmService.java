@@ -26,35 +26,47 @@ public class FilmService {
     }
 
     public List<Film> receiveFilms() {
-        log.debug("/films - GET: getFilms()");
-        log.info("Возвращен список фильмов в количестве: " + storage.getFilmsSize());
+        log.debug("FilmService - service.getFilms()");
+        log.info("Возвращен список фильмов в количестве: " + storage.getFilmsQuantity());
 
-        return new ArrayList<>(storage.values());
+        return new ArrayList<>(storage.getFilms());
     }
 
     public Film addFilm(final Film film) {
-        if (addValidation(film))
-            log.info("Успешное окончание addValidation() валидации фильма: " + film);
+        log.debug("FilmService - service.addFilm()");
+        addValidation(film);
 
-        film.setId(generateId());
-        storage.put(generateId, film);
+        Integer id = storage.addFilm(film);
 
-        log.info("Фильм добавлен: " + film);
-        log.info("Количество фильмов: " + films.size());
+        log.info("Добавлен фильм с Id: " + id);
+        log.info("Количество фильмов: " + storage.getFilmsQuantity());
 
         return film;
     }
 
     public Film updateFilm(final Film film) {
-        if (addValidation(film) && updateValidation(film))
-            log.info("Успешное окончание updateValidation() валидации фильма: " + film);
+        log.debug("FilmService - service.updateFilm()");
+        addValidation(film);
+        updateValidation(film);
 
-        films.put(film.getId(), film);
+        storage.updateFilm(film);
 
         log.info("Фильм обновлен: " + film);
-        log.info("Количество фильмов: " + films.size());
+        log.info("Количество фильмов: " + storage.getFilmsQuantity());
 
         return film;
+    }
+
+    public Film like(int filmId, int userId) {
+        return null;
+    }
+
+    public Film unlike(int filmId, int userId) {
+        return null;
+    }
+
+    public List<Film> getTop(int size) {
+        return null;
     }
 
     public boolean addValidation(final Film film) {
@@ -63,21 +75,19 @@ public class FilmService {
         final LocalDate releaseDate = film.getReleaseDate();
         final Duration duration = film.getDuration();
 
-        boolean validReleaseDate = releaseDate.isAfter(FilmRestriction.REALEASE_DATE);
-
-        if (!validReleaseDate) {
+        if (!releaseDate.isAfter(FilmRestriction.REALEASE_DATE)) {
             String message = "Валидация по дате выхода фильма не пройдена: " + film;
             log.warn(message);
             throw new FilmReleaseDateValidationException(message);
         }
 
-        boolean validDuration = duration.getSeconds() > FilmRestriction.MIN_DURATION;
-
-        if (!validDuration) {
-            log.warn("Валидация на положительную продолжительность фильма не пройдена: " + film);
-            throw new FilmDurationValidationException();
+        if (!(duration.getSeconds() > FilmRestriction.MIN_DURATION)) {
+            String message = "Валидация на положительную продолжительность фильма не пройдена: " + film;
+            log.warn(message);
+            throw new FilmDurationValidationException(message);
         }
 
+        log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;
     }
 
@@ -85,15 +95,19 @@ public class FilmService {
         log.debug("Начало updateValidation() валидации фильма: " + film);
 
         if (film.getId() == null) {
-            log.warn("У фильма не id, валидация не пройдена: " + film);
-            throw new FilmNullValueException("");
+            String message = "У фильма нет id, валидация не пройдена: " + film;
+            log.warn(message);
+            throw new FilmNullValueException(message);
         }
 
-        if (!films.containsKey(film.getId())) {
-            log.warn("Валидация на существование фильма по id не пройдена: " + film);
-            throw new FilmNullValueException();
+        if (!storage.containsFilm(film)) {
+            String message = "Валидация на существование фильма по id не пройдена: " + film;
+            log.warn(message);
+            throw new FilmNullValueException(message);
         }
 
+        log.info("Успешное окончание updateValidation() валидации фильма: " + film);
         return true;
     }
+
 }

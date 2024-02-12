@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
@@ -11,12 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserConttrollerTest {
 
-    private UserController userConttroller;
+    private UserController userController;
+    private UserService service;
+    private UserStorage storage;
     private User user;
 
     @BeforeEach
     public void initialize() {
-        userConttroller = new UserController();
+        storage = new InMemoryUserStorage();
+        service = new UserService(storage);
+        userController = new UserController(service);
     }
 
     @Test
@@ -28,15 +35,15 @@ class UserConttrollerTest {
         user.setEmail("mail@mail.ru");
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
-        userConttroller.createUser(user);
+        userController.createUser(user);
         assertNotNull(user.getId());
 
-        boolean actual = userConttroller.updateValidation(user);
+        boolean actual = service.updateValidation(user);
         assertTrue(actual);
 
-        assertEquals(1, userConttroller.getUsersSize());
-        userConttroller.updateUser(user);
-        assertEquals(1, userConttroller.getUsersSize());
+        assertEquals(1, storage.getUsersQuantity());
+        userController.updateUser(user);
+        assertEquals(1, storage.getUsersQuantity());
     }
 
     @Test
@@ -49,12 +56,12 @@ class UserConttrollerTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
         assertNull(user.getId());
-        boolean actual = userConttroller.updateValidation(user);
+        boolean actual = service.updateValidation(user);
         assertFalse(actual);
 
-        assertEquals(0, userConttroller.getUsersSize());
-        assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
-        assertEquals(0, userConttroller.getUsersSize());
+        assertEquals(0, storage.getUsersQuantity());
+        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertEquals(0, storage.getUsersQuantity());
     }
 
     @Test
@@ -67,11 +74,11 @@ class UserConttrollerTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
         user.setId(9999);
-        boolean actual = userConttroller.updateValidation(user);
+        boolean actual = service.updateValidation(user);
         assertFalse(actual);
 
-        assertEquals(0, userConttroller.getUsersSize());
-        assertThrows(ValidationException.class, () -> userConttroller.updateUser(user));
-        assertEquals(0, userConttroller.getUsersSize());
+        assertEquals(0, storage.getUsersQuantity());
+        assertThrows(ValidationException.class, () -> userController.updateUser(user));
+        assertEquals(0, storage.getUsersQuantity());
     }
 }

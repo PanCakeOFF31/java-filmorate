@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.Duration;
@@ -14,11 +15,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
     private FilmController filmController;
+    private FilmService service;
+    private FilmStorage storage;
     private Film film;
 
     @BeforeEach
     public void initialize() {
-        filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
+        storage = new InMemoryFilmStorage();
+        service = new FilmService(storage);
+        filmController = new FilmController(service);
     }
 
 
@@ -31,15 +36,15 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
 
-        boolean actual = filmController.addValidation(film);
+        boolean actual = service.addValidation(film);
         assertTrue(actual);
 
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
 
-        filmController.addFilm(film);
+        service.addFilm(film);
         assertNotNull(film.getId());
 
-        assertEquals(1, filmController.getFilmsSize());
+        assertEquals(1, storage.getFilmsQuantity());
     }
 
     @Test
@@ -51,12 +56,12 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(1895, 12, 28));
         film.setDuration(Duration.ofMinutes(90));
 
-        boolean actual = filmController.addValidation(film);
+        boolean actual = service.addValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
     }
 
     @Test
@@ -68,12 +73,12 @@ class FilmControllerTest {
         film.setReleaseDate(LocalDate.of(2000, 12, 28));
         film.setDuration(Duration.ofMinutes(-90));
 
-        boolean actual = filmController.addValidation(film);
+        boolean actual = service.addValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
     }
 
     @Test
@@ -88,7 +93,7 @@ class FilmControllerTest {
         filmController.addFilm(film);
         assertNotNull(film.getId());
 
-        boolean actual = filmController.updateValidation(film);
+        boolean actual = service.updateValidation(film);
         assertTrue(actual);
     }
 
@@ -103,12 +108,12 @@ class FilmControllerTest {
 
         assertNull(film.getId());
 
-        boolean actual = filmController.updateValidation(film);
+        boolean actual = service.updateValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
 
     }
 
@@ -123,12 +128,12 @@ class FilmControllerTest {
 
         film.setId(9999);
 
-        boolean actual = filmController.updateValidation(film);
+        boolean actual = service.updateValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
-        assertEquals(0, filmController.getFilmsSize());
+        assertEquals(0, storage.getFilmsQuantity());
 
     }
 }

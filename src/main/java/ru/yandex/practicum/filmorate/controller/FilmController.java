@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -20,8 +22,8 @@ public class FilmController {
         this.service = service;
     }
 
-    @GetMapping
-    public List<Film> receiveFilms() {
+    @GetMapping()
+    public List<Film> receiveFilms(@RequestParam(defaultValue = "10") Integer number) {
         log.debug("/films - GET: getFilms()");
         return service.receiveFilms();
     }
@@ -35,7 +37,42 @@ public class FilmController {
     @PutMapping
     public Film updateFilm(@Valid @RequestBody final Film film) {
         log.debug("/films - PUT: updateFilm()");
-        return film;
+        return service.updateFilm(film);
     }
 
+    @PutMapping(value = "/{id}/like/{userId}")
+    public Film like(@PathVariable int id,
+                     @PathVariable int userId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+    }
+
+    @DeleteMapping(value = "/{id}/like/{userId}")
+    public Film unlike(@PathVariable(name = "id") int filmId,
+                       @PathVariable(name = "userId") int userId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+    }
+
+    @GetMapping(value = "/popular")
+    public List<Film> getTop(@RequestParam(name = "count", defaultValue = "10") int count) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

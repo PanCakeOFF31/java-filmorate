@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -38,4 +40,49 @@ public class UserController {
         return service.updateUser(user);
     }
 
+    @PutMapping(value = "/{id}/friends/{friendId}")
+    public void addToFriend(@PathVariable(name = "id") int userId,
+                            @PathVariable int friendId) {
+
+    }
+
+    @DeleteMapping(value = "/{id}/friends/{friendId}")
+    public void deleteFromFriend(@PathVariable(name = "id") int userId,
+                                 @PathVariable int friendId) {
+
+    }
+
+    @GetMapping(value = "/{id}/friends")
+    public List<User> getUserFriends(@PathVariable int id) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+    }
+
+    @GetMapping(value = "/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable(name = "id") int userID,
+                                       @PathVariable(name = "userId") int otherUserId) {
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
