@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @RestControllerAdvice(basePackages = "ru.yandex.practicum.filmorate")
 @Slf4j
-public class Z_CommonControllerAdvice {
+public class ZigCommonControllerAdvice {
     private static final String CLASS_NAME = "GeneralControllerAdvice ";
 
     @ExceptionHandler()
