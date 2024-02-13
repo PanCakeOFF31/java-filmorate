@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -24,6 +25,11 @@ public class FilmController {
     public List<Film> receiveFilms(@RequestParam(defaultValue = "10") int count) {
         log.debug("/films - GET: getFilms()");
         return service.receiveFilms(count);
+    }
+
+    @GetMapping(value = "/{id}")
+    public Film receiveFilmById(@PathVariable(name = "id") int filmId) {
+        return service.receiveFilmById(filmId);
     }
 
     @PostMapping

@@ -43,6 +43,16 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public User receiveUserById(int userId) {
+        if (!userStorage.containsById(userId)) {
+            String message = "Пользователя нет с id :" + userId;
+            log.warn(message);
+            throw new UserNotFoundException(message);
+        }
+
+        return userStorage.getUserById(userId);
+    }
+
     public User createUser(final User user) {
         log.debug("UserService - service.createUser()");
 
@@ -61,6 +71,9 @@ public class UserService {
         log.debug("UserService - service.updateUser()");
         updateValidation(user);
 
+        Set<Integer> friends = userStorage.getUserById(user.getId()).getFriends();
+        user.setFriends(friends);
+
         userStorage.updateUser(user);
 
         log.info("Пользователь обновлен: " + user);
@@ -75,7 +88,7 @@ public class UserService {
         coupleUserValidation(userId, friendId);
 
         User user = userStorage.getUserById(userId);
-        log.info("Количеств лайка в изначально:" + user.friendsQuantity());
+        log.info("Количеств друзей изначально:" + user.friendsQuantity());
         boolean result = user.toFriend(friendId);
 
         if (result)
@@ -84,6 +97,8 @@ public class UserService {
             log.info("Пользователь уже добавлен в друзья");
 
         log.info("Количество друзей теперь: " + user.friendsQuantity());
+
+        userStorage.getUserById(friendId).toFriend(userId);
 
         return user;
     }
@@ -103,6 +118,8 @@ public class UserService {
             log.info("Пользователь уже удален из друзей");
 
         log.info("Количество друзей теперь: " + user.friendsQuantity());
+
+        userStorage.getUserById(friendId).unfriend(userId);
 
         return user;
     }

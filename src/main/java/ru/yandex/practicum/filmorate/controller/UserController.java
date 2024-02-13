@@ -26,6 +26,11 @@ public class UserController {
         return service.receiveUsers(count);
     }
 
+    @GetMapping(value = "/{id}")
+    public User receiveUserById(@PathVariable(name = "id") int userId) {
+        return service.receiveUserById(userId);
+    }
+
     @PostMapping
     public User createUser(@Valid @RequestBody final User user) {
         log.debug("/users - POST: createUser()");
@@ -59,10 +64,10 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable(name = "id") int userID,
+    public List<User> getCommonFriends(@PathVariable(name = "id") int userId,
                                        @PathVariable(name = "otherId") int otherUserId) {
         log.debug("/users/{id}/friends/common/{otherId}} - GET: getCommonFriends()");
-        return service.getCommonFriends(userID, otherUserId);
+        return service.getCommonFriends(userId, otherUserId);
     }
 }
 

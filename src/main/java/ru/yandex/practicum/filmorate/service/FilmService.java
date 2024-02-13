@@ -51,6 +51,16 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public Film receiveFilmById(int filmId) {
+        if (!filmStorage.containsById(filmId)) {
+            String message = "Фильма нет с id :" + filmId;
+            log.warn(message);
+            throw new FilmNotFoundException(message);
+        }
+
+        return filmStorage.getFilmById(filmId);
+    }
+
     public Film addFilm(final Film film) {
         log.debug("FilmService - service.addFilm()");
         addValidation(film);
@@ -69,6 +79,9 @@ public class FilmService {
         log.debug("FilmService - service.updateFilm()");
         addValidation(film);
         updateValidation(film);
+
+        Set<Integer> likes = filmStorage.getFilmById(film.getId()).getLikes();
+        film.setLikes(likes);
 
         filmStorage.updateFilm(film);
 
