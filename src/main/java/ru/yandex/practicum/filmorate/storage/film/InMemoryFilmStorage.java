@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -28,6 +25,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Set<Integer> getKeys() {
+        log.debug("InMemoryFilmStorage - films.getKeys().");
+        return new HashSet<>(films.keySet());
+    }
+
+    @Override
+    public Film getFilmById(int id) {
+        return films.get(id);
+    }
+
+    @Override
     public Integer addFilm(Film film) {
         log.debug("InMemoryFilmStorage - films.addFilm().");
         Integer generatedId = generateId();
@@ -40,18 +48,21 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void updateFilm(Film film) {
+    public Film updateFilm(Film film) {
         log.debug("InMemoryFilmStorage - films.updateFilm().");
         Integer key = film.getId();
-        Film updated = films.put(key, film);
-
-        if (updated == null)
-            throw new RuntimeException("");
+        return films.put(key, film);
     }
 
     public boolean containsFilm(Film film) {
         log.debug("InMemoryFilmStorage - films.containsFilm().");
         return films.containsKey(film.getId());
+    }
+
+    @Override
+    public boolean containsById(int id) {
+        log.debug("InMemoryFilmStorage - films.containsById().");
+        return films.containsKey(id);
     }
 
     private int generateId() {

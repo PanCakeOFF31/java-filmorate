@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.exception.film;
 
-public class FilmNullValueValidationException extends RuntimeException {
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+
+public class FilmNullValueValidationException extends ValidationException {
     public FilmNullValueValidationException() {
         super();
     }

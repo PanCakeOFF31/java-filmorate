@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -23,4 +22,16 @@ public class User {
     private String name = "";
     @Null
     private Set<Integer> friends;
+
+    public boolean toFriend(int friendId) {
+        return friends.add(friendId);
+    }
+
+    public boolean unfriend(int friendId) {
+        return friends.remove(friendId);
+    }
+
+    public int friendsQuantity() {
+        return friends.size();
+    }
 }

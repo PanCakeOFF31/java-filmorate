@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -37,36 +35,34 @@ public class UserController {
     @PutMapping
     public User updateUser(@Valid @RequestBody final User user) {
         log.debug("/users - PUT: updateUser()");
-//        return service.updateUser(user);
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+        return service.updateUser(user);
     }
 
     @PutMapping(value = "/{id}/friends/{friendId}")
-    public void addToFriend(@PathVariable(name = "id") int userId,
+    public User addToFriend(@PathVariable(name = "id") int userId,
                             @PathVariable int friendId) {
         log.debug("/users/{id}/friends/{friendId}} - PUT: addToFriend()");
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
-
+        return service.addToFriend(userId, friendId);
     }
 
     @DeleteMapping(value = "/{id}/friends/{friendId}")
-    public void deleteFromFriend(@PathVariable(name = "id") int userId,
+    public User deleteFromFriend(@PathVariable(name = "id") int userId,
                                  @PathVariable int friendId) {
         log.debug("/users/{id}/friends/{friendId}} - DELETE: deleteFromFriend()");
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+        return service.deleteFromFriend(userId, friendId);
     }
 
     @GetMapping(value = "/{id}/friends")
     public List<User> getUserFriends(@PathVariable int id) {
         log.debug("/users/{id}/friends - GET: getUserFriends()");
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+        return service.getUserFriends(id);
     }
 
     @GetMapping(value = "/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable(name = "id") int userID,
                                        @PathVariable(name = "otherId") int otherUserId) {
         log.debug("/users/{id}/friends/common/{otherId}} - GET: getCommonFriends()");
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод /feed ещё не реализован.");
+        return service.getCommonFriends(userID, otherUserId);
     }
 }
 

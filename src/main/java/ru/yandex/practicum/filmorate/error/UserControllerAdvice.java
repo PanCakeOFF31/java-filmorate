@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
@@ -25,15 +25,6 @@ public class UserControllerAdvice {
                 "Пропущен обработчик исключений валидации ValidationException");
     }
 
-    //    На тот случай, если где-то забуду реализовать @ExceptionHandler для ObjectNotFoundException
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleSkippedObjectNotFoundedException(final NotFoundException exception) {
-        log.debug(CLASS_NAME + "handleSkippedObjectNotFoundedException");
-        return new ErrorResponse("ObjectNotFoundException",
-                "Пропущен обработчик исключений валидации ObjectNotFoundException");
-    }
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUserNullValueValidationException(final UserNullValueValidationException exception) {
@@ -43,4 +34,12 @@ public class UserControllerAdvice {
                 , exception.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ErrorResponse handleSameUserException(final SameUserException exception) {
+        log.debug(CLASS_NAME + "handleSameUserException");
+        return new ErrorResponse("Ошибка повторяющегося идентификатора"
+                , "Идентификаторы должны различаться"
+                , exception.getMessage());
+    }
 }

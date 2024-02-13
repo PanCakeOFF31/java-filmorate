@@ -6,10 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
-import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
@@ -27,14 +25,6 @@ public class FilmControllerAdvice {
         log.debug(CLASS_NAME + "handleSkippedValidationException");
         return new ErrorResponse("ValidationException"
                 , "Пропущен обработчик исключений валидации ValidationException");
-    }
-
-    //    На тот случай, если где-то забуду реализовать @ExceptionHandler для ObjectNotFoundException
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleSkippedObjectNotFoundedException(final NotFoundException exception) {
-        log.debug(CLASS_NAME + "handleSkippedObjectNotFoundedException");
-        return new ErrorResponse("ObjectNotFoundException", "Пропущен обработчик исключений валидации ObjectNotFoundException");
     }
 
     @ExceptionHandler
@@ -63,15 +53,4 @@ public class FilmControllerAdvice {
                 , "Не должно быть указанного null значения."
                 , exception.getMessage());
     }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleFilmNotFoundException(final FilmNotFoundException exception) {
-        log.debug(CLASS_NAME + "handleFilmNotFoundException");
-        return new ErrorResponse("Не найден фильм"
-                , "Какое-то описание ошибки"
-                , exception.getMessage());
-    }
-
-
 }

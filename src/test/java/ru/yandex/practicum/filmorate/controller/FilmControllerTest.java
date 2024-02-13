@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -16,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmControllerTest {
     private FilmController filmController;
     private FilmService service;
-    private FilmStorage storage;
+    private FilmStorage filmStorage;
+    private UserStorage userStorage;
     private Film film;
 
     @BeforeEach
     public void initialize() {
-        storage = new InMemoryFilmStorage();
-        service = new FilmService(storage);
+        filmStorage = new InMemoryFilmStorage();
+        service = new FilmService(filmStorage, userStorage);
         filmController = new FilmController(service);
     }
 
@@ -39,12 +41,12 @@ class FilmControllerTest {
         boolean actual = service.addValidation(film);
         assertTrue(actual);
 
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
 
         service.addFilm(film);
         assertNotNull(film.getId());
 
-        assertEquals(1, storage.getFilmsQuantity());
+        assertEquals(1, filmStorage.getFilmsQuantity());
     }
 
     @Test
@@ -59,9 +61,9 @@ class FilmControllerTest {
         boolean actual = service.addValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
     }
 
     @Test
@@ -76,9 +78,9 @@ class FilmControllerTest {
         boolean actual = service.addValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.addFilm(film));
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
     }
 
     @Test
@@ -111,9 +113,9 @@ class FilmControllerTest {
         boolean actual = service.updateValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
 
     }
 
@@ -131,9 +133,9 @@ class FilmControllerTest {
         boolean actual = service.updateValidation(film);
         assertFalse(actual);
 
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmController.updateFilm(film));
-        assertEquals(0, storage.getFilmsQuantity());
+        assertEquals(0, filmStorage.getFilmsQuantity());
 
     }
 }
