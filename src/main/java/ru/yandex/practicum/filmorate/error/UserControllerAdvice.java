@@ -29,17 +29,17 @@ public class UserControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUserNullValueValidationException(final UserNullValueValidationException exception) {
         log.debug(CLASS_NAME + "handleUserNullValueValidationException");
-        return new ErrorResponse("Ошибка null значение"
-                , "Не должно быть указанного null значения."
-                , exception.getMessage());
+        return new ErrorResponse("Ошибка null значение",
+                "Не должно быть указанного null значения.",
+                exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public ErrorResponse handleSameUserException(final SameUserException exception) {
         log.debug(CLASS_NAME + "handleSameUserException");
-        return new ErrorResponse("Ошибка повторяющегося идентификатора"
-                , "Идентификаторы должны различаться"
-                , exception.getMessage());
+        return new ErrorResponse("Ошибка повторяющегося идентификатора",
+                "Идентификаторы должны различаться",
+                exception.getMessage());
     }
 }
