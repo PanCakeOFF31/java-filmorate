@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
     private UserService service;
     private UserStorage storage;
-    private User user;
+    private User user = new User();
 
     @BeforeEach
     public void initialize() {
@@ -83,13 +83,11 @@ class UserServiceTest {
 
         User user1 = new User();
 
-        {
-            user1.setLogin("dolore");
-            user1.setName("");
-            user1.setEmail("mail@mail.ru");
-            user1.setBirthday(LocalDate.of(1946, 8, 20));
-            user1.setFriends(new HashSet<>());
-        }
+        user1.setLogin("dolore");
+        user1.setName("");
+        user1.setEmail("mail@mail.ru");
+        user1.setBirthday(LocalDate.of(1946, 8, 20));
+        user1.setFriends(new HashSet<>());
 
         service.createUser(user1);
         assertNotNull(user1.getId());
@@ -116,13 +114,11 @@ class UserServiceTest {
 
         user = new User();
 
-        {
-            user.setLogin("dolore");
-            user.setName("");
-            user.setEmail("mail@mail.ru");
-            user.setBirthday(LocalDate.of(1946, 8, 20));
-            user.setFriends(new HashSet<>());
-        }
+        user.setLogin("dolore");
+        user.setName("");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
+        user.setFriends(new HashSet<>());
 
         service.createUser(user);
         assertNotNull(user.getId());
@@ -137,13 +133,11 @@ class UserServiceTest {
 
         user = new User();
 
-        {
-            user.setLogin("dolore");
-            user.setName("");
-            user.setEmail("mail@mail.ru");
-            user.setBirthday(LocalDate.of(1946, 8, 20));
-            user.setFriends(new HashSet<>());
-        }
+        user.setLogin("dolore");
+        user.setName("");
+        user.setEmail("mail@mail.ru");
+        user.setBirthday(LocalDate.of(1946, 8, 20));
+        user.setFriends(new HashSet<>());
 
         service.createUser(user);
         assertNotNull(user.getId());
