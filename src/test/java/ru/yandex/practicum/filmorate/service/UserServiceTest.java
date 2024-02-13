@@ -15,7 +15,6 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
-
     private UserService service;
     private UserStorage storage;
     private User user;
@@ -152,5 +151,4 @@ class UserServiceTest {
         Integer userId = user.getId();
         assertThrows(UserNotFoundException.class, () -> service.coupleUserValidation(userId, userId + 1));
     }
-
 }

@@ -32,7 +32,6 @@ class FilmServiceTest {
         service = new FilmService(filmStorage, userStorage);
     }
 
-
     @Test
     public void test_T0020_PS01_addValidation() {
         film = new Film();

@@ -80,6 +80,7 @@ public class FilmService {
         addValidation(film);
         updateValidation(film);
 
+//        Так как не допускается передавать список лайков, при обновлении нужно сохранять его
         Set<Integer> likes = filmStorage.getFilmById(film.getId()).getLikes();
         film.setLikes(likes);
 

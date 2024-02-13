@@ -38,7 +38,6 @@ public class InMemoryUserStorage implements UserStorage {
         user.setId(generatedId);
         users.put(generatedId, user);
 
-        log.info("Пользователь добавлен: " + user);
         return generatedId;
     }
 
@@ -70,6 +69,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     private int generateId() {
         log.debug("InMemoryUserStorage - users.generatedId()");
+
         while (users.containsKey(generateId))
             ++generateId;
 

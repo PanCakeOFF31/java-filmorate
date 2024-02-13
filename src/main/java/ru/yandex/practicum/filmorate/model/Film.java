@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -33,9 +31,10 @@ public class Film {
         return likes.add(userId);
     }
 
-    public boolean unlike(int userId){
+    public boolean unlike(int userId) {
         return likes.remove(userId);
     }
+
     public int likeQuantity() {
         return likes.size();
     }

@@ -19,9 +19,7 @@ public class User {
     @NotNull
     @Past
     private LocalDate birthday;
-    //    Последний тест от Яндекс "POST Create user with empty name" почему-то не содержит поле name
-//    Поэтому убрал ограничение javax.validation.constraints
-    private String name = "";
+    private String name;
     @Null
     private Set<Integer> friends;
 

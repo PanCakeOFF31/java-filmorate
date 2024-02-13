@@ -70,26 +70,3 @@ public class UserController {
         return service.getCommonFriends(userId, otherUserId);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

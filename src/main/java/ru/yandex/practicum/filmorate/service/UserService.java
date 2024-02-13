@@ -71,6 +71,7 @@ public class UserService {
         log.debug("UserService - service.updateUser()");
         updateValidation(user);
 
+//        Так как не допускается передавать список друзей, при обновлении нужно сохранять его
         Set<Integer> friends = userStorage.getUserById(user.getId()).getFriends();
         user.setFriends(friends);
 
@@ -91,11 +92,11 @@ public class UserService {
         log.info("Количеств друзей изначально:" + user.friendsQuantity());
         boolean result = user.toFriend(friendId);
 
-        if (result)
-            log.info("Пользователь с " + userId + " добавил в друзья пользователя " + friendId);
-        else
-            log.info("Пользователь уже добавлен в друзья");
+        String message = result
+                ? "Пользователь с " + userId + " добавил в друзья пользователя " + friendId
+                : ("Пользователь уже добавлен в друзья");
 
+        log.info(message);
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
         userStorage.getUserById(friendId).toFriend(userId);
@@ -112,11 +113,11 @@ public class UserService {
         log.info("Количеств лайка в изначально:" + user.friendsQuantity());
         boolean result = user.unfriend(friendId);
 
-        if (result)
-            log.info("Пользователь с " + userId + " удалил из друзей пользователя" + friendId);
-        else
-            log.info("Пользователь уже удален из друзей");
+        String message = result
+                ? ("Пользователь с " + userId + " удалил из друзей пользователя" + friendId)
+                : ("Пользователь уже удален из друзей");
 
+        log.info(message);
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
         userStorage.getUserById(friendId).unfriend(userId);
@@ -205,7 +206,7 @@ public class UserService {
             throw new UserNotFoundException(message);
         }
 
-
+        log.info("Успешное окончание coupleUserValidation() валидации");
         return true;
     }
 
@@ -215,5 +216,4 @@ public class UserService {
             log.info("Имя пользователя скорректировано и указано в качестве логина");
         }
     }
-
 }
