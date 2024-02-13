@@ -149,7 +149,7 @@ public class FilmService {
         final LocalDate releaseDate = film.getReleaseDate();
         final Duration duration = film.getDuration();
 
-        if (!releaseDate.isAfter(FilmRestriction.REALEASE_DATE)) {
+        if (!releaseDate.isAfter(FilmRestriction.RELEASE_DATE)) {
             String message = "Валидация по дате выхода фильма не пройдена: " + film;
             log.warn(message);
             throw new FilmReleaseDateValidationException(message);

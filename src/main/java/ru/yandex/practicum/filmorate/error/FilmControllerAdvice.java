@@ -41,7 +41,7 @@ public class FilmControllerAdvice {
     public ErrorResponse handleFilmReleaseDateValidationException(final FilmReleaseDateValidationException exception) {
         log.debug(CLASS_NAME + "handleFilmReleaseDateValidationException");
         return new ErrorResponse("Ошибка даты выхода фильма",
-                "Допустимое значение, не раньше: " + FilmRestriction.REALEASE_DATE,
+                "Допустимое значение, не раньше: " + FilmRestriction.RELEASE_DATE,
                 exception.getMessage());
     }
 
