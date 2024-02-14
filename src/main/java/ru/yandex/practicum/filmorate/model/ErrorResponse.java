@@ -13,5 +13,5 @@ public class ErrorResponse {
     private String error;
     @NonNull
     private String description;
-    private String methodMessage = "";
+    private String methodMessage;
 }

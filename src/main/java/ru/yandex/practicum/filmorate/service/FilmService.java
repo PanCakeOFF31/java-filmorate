@@ -32,14 +32,15 @@ public class FilmService {
 
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
+        int filmsQuantity = filmStorage.getFilmsQuantity();
 
         if (count < 0) {
-            log.info("Возвращен список фильмов в количестве: " + filmStorage.getFilmsQuantity());
+            log.info("Возвращен список фильмов в количестве: " + filmsQuantity);
             return new ArrayList<>(filmStorage.getFilms());
         }
 
-        if (count > filmStorage.getFilmsQuantity())
-            count = filmStorage.getFilmsQuantity();
+        if (count > filmsQuantity)
+            count = filmsQuantity;
 
         List<Film> films = new ArrayList<>(filmStorage.getFilms());
         Collections.shuffle(films);
@@ -52,11 +53,8 @@ public class FilmService {
     }
 
     public Film receiveFilmById(int filmId) {
-        if (!filmStorage.containsById(filmId)) {
-            String message = "Фильма нет с id :" + filmId;
-            log.warn(message);
-            throw new FilmNotFoundException(message);
-        }
+        String message = "Фильма нет с id :" + filmId;
+        filmIsExist(filmId, message);
 
         return filmStorage.getFilmById(filmId);
     }
@@ -100,11 +98,11 @@ public class FilmService {
         log.info("Количеств лайка в изначально:" + film.likeQuantity());
         boolean result = film.like(userId);
 
-        if (result)
-            log.info("Лайк пользователя " + userId + " установлен для фильма " + filmId);
-        else
-            log.info("Лайк уже поставлен");
+        String logMessage = result
+                ? "Лайк пользователя " + userId + " установлен для фильма " + filmId
+                : "Лайк уже поставлен";
 
+        log.info(logMessage);
         log.info("Количеств лайка теперь: " + film.likeQuantity());
 
         return film;
@@ -118,12 +116,13 @@ public class FilmService {
         log.info("Количеств лайка в изначально:" + film.getLikes().size());
         boolean result = film.unlike(userId);
 
-        if (result)
-            log.info("Лайк пользователя " + userId + " снят с фильма " + filmId);
-        else
-            log.info("Лайк уже снят");
+        String logMessage = result
+                ? "Лайк пользователя " + userId + " снят с фильма " + filmId
+                : "Лайк уже снят";
 
+        log.info(logMessage);
         log.info("Количеств лайка теперь: " + film.getLikes().size());
+
         return film;
     }
 
@@ -168,18 +167,16 @@ public class FilmService {
     public boolean updateValidation(final Film film) {
         log.debug("FilmService - service.updateValidation()");
         log.debug("Валидации фильма: " + film);
+        String message;
 
         if (film.getId() == null) {
-            String message = "У фильма нет id, валидация не пройдена: " + film;
+            message = "У фильма нет id, валидация не пройдена: " + film;
             log.warn(message);
             throw new FilmNullValueValidationException(message);
         }
 
-        if (!filmStorage.containsFilm(film)) {
-            String message = "Валидация на существование фильма по id не пройдена: " + film;
-            log.warn(message);
-            throw new FilmNotFoundException(message);
-        }
+        message = "Валидация на существование фильма по id не пройдена: " + film;
+        filmIsExist(film.getId(), message);
 
         log.info("Успешное окончание updateValidation() валидации фильма: " + film);
         return true;
@@ -187,20 +184,33 @@ public class FilmService {
 
     public boolean likeValidation(int filmId, int userId) {
         log.debug("FilmService - service.likeValidation()");
+        String message;
 
+        message = "Фильма нет с id :" + filmId;
+        filmIsExist(filmId, message);
+
+        message = "Пользователя нет с id :" + userId;
+        userIsExist(userId, message);
+
+        return true;
+    }
+
+    public boolean filmIsExist(int filmId, String message) {
         if (!filmStorage.containsById(filmId)) {
-            String message = "Фильма нет с id :" + filmId;
+            message = "Фильма нет с id :" + filmId;
             log.warn(message);
             throw new FilmNotFoundException(message);
         }
 
+        return true;
+    }
+
+    private boolean userIsExist(int userId, String message) {
         if (!userStorage.containsById(userId)) {
-            String message = "Пользователя нет с id :" + userId;
             log.warn(message);
             throw new UserNotFoundException(message);
         }
 
         return true;
     }
-
 }

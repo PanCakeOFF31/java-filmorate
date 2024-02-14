@@ -24,14 +24,15 @@ public class UserService {
 
     public List<User> receiveUsers(int count) {
         log.debug("UserService - service.receiveUsers()");
+        int usersQuantity = userStorage.getUsersQuantity();
 
         if (count < 0) {
-            log.info("Возвращен список пользователей в количестве: " + userStorage.getUsersQuantity());
+            log.info("Возвращен список пользователей в количестве: " + usersQuantity);
             return new ArrayList<>(userStorage.getUsers());
         }
 
-        if (count > userStorage.getUsersQuantity())
-            count = userStorage.getUsersQuantity();
+        if (count > usersQuantity)
+            count = usersQuantity;
 
         List<User> users = new ArrayList<>(userStorage.getUsers());
         Collections.shuffle(users);
@@ -44,11 +45,8 @@ public class UserService {
     }
 
     public User receiveUserById(int userId) {
-        if (!userStorage.containsById(userId)) {
-            String message = "Пользователя нет с id :" + userId;
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
+        String message = "Пользователя нет с id :" + userId;
+        userIsExist(userId, message);
 
         return userStorage.getUserById(userId);
     }
@@ -128,11 +126,8 @@ public class UserService {
     public List<User> getUserFriends(int userId) {
         log.debug("UserService - service.getUserFriend()");
 
-        if (!userStorage.containsById(userId)) {
-            String message = "Пользователя нет с id :" + userId;
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
+        String message = "Пользователя нет с id :" + userId;
+        userIsExist(userId, message);
 
         User user = userStorage.getUserById(userId);
         List<User> userFriends = user.getFriends().stream()
@@ -164,7 +159,6 @@ public class UserService {
         return commonFriends;
     }
 
-
     public boolean updateValidation(final User user) {
         log.debug("UserService - service.updateValidation()");
         log.debug("Валидации пользователя: " + user);
@@ -175,11 +169,8 @@ public class UserService {
             throw new UserNullValueValidationException(message);
         }
 
-        if (!userStorage.containsUser(user)) {
-            String message = "Валидация на существование пользователя по id не пройдена: " + user;
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
+        String message = "Валидация на существование пользователя по id не пройдена: " + user;
+        userIsExist(user.getId(), message);
 
         log.info("Успешное окончание updateValidation() валидации пользователя: " + user);
         return true;
@@ -187,26 +178,30 @@ public class UserService {
 
     public boolean coupleUserValidation(int userId, int otherUserId) {
         log.debug("UserService - service.toFriendValidation()");
+        String message;
 
         if (userId == otherUserId) {
-            String message = "Идентификаторы пользователей совпадают: " + userId + "==" + otherUserId;
+            message = "Идентификаторы пользователей совпадают: " + userId + "==" + otherUserId;
             log.warn(message);
             throw new SameUserException(message);
         }
 
-        if (!userStorage.containsById(userId)) {
-            String message = "Пользователя нет с id :" + userId;
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
+        message = "Пользователя нет с id :" + userId;
+        userIsExist(userId, message);
 
-        if (!userStorage.containsById(otherUserId)) {
-            String message = "Второго пользователя нет с id :" + otherUserId;
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
+        message = "Второго пользователя нет с id :" + otherUserId;
+        userIsExist(otherUserId, message);
 
         log.info("Успешное окончание coupleUserValidation() валидации");
+        return true;
+    }
+
+    private boolean userIsExist(int userId, String message) {
+        if (!userStorage.containsById(userId)) {
+            log.warn(message);
+            throw new UserNotFoundException(message);
+        }
+
         return true;
     }
 
