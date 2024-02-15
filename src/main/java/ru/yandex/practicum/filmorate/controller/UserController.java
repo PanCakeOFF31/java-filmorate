@@ -1,97 +1,72 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int generateId = 1;
+    private final UserService service;
 
-    public int getUsersSize() {
-        return users.size();
+    @Autowired
+    public UserController(UserService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<User> receiveUsers() {
+    public List<User> receiveUsers(@RequestParam(defaultValue = "10") int count) {
         log.debug("/users - GET: getUsers()");
-        log.info("Возвращен список пользователей в количестве: " + users.size());
+        return service.receiveUsers(count);
+    }
 
-        return new ArrayList<>(users.values());
+    @GetMapping(value = "/{id}")
+    public User receiveUserById(@PathVariable(name = "id") int userId) {
+        return service.receiveUserById(userId);
     }
 
     @PostMapping
     public User createUser(@Valid @RequestBody final User user) {
         log.debug("/users - POST: createUser()");
-
-        user.setId(generateId());
-        users.put(generateId, user);
-
-        correctName(user);
-
-        log.info("Пользователь добавлен: " + user);
-        log.info("Количество пользователей: " + users.size());
-
-        return user;
+        return service.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody final User user) {
         log.debug("/users - PUT: updateUser()");
-
-        if (!updateValidation(user)) {
-            log.warn("Пользователь не обновлен, так как не прошел валидацию");
-            throw new ValidationException();
-        }
-
-        users.put(user.getId(), user);
-
-        log.info("Пользователь обновлен: " + user);
-        log.info("Количество пользователей: " + users.size());
-
-        return user;
+        return service.updateUser(user);
     }
 
-    public boolean updateValidation(final User user) {
-        log.debug("Начало updateValidation() валидации пользователя: " + user);
-
-        if (user.getId() == null) {
-            log.warn("У пользователя нет id, валидация не пройдена: " + user);
-            return false;
-        }
-
-        if (!users.containsKey(user.getId())) {
-            log.warn("Валидация на существование пользователя по id не пройдена: " + user);
-            return false;
-        }
-
-        log.info("Успешное окончание updateValidation() валидации пользователя: " + user);
-
-        return true;
+    @PutMapping(value = "/{id}/friends/{friendId}")
+    public User addToFriend(@PathVariable(name = "id") int userId,
+                            @PathVariable int friendId) {
+        log.debug("/users/{id}/friends/{friendId}} - PUT: addToFriend()");
+        return service.addToFriend(userId, friendId);
     }
 
-    private void correctName(final User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-            log.info("Имя пользователя указано в качестве логина");
-        }
+    @DeleteMapping(value = "/{id}/friends/{friendId}")
+    public User deleteFromFriend(@PathVariable(name = "id") int userId,
+                                 @PathVariable int friendId) {
+        log.debug("/users/{id}/friends/{friendId}} - DELETE: deleteFromFriend()");
+        return service.deleteFromFriend(userId, friendId);
     }
 
-    private int generateId() {
-        while (users.containsKey(generateId))
-            ++generateId;
-
-        return this.generateId;
+    @GetMapping(value = "/{id}/friends")
+    public List<User> getUserFriends(@PathVariable int id) {
+        log.debug("/users/{id}/friends - GET: getUserFriends()");
+        return service.getUserFriends(id);
     }
 
+    @GetMapping(value = "/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable(name = "id") int userId,
+                                       @PathVariable(name = "otherId") int otherUserId) {
+        log.debug("/users/{id}/friends/common/{otherId}} - GET: getCommonFriends()");
+        return service.getCommonFriends(userId, otherUserId);
+    }
 }
