@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipDao;
 
     public List<User> receiveUsers(int count) {
         log.debug("UserService - service.receiveUsers()");
@@ -52,12 +54,13 @@ public class UserService {
         correctName(user);
         user.setFriends(new HashSet<>());
         Integer id = userStorage.addUser(user);
-
         log.info("Пользователь добавлен с Id: " + id);
-        log.info(user.toString());
+
+        User addedUser = userStorage.getUserById(id);
+        System.out.println(addedUser);
         log.info("Количество пользователей: " + userStorage.getUsersQuantity());
 
-        return user;
+        return addedUser;
     }
 
     public User updateUser(final User user) {
@@ -93,6 +96,7 @@ public class UserService {
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
         userStorage.getUserById(friendId).toFriend(userId);
+        friendshipDao.addToFriend(userId, friendId);
 
         return user;
     }
@@ -114,6 +118,7 @@ public class UserService {
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
         userStorage.getUserById(friendId).unfriend(userId);
+        friendshipDao.deleteFromFriend(userId, friendId);
 
         return user;
     }
@@ -124,10 +129,7 @@ public class UserService {
         String message = "Пользователя нет с id :" + userId;
         userIsExist(userId, message);
 
-        User user = userStorage.getUserById(userId);
-        List<User> userFriends = user.getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        List<User> userFriends = friendshipDao.getUserFriends(userId);
 
         log.info("Для пользователя " + userId + " возвращены друзья в количестве " + userFriends.size());
         return userFriends;
@@ -138,15 +140,7 @@ public class UserService {
 
         coupleUserValidation(userId, otherUserId);
 
-        User user = userStorage.getUserById(userId);
-        User otherUser = userStorage.getUserById(otherUserId);
-
-        Set<Integer> otherUserFriends = otherUser.getFriends();
-        List<User> commonFriends =
-                user.getFriends().stream()
-                        .filter(otherUserFriends::contains)
-                        .map(userStorage::getUserById)
-                        .collect(Collectors.toList());
+        List<User> commonFriends = friendshipDao.getCommonFriends(userId, otherUserId);
 
         log.info("Для пользователя " + userId + " возвращены общие друзья с пользователем " + otherUserId);
         log.info("Количество общих друзей: " + commonFriends.size());

@@ -8,10 +8,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +23,7 @@ import java.util.Set;
 @Slf4j
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final FriendshipStorage friendshipDao;
 
     @Override
     public int getUsersQuantity() {
@@ -40,23 +43,19 @@ public class UserDbStorage implements UserStorage {
         log.debug("UserDbStorage - storage.getUsers()");
 
         String sqlRequest = "SELECT * FROM users";
-        RowMapper<User> userMapper = (rs, rowMapper) -> makeUser(rs);
+        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+
         return jdbcTemplate.query(sqlRequest, userMapper);
     }
 
-    private User makeUser(ResultSet rs) throws SQLException {
-        Integer id = rs.getInt("id");
-        String email = rs.getString("email");
-        String login = rs.getString("login");
-        String name = rs.getString("name");
-        LocalDate birthday = rs.getDate("birthday").toLocalDate();
-
-        return new User(id, email, login, birthday, name, null);
-    }
-
     @Override
-    public Set<Integer> getIds() {
-        return null;
+    public Set<Integer> getAllRowId() {
+        log.debug("UserDbStorage - storage.getAllRowId()");
+
+        String sqlRequest = "SELECT id FROM users";
+        List<Integer> users = jdbcTemplate.query(sqlRequest, (rs, rowNum) -> rs.getInt("id"));
+
+        return new HashSet<>(users);
     }
 
     @Override
@@ -64,8 +63,26 @@ public class UserDbStorage implements UserStorage {
         log.debug("UserDbStorage - storage.getUserById()");
 
         String sqlRequest = "SELECT * FROM users WHERE id = ?";
-        RowMapper<User> userMapper = (rs, rowMapper) -> makeUser(rs);
+        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+
         return jdbcTemplate.queryForObject(sqlRequest, userMapper, id);
+    }
+
+    public User getUserByEmail(String email) {
+        log.debug("UserDbStorage - storage.getUserById()");
+
+        String sqlRequest = "SELECT * FROM users WHERE email = ?";
+        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+
+        return jdbcTemplate.queryForObject(sqlRequest, userMapper, email);
+    }
+
+    public User getUserByLogin(String login) {
+        log.debug("UserDbStorage - storage.getUserById()");
+
+        String sqlRequest = "SELECT * FROM users WHERE login = ?";
+        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+        return jdbcTemplate.queryForObject(sqlRequest, userMapper, login);
     }
 
     @Override
@@ -74,19 +91,18 @@ public class UserDbStorage implements UserStorage {
 
         String sqlRequest = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?);";
 
-        System.out.println(user);
-
         jdbcTemplate.update(sqlRequest,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
                 user.getBirthday());
 
-        return null;
+        return getUserId(user);
     }
 
     @Override
     public boolean containsUser(User user) {
+        log.debug("UserDbStorage - storage.containsUser()");
         return containsById(user.getId());
     }
 
@@ -103,8 +119,41 @@ public class UserDbStorage implements UserStorage {
     public User updateUser(User user) {
         log.debug("UserDbStorage - storage.updateUser()");
 
-        String sqlRequest = "INSERT INTO users VALUES (?, ?, ?, ?, ?) ON CONFLICT DO UPDATE";
+        String sqlRequest = "INSERT INTO users (id, email, login, name, birthday)" +
+                "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO UPDATE";
 
-        return null;
+        jdbcTemplate.update(sqlRequest,
+                user.getId(),
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday());
+
+        return getUserById(user.getId());
+    }
+
+    private int getUserId(User user) {
+        log.debug("UserDbStorage - storage.getUserId()");
+
+        String sqlRequest = "SELECT * FROM users WHERE email = ? AND login = ?";
+        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+        User userFromDb = jdbcTemplate.queryForObject(sqlRequest, userMapper, user.getEmail(), user.getLogin());
+
+        return userFromDb.getId();
+    }
+
+    //    TODO: что-то с этим нужно сделать
+    // Этот метод дублирует метод в FriendshipDao
+    public User makeUser(ResultSet rs) throws SQLException {
+        log.debug("UserDbStorage - makeUser()");
+
+        int id = rs.getInt("id");
+        String email = rs.getString("email");
+        String login = rs.getString("login");
+        String name = rs.getString("name");
+        LocalDate birthday = rs.getDate("birthday").toLocalDate();
+        Set<Integer> friends = friendshipDao.getUserFriendsId(id);
+
+        return new User(id, email, login, birthday, name, friends);
     }
 }

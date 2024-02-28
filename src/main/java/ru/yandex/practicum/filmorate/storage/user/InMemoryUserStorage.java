@@ -25,7 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Set<Integer> getIds() {
+    public Set<Integer> getAllRowId() {
         log.debug("InMemoryUserStorage - users.getKeys()");
         return new HashSet<>(users.keySet());
     }

@@ -10,7 +10,7 @@ public interface FilmStorage {
 
     List<Film> getFilms();
 
-    Set<Integer> getKeys();
+    Set<Integer> getAllRowId();
 
     Film getFilmById(int id);
 

@@ -22,7 +22,7 @@ class UserServiceTest {
     @BeforeEach
     public void initialize() {
         storage = new InMemoryUserStorage();
-        service = new UserService(storage);
+        service = new UserService(storage, null);
     }
 
     @Test

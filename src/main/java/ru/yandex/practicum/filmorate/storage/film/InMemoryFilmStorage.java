@@ -25,7 +25,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Set<Integer> getKeys() {
+    public Set<Integer> getAllRowId() {
         log.debug("InMemoryFilmStorage - films.getKeys().");
         return new HashSet<>(films.keySet());
     }

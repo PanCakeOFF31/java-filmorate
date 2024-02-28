@@ -13,16 +13,17 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 @RestControllerAdvice(basePackages = "ru.yandex.practicum.filmorate")
 @Slf4j
 public class ZigCommonControllerAdvice {
-    private static final String CLASS_NAME = "GeneralControllerAdvice ";
+    private static final String CLASS_NAME = "CommonControllerAdvice ";
 
-    @ExceptionHandler()
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRunTimeException(final RuntimeException exception) {
-        log.debug("GeneralControllerAdvice - handleRunTimeException()");
-        log.warn(exception.getClass().toString());
-        return new ErrorResponse("RuntimeException",
-                "Не предвиденная ошибка, которую не предвидели.");
-    }
+//    @ExceptionHandler()
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleRunTimeException(final RuntimeException exception) {
+//        log.debug("GeneralControllerAdvice - handleRunTimeException()");
+//        log.warn(exception.getClass().toString());
+//        return new ErrorResponse("RuntimeException",
+//                "Не предвиденная ошибка, которую не предвидели.",
+//                exception.getClass().toString());
+//    }
 
     //    На тот случай, если где-то забуду реализовать @ExceptionHandler для ObjectNotFoundException
     @ExceptionHandler
@@ -47,7 +48,7 @@ public class ZigCommonControllerAdvice {
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException exception) {
         log.debug(CLASS_NAME + "UserNotFoundException");
         return new ErrorResponse("Ошибка существования пользователя",
-                "Фильм с указанным идентификатором отсутствует",
+                "Пользователь с указанным идентификатором отсутствует",
                 exception.getMessage());
     }
 }
