@@ -10,7 +10,7 @@ public interface UserStorage {
 
     List<User> getUsers();
 
-    Set<Integer> getKeys();
+    Set<Integer> getIds();
 
     User getUserById(int id);
 

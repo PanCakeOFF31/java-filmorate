@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.impl.UserDaoImpl;
 import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
-    private final UserDaoImpl userDao;
 
     public List<User> receiveUsers(int count) {
         log.debug("UserService - service.receiveUsers()");
@@ -45,16 +43,15 @@ public class UserService {
     public User receiveUserById(int userId) {
         String message = "Пользователя нет с id :" + userId;
         userIsExist(userId, message);
-
         return userStorage.getUserById(userId);
     }
 
     public User createUser(final User user) {
         log.debug("UserService - service.createUser()");
 
-        Integer id = userStorage.addUser(user);
-        user.setFriends(new HashSet<>());
         correctName(user);
+        user.setFriends(new HashSet<>());
+        Integer id = userStorage.addUser(user);
 
         log.info("Пользователь добавлен с Id: " + id);
         log.info(user.toString());
