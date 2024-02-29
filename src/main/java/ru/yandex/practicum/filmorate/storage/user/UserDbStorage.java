@@ -49,6 +49,16 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
+    public List<User> getUsers(int count) {
+        log.debug("UserDbStorage - storage.getUsers(int count)");
+
+        String sqlRequest = "SELECT * FROM users LIMIT ?";
+        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+
+        return jdbcTemplate.query(sqlRequest, userMapper, count);
+    }
+
+    @Override
     public Set<Integer> getAllRowId() {
         log.debug("UserDbStorage - storage.getAllRowId()");
 
@@ -120,15 +130,19 @@ public class UserDbStorage implements UserStorage {
     public User updateUser(User user) {
         log.debug("UserDbStorage - storage.updateUser()");
 
-        String sqlRequest = "INSERT INTO users (id, email, login, name, birthday)" +
-                "VALUES (?, ?, ?, ?, ?) ON CONFLICT DO UPDATE";
+        String sqlRequest = "UPDATE users SET\n" +
+                "email = ?,\n" +
+                "login = ?,\n" +
+                "name = ?,\n" +
+                "birthday = ?\n" +
+                "WHERE id = ?;";
 
         jdbcTemplate.update(sqlRequest,
-                user.getId(),
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
-                user.getBirthday());
+                user.getBirthday(),
+                user.getId());
 
         return getUserById(user.getId());
     }

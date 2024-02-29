@@ -95,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getMpa().getId());
+                film.getMpaId().getId());
 
         return getFilmId(film);
     }
@@ -120,16 +120,21 @@ public class FilmDbStorage implements FilmStorage {
     public Film updateFilm(Film film) {
         log.debug("FilmDbStorage - updateFilm()");
 
-        String sqlRequest = "INSERT INTO films (id, name, description, release_date, duration, mpa)" +
-                "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO UPDATE";
+        String sqlRequest = "UPDATE films SET\n" +
+                "name = ?,\n" +
+                "description = ?,\n" +
+                "release_date = ?,\n" +
+                "duration = ?,\n" +
+                "mpa = ?\n" +
+                "WHERE id = ?;";
 
         jdbcTemplate.update(sqlRequest,
-                film.getId(),
                 film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDescription(),
-                film.getMpa());
+                film.getMpaId(),
+                film.getId());
 
         return getFilmById(film.getId());
     }

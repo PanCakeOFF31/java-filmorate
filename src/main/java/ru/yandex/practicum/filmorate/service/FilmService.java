@@ -42,7 +42,6 @@ public class FilmService {
             count = filmsQuantity;
 
         List<Film> films = new ArrayList<>(filmStorage.getFilms(count));
-//        Collections.shuffle(films);
 
         log.info("Возвращен список фильмов в количестве: " + count);
 

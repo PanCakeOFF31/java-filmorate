@@ -11,10 +11,8 @@ import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,14 +33,11 @@ public class UserService {
         if (count > usersQuantity)
             count = usersQuantity;
 
-        List<User> users = new ArrayList<>(userStorage.getUsers());
-        Collections.shuffle(users);
+        List<User> users = new ArrayList<>(userStorage.getUsers(count));
 
         log.info("Возвращен список пользователей в количестве: " + count);
 
-        return users.stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return users;
     }
 
     public User receiveUserById(int userId) {
@@ -69,6 +64,7 @@ public class UserService {
     public User updateUser(final User user) {
         log.debug("UserService - service.updateUser()");
         updateValidation(user);
+        correctName(user);
 
         User updatedUser = userStorage.updateUser(user);
 

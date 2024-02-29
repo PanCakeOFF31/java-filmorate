@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -33,7 +32,7 @@ public class Film {
     private Duration duration;
     private int rate;
     @NotNull
-    private MpaId mpa;
+    private MpaId mpaId;
     @Null
     private List<GenreId> genres;
 }

@@ -21,7 +21,9 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     @Override
     public boolean addToFriend(int userId, int friendId) {
-        String sqlRequest = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?), (?, ?)";
+        log.debug("FriendshipDbStorage - storage.addToFriend()");
+
+        String sqlRequest = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?), (?, ?)";
 
         int added = jdbcTemplate.update(sqlRequest, userId, friendId);
 
@@ -30,7 +32,9 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
     @Override
     public boolean deleteFromFriend(int userId, int friendId) {
-        String sqlRequest = "DELETE FROM friends WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
+        log.debug("FriendshipDbStorage - storage.deleteFromFriend()");
+
+        String sqlRequest = "DELETE FROM friendship WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
 
         int deleted = jdbcTemplate.update(sqlRequest, userId, friendId);
 
@@ -41,7 +45,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public int getUserFriendCounts(int userId) {
         log.debug("FriendshipDao - getUserFriendCounts()");
 
-        String sqlRequest = "SELECT COUNT(friend_id) AS friend_count FROM friends WHERE user_id = ?";
+        String sqlRequest = "SELECT COUNT(friend_id) AS friend_count FROM friendship WHERE user_id = ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, userId);
 
         if (rowSet.next())
@@ -53,7 +57,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public List<Integer> getUserFriendsAsId(int userId) {
         log.debug("FriendshipDao - getUserFriendsId()");
 
-        String sqlRequest = "SELECT friend_id FROM friends WHERE user_id = ?";
+        String sqlRequest = "SELECT friend_id FROM friendship WHERE user_id = ?";
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> rs.getInt("friend_id"), userId);
     }
 
@@ -64,7 +68,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
         String sqlRequest = "SELECT id, email, login, name, birthday \n" +
                 "FROM users\n" +
                 "INNER JOIN \n" +
-                "(SELECT friend_id FROM friends WHERE user_id = ?)\n" +
+                "(SELECT friend_id FROM friendship WHERE user_id = ?)\n" +
                 "ON id = friend_id";
 
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeUser(rs), userId);
@@ -78,11 +82,11 @@ public class FriendshipDbStorage implements FriendshipStorage {
                 "FROM users \n" +
                 "WHERE id IN (\n" +
                 "SELECT friend_id\n" +
-                "FROM friends\n" +
+                "FROM friendship\n" +
                 "WHERE user_id = ?\n" +
                 "INTERSECT \n" +
                 "SELECT friend_id\n" +
-                "FROM friends\n" +
+                "FROM friendship\n" +
                 "WHERE user_id = ?)";
 
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeUser(rs), userId, otherUserId);
