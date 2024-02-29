@@ -8,10 +8,10 @@ import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationExcep
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.films.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.users.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;

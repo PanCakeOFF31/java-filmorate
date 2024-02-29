@@ -23,8 +23,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public boolean addToFriend(int userId, int friendId) {
         log.debug("FriendshipDbStorage - storage.addToFriend()");
 
-        String sqlRequest = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?), (?, ?)";
-
+        String sqlRequest = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
         int added = jdbcTemplate.update(sqlRequest, userId, friendId);
 
         return added > 0;
@@ -34,8 +33,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public boolean deleteFromFriend(int userId, int friendId) {
         log.debug("FriendshipDbStorage - storage.deleteFromFriend()");
 
-        String sqlRequest = "DELETE FROM friendship WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
-
+        String sqlRequest = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?;";
         int deleted = jdbcTemplate.update(sqlRequest, userId, friendId);
 
         return deleted > 0;

@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
@@ -51,4 +53,22 @@ public class ZigCommonControllerAdvice {
                 "Пользователь с указанным идентификатором отсутствует",
                 exception.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException exception) {
+        log.debug(CLASS_NAME + "MpaNotFoundException");
+        return new ErrorResponse("Ошибка существования mpa",
+                "Mpa с указанным идентификатором отсутствует",
+                exception.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException exception) {
+        log.debug(CLASS_NAME + "GenreNotFoundException");
+        return new ErrorResponse("Ошибка существования mpa",
+                "Genre с указанным идентификатором отсутствует",
+                exception.getMessage());
+    }
+
 }

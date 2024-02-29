@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,7 +50,8 @@ public class UserService {
         log.debug("UserService - service.createUser()");
 
         correctName(user);
-        user.setFriends(new HashSet<>());
+        correctFriends(user);
+
         Integer id = userStorage.addUser(user);
 
         log.info("Пользователь добавлен с Id: " + id);
@@ -63,8 +64,10 @@ public class UserService {
 
     public User updateUser(final User user) {
         log.debug("UserService - service.updateUser()");
-        updateValidation(user);
+
+        correctFriends(user);
         correctName(user);
+        updateValidation(user);
 
         User updatedUser = userStorage.updateUser(user);
 
@@ -93,23 +96,19 @@ public class UserService {
 
     public User deleteFromFriend(int userId, int friendId) {
         log.debug("UserService - service.deleteFromFriend()");
-
         coupleUserValidation(userId, friendId);
 
-        User user = userStorage.getUserById(userId);
-        log.info("Количеств лайка в изначально:" + user.friendsQuantity());
-        boolean result = user.unfriend(friendId);
+        log.info("Количеств друзей изначально: " + friendshipDao.getUserFriendCounts(userId));
+        boolean result = friendshipDao.deleteFromFriend(userId, friendId);
 
         String message = result
                 ? ("Пользователь с " + userId + " удалил из друзей пользователя" + friendId)
                 : ("Пользователь уже удален из друзей");
 
         log.info(message);
-        log.info("Количество друзей теперь: " + user.friendsQuantity());
+        log.info("Количество друзей теперь: " + friendshipDao.getUserFriendCounts(userId));
 
-        friendshipDao.deleteFromFriend(userId, friendId);
-
-        return user;
+        return userStorage.getUserById(userId);
     }
 
     public List<User> getUserFriends(int userId) {
@@ -175,18 +174,36 @@ public class UserService {
     }
 
     private boolean userIsExist(int userId, String message) {
+        log.debug("UserService - service.userIsExist()");
+
         if (!userStorage.containsById(userId)) {
             log.warn(message);
             throw new UserNotFoundException(message);
         }
 
+        log.info("Пользователь с id = " + userId + " существует в хранилище");
         return true;
     }
 
     private void correctName(final User user) {
+        log.debug("UserService - service.correctName()");
+
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Имя пользователя скорректировано и указано в качестве логина");
         }
+
+        log.info("У пользователя есть имя, корректировать не понадобилось");
+    }
+
+    private void correctFriends(final User user) {
+        log.debug("UserService - service.correctFriends()");
+
+        if (user.getFriends() == null) {
+            user.setFriends(new HashSet<>());
+            log.info("Друзья инициализированы пустым множеством");
+        }
+
+        log.info("У пользователя указаны друзья, коррекции не было");
     }
 }

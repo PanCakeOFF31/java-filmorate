@@ -2,10 +2,12 @@ package ru.yandex.practicum.filmorate.storage.genres;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Genre.Genre;
-import ru.yandex.practicum.filmorate.model.Genre.GenreId;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,15 +20,33 @@ public class GenreDbStorage implements GenresStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void addFilmGenre(int filmId, int genreId) {
+    public boolean addFilmGenre(int filmId, int genreId) {
         log.debug("GenreDbStorage - storage.addFilmGenre()");
 
+        String sqlRequest = "INSERT INTO film_genre (film_id, genre_id) VALUES (?, ?);";
+        int added = jdbcTemplate.update(sqlRequest, filmId, genreId);
+
+        return added > 0;
     }
 
     @Override
-    public void deleteFilmGenre(int filmId, int genreId) {
+    public boolean deleteFilmGenre(int filmId, int genreId) {
         log.debug("GenreDbStorage - storage.deleteFilmGenre()");
 
+        String sqlRequest = "DELETE FROM film_genre WHERE film_id = ? AND genre_id = ?;";
+        int deleted = jdbcTemplate.update(sqlRequest, filmId, genreId);
+
+        return deleted > 0;
+    }
+
+    @Override
+    public boolean deleteAllFilmGenres(int filmId) {
+        log.debug("GenreDbStorage - storage.deleteFilmGenre()");
+
+        String sqlRequest = "DELETE FROM film_genre WHERE film_id = ?;";
+        int deleted = jdbcTemplate.update(sqlRequest, filmId);
+
+        return deleted > 0;
     }
 
     @Override
@@ -52,17 +72,18 @@ public class GenreDbStorage implements GenresStorage {
     }
 
     @Override
-    public List<GenreId> getFilmGenreId(int filmId) {
-        log.debug("GenreDbStorage - storage.getFilmGenreId()");
+    public Genre getGenre(int genreId) {
+        log.debug("GenreDbStorage - storage.getGenre()");
 
-        String sqlRequest = "SELECT g.id FROM\n" +
-                "(SELECT *\n" +
-                "FROM film_genre\n" +
-                "WHERE film_id = ?) AS f\n" +
-                "JOIN\n" +
-                "genres AS g ON f.genre_id = g.id\n";
+        String sqlRequest = "SELECT * FROM genres WHERE id = ?;";
 
-        return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeGenreId(rs), filmId);
+        try {
+            return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeGenre(rs), genreId);
+        } catch (DataAccessException e) {
+            String message = "Такого жанра с id = " + genreId + " не существует в хранилище";
+            log.warn(message);
+            throw new GenreNotFoundException(message);
+        }
     }
 
     public Genre makeGenre(ResultSet rs) throws SQLException {
@@ -72,12 +93,4 @@ public class GenreDbStorage implements GenresStorage {
         String name = rs.getString("name");
         return new Genre(id, name);
     }
-
-    public GenreId makeGenreId(ResultSet rs) throws SQLException {
-        log.debug("GenreDbStorage - storage.makeGenreId()");
-
-        int id = rs.getInt("id");
-        return new GenreId(id);
-    }
-
 }

@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.storage.ratings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Mpa.Mpa;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +25,21 @@ public class MpaDbStorage implements MpaStorage {
         String sqlRequest = "SELECT * FROM ratings ORDER BY id ASC;";
 
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeMpa(rs));
+    }
+
+    @Override
+    public Mpa getMpa(int mpaId) {
+        log.debug("MpaDbStorage - storage.getMpa()");
+
+        String sqlRequest = "SELECT * FROM ratings WHERE id = ?;";
+
+        try {
+            return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeMpa(rs), mpaId);
+        } catch (DataAccessException e) {
+            String message = "Такого рейтинга с id = " + mpaId + " не существует в хранилище";
+            log.warn(message);
+            throw new MpaNotFoundException(message);
+        }
     }
 
     @Override

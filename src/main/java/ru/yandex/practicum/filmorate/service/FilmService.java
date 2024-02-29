@@ -10,10 +10,10 @@ import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationExc
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -61,7 +61,7 @@ public class FilmService {
         log.debug("FilmService - service.addFilm()");
         addValidation(film);
 
-        film.setGenres(new ArrayList<>());
+        correctGenres(film);
         Integer id = filmStorage.addFilm(film);
 
         log.info("Добавлен фильм с Id: " + id);
@@ -74,8 +74,10 @@ public class FilmService {
 
     public Film updateFilm(final Film film) {
         log.debug("FilmService - service.updateFilm()");
-        addValidation(film);
+
+        correctGenres(film);
         updateValidation(film);
+        addValidation(film);
 
         Film updatedFilm = filmStorage.updateFilm(film);
 
@@ -203,5 +205,16 @@ public class FilmService {
         }
 
         return true;
+    }
+
+    private void correctGenres(final Film film) {
+        log.debug("FilmService - service.correctGenres()");
+
+        if (film.getGenres() == null) {
+            film.setGenres(new ArrayList<>());
+            log.info("Жанры инициализированы пустым списком");
+        }
+
+        log.info("У фильма указаны лайки, коррекции не было");
     }
 }

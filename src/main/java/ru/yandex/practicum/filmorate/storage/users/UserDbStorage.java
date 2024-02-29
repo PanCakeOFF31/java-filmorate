@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.users;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,6 +92,7 @@ public class UserDbStorage implements UserStorage {
 
         String sqlRequest = "SELECT * FROM users WHERE login = ?";
         RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
+
         return jdbcTemplate.queryForObject(sqlRequest, userMapper, login);
     }
 

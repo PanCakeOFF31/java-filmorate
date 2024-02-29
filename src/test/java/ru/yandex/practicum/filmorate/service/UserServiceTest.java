@@ -6,8 +6,8 @@ import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;

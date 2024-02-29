@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.model.Genre.Genre;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 
 import java.util.List;
@@ -30,6 +30,11 @@ public class GenreService {
         filmIsExist(filmId, message);
 
         return genresStorage.getFilmGenre(filmId);
+    }
+
+    public Genre getGenre(int genreId) {
+        log.debug("GenreService - service.getGenre()");
+        return genresStorage.getGenre(genreId);
     }
 
     public boolean filmIsExist(int filmId, String message) {

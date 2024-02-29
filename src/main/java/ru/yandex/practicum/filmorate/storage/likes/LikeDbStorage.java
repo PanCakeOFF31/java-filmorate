@@ -21,7 +21,6 @@ public class LikeDbStorage implements LikeStorage {
 
         String sqlRequest = "INSERT INTO likes (film_id, user_id)\n" +
                 "VALUES (?, ?)";
-
         int inserted = jdbcTemplate.update(sqlRequest, filmId, userId);
 
         return inserted > 0;
@@ -32,7 +31,6 @@ public class LikeDbStorage implements LikeStorage {
         log.debug("LikeDbStorage - storage.like()");
 
         String sqlRequest = "DELETE FROM likes WHERE film_id = ? AND user_id = ? ";
-
         int deleted = jdbcTemplate.update(sqlRequest, filmId, userId);
 
         return deleted > 0;

@@ -4,16 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.model.Genre.GenreId;
-import ru.yandex.practicum.filmorate.model.Mpa.MpaId;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Data
 @AllArgsConstructor
@@ -32,7 +30,6 @@ public class Film {
     private Duration duration;
     private int rate;
     @NotNull
-    private MpaId mpaId;
-    @Null
-    private List<GenreId> genres;
+    private Mpa mpa;
+    private List<Genre> genres;
 }
