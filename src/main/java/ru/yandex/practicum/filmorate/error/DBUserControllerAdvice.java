@@ -14,10 +14,20 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 public class DBUserControllerAdvice {
     private static final String CLASS_NAME = "DBUserControllerAdvice ";
 
+    @ExceptionHandler()
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleRunTimeException(final RuntimeException exception) {
+        log.debug(CLASS_NAME + "- handleRunTimeException()");
+        log.warn(exception.getClass().toString());
+        return new ErrorResponse("RuntimeException",
+                "Не предвиденная ошибка, которую не предвидели.",
+                exception.getClass().toString());
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUserDuplicateKeyException(final DuplicateKeyException exception) {
-        log.debug(CLASS_NAME + "handleUserDuplicateKeyException");
+        log.debug(CLASS_NAME + "- handleUserDuplicateKeyException");
         return new ErrorResponse("Ошибка добавления пользователя в таблицу",
                 "Запись не проходит ограничение уникальности для поля email и login");
     }

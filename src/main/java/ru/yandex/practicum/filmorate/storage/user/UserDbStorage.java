@@ -152,7 +152,7 @@ public class UserDbStorage implements UserStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        Set<Integer> friends = friendshipDao.getUserFriendsId(id);
+        Set<Integer> friends = friendshipDao.getUserFriendsAsId(id);
 
         return new User(id, email, login, birthday, name, friends);
     }

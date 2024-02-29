@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmRating;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
 
 import java.sql.ResultSet;
@@ -26,6 +28,7 @@ import java.util.Set;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final LikeStorage likeStorage;
+    private final GenresStorage genresStorage;
 
     @Override
     public int getFilmsQuantity() {
@@ -73,7 +76,7 @@ public class FilmDbStorage implements FilmStorage {
     public Integer addFilm(Film film) {
         log.debug("FilmDbStorage - addFilm()");
 
-        String sqlRequest = "INSERT INTO films (name, description, release_date, duration, rating)\n" +
+        String sqlRequest = "INSERT INTO films (name, description, release_date, duration, mpa)\n" +
                 "VALUES (?, ?, ?, ?, ?);";
 
         jdbcTemplate.update(sqlRequest,
@@ -81,7 +84,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getRating());
+                film.getMpa());
 
         return getFilmId(film);
     }
@@ -122,15 +125,16 @@ public class FilmDbStorage implements FilmStorage {
 
     public Film makeFilm(ResultSet rs) throws SQLException {
         log.debug("FilmDbStorage - makeFilm()");
-//
+
         int id = rs.getInt("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("releaseDate").toLocalDate();
         Duration duration = Duration.ofSeconds(rs.getInt("duration"));
-        FilmRating ratings = FilmRating.valueOf(rs.getString("rating"));
+        Mpa mpa = rs.getObject("mpa", Mpa.class);
+        Set<Genre> genres = genresStorage.getFilmGenre(id);
         Set<Integer> likes = likeStorage.getLikes(id);
-//
-        return new Film(id, name, description, releaseDate, duration, ratings, likes);
+
+        return new Film(id, name, description, releaseDate, duration, mpa, genres, likes);
     }
 }

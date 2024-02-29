@@ -95,8 +95,8 @@ public class UserService {
         log.info(message);
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
-        userStorage.getUserById(friendId).toFriend(userId);
-        friendshipDao.addToFriend(userId, friendId);
+//        userStorage.getUserById(friendId).toFriend(userId);
+//        friendshipDao.addToFriend(userId, friendId);
 
         return user;
     }
@@ -117,8 +117,8 @@ public class UserService {
         log.info(message);
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
-        userStorage.getUserById(friendId).unfriend(userId);
-        friendshipDao.deleteFromFriend(userId, friendId);
+//        userStorage.getUserById(friendId).unfriend(userId);
+//        friendshipDao.deleteFromFriend(userId, friendId);
 
         return user;
     }
@@ -129,7 +129,7 @@ public class UserService {
         String message = "Пользователя нет с id :" + userId;
         userIsExist(userId, message);
 
-        List<User> userFriends = friendshipDao.getUserFriends(userId);
+        List<User> userFriends = friendshipDao.getUserFriendsAsUsers(userId);
 
         log.info("Для пользователя " + userId + " возвращены друзья в количестве " + userFriends.size());
         return userFriends;
@@ -140,7 +140,7 @@ public class UserService {
 
         coupleUserValidation(userId, otherUserId);
 
-        List<User> commonFriends = friendshipDao.getCommonFriends(userId, otherUserId);
+        List<User> commonFriends = friendshipDao.getCommonFriendsAsUsers(userId, otherUserId);
 
         log.info("Для пользователя " + userId + " возвращены общие друзья с пользователем " + otherUserId);
         log.info("Количество общих друзей: " + commonFriends.size());

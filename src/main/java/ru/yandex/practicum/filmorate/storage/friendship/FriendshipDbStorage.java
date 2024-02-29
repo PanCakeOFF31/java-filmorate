@@ -37,7 +37,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
                 friendId, userId);
     }
 
-    public Set<Integer> getUserFriendsId(int userId) {
+    public Set<Integer> getUserFriendsAsId(int userId) {
         log.debug("FriendshipDao - getUserFriendsId()");
 
         String sqlRequest = "SELECT friend_id FROM friends WHERE user_id = ?";
@@ -47,7 +47,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     }
 
     @Override
-    public List<User> getUserFriends(int userId) {
+    public List<User> getUserFriendsAsUsers(int userId) {
         log.debug("FriendshipDao - getUserFriends()");
 
         String sqlRequest = "SELECT id, email, login, name, birthday \n" +
@@ -60,7 +60,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     }
 
     @Override
-    public List<User> getCommonFriends(int userId, int otherUserId) {
+    public List<User> getCommonFriendsAsUsers(int userId, int otherUserId) {
         log.debug("FriendshipDao - getCommonFriends()");
 
         String sqlRequest = "SELECT * \n" +
@@ -87,7 +87,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        Set<Integer> friends = getUserFriendsId(id);
+        Set<Integer> friends = getUserFriendsAsId(id);
 
         return new User(id, email, login, birthday, name, friends);
     }

@@ -8,7 +8,7 @@ import java.util.Set;
 public interface FriendshipStorage {
     void addToFriend(int userId, int friendId);
     void deleteFromFriend(int userId, int friendId);
-    Set<Integer> getUserFriendsId(int userId);
-    List<User> getUserFriends(int userId);
-    List<User> getCommonFriends(int userId, int otherUserId);
+    Set<Integer> getUserFriendsAsId(int userId);
+    List<User> getUserFriendsAsUsers(int userId);
+    List<User> getCommonFriendsAsUsers(int userId, int otherUserId);
 }

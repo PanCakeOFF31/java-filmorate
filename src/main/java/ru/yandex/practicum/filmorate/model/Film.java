@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Film {
     private Integer id;
     @NotBlank
@@ -27,7 +29,9 @@ public class Film {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
     @NotNull
-    private FilmRating rating;
+    private Mpa mpa;
+    @Null
+    private Set<Genre> genres;
     @Null
     private Set<Integer> likes;
 
