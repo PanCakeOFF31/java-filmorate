@@ -22,4 +22,5 @@ public interface FilmStorage {
     boolean containsById(int id);
 
     Film updateFilm(Film film);
+    List<Film> getTopFilms(int size);
 }

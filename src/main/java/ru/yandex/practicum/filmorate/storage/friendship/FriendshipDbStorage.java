@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -19,17 +20,34 @@ public class FriendshipDbStorage implements FriendshipStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void addToFriend(int userId, int friendId) {
+    public boolean addToFriend(int userId, int friendId) {
         String sqlRequest = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?), (?, ?)";
 
-        jdbcTemplate.update(sqlRequest, userId, friendId);
+        int added = jdbcTemplate.update(sqlRequest, userId, friendId);
+
+        return added > 0;
     }
 
     @Override
-    public void deleteFromFriend(int userId, int friendId) {
+    public boolean deleteFromFriend(int userId, int friendId) {
         String sqlRequest = "DELETE FROM friends WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
 
-        jdbcTemplate.update(sqlRequest, userId, friendId);
+        int deleted = jdbcTemplate.update(sqlRequest, userId, friendId);
+
+        return deleted > 0;
+    }
+
+    @Override
+    public int getUserFriendCounts(int userId) {
+        log.debug("FriendshipDao - getUserFriendCounts()");
+
+        String sqlRequest = "SELECT COUNT(friend_id) AS friend_count FROM friends WHERE user_id = ?";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, userId);
+
+        if (rowSet.next())
+            return rowSet.getInt("friend_count");
+
+        return 0;
     }
 
     public List<Integer> getUserFriendsAsId(int userId) {

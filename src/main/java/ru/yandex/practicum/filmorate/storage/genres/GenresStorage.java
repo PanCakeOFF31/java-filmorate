@@ -1,10 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.genres;
 
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.GenreId;
+import ru.yandex.practicum.filmorate.model.Genre.Genre;
+import ru.yandex.practicum.filmorate.model.Genre.GenreId;
 
 import java.util.List;
-import java.util.Set;
 
 public interface GenresStorage {
     void addFilmGenre(int filmId, int genreId);

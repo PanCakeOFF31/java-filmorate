@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.Mpa.Mpa;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,14 +21,20 @@ public class MpaDbStorage implements MpaStorage {
         log.debug("MpaDbStorage - storage.getAllRating()");
 
         String sqlRequest = "SELECT * FROM ratings ORDER BY id ASC;";
+
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeMpa(rs));
     }
 
     @Override
-    public List<Mpa> getFilmMpa(int filmId) {
+    public Mpa getFilmMpa(int filmId) {
         log.debug("MpaDbStorage - storage.getFilmRating()");
 
-        return null;
+        String sqlRequest = "SELECT r.id, r.name FROM\n" +
+                "(SELECT * FROM films WHERE id = ?) AS f\n" +
+                "INNER JOIN \n" +
+                "ratings AS r ON f.mpa = r.id";
+
+        return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeMpa(rs), filmId);
     }
 
     public Mpa makeMpa(ResultSet rs) throws SQLException {

@@ -10,7 +10,10 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,10 +57,10 @@ public class UserService {
         correctName(user);
         user.setFriends(new HashSet<>());
         Integer id = userStorage.addUser(user);
-        log.info("Пользователь добавлен с Id: " + id);
 
+        log.info("Пользователь добавлен с Id: " + id);
         User addedUser = userStorage.getUserById(id);
-        System.out.println(addedUser);
+        log.info(addedUser.toString());
         log.info("Количество пользователей: " + userStorage.getUsersQuantity());
 
         return addedUser;
@@ -67,37 +70,29 @@ public class UserService {
         log.debug("UserService - service.updateUser()");
         updateValidation(user);
 
-//        Так как не допускается передавать список друзей, при обновлении нужно сохранять его
-        Set<Integer> friends = userStorage.getUserById(user.getId()).getFriends();
-        user.setFriends(friends);
+        User updatedUser = userStorage.updateUser(user);
 
-        userStorage.updateUser(user);
-
-        log.info("Пользователь обновлен: " + user);
+        log.info("Пользователь обновлен: " + updatedUser);
         log.info("Количество пользователей: " + userStorage.getUsersQuantity());
 
-        return user;
+        return updatedUser;
     }
 
     public User addToFriend(int userId, int friendId) {
         log.debug("UserService - service.addToFriend()");
-
         coupleUserValidation(userId, friendId);
 
-        User user = userStorage.getUserById(userId);
-        log.info("Количеств друзей изначально:" + user.friendsQuantity());
-        boolean result = user.toFriend(friendId);
+        log.info("Количеств друзей изначально:" + friendshipDao.getUserFriendCounts(userId));
+        boolean result = friendshipDao.addToFriend(userId, friendId);
 
         String message = result
                 ? "Пользователь с " + userId + " добавил в друзья пользователя " + friendId
                 : ("Пользователь уже добавлен в друзья");
 
         log.info(message);
-        log.info("Количество друзей теперь: " + user.friendsQuantity());
+        log.info("Количество друзей теперь: " + friendshipDao.getUserFriendCounts(userId));
 
-        friendshipDao.addToFriend(userId, friendId);
-
-        return user;
+        return userStorage.getUserById(userId);
     }
 
     public User deleteFromFriend(int userId, int friendId) {

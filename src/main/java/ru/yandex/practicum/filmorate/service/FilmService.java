@@ -17,8 +17,8 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -62,15 +62,15 @@ public class FilmService {
         log.debug("FilmService - service.addFilm()");
         addValidation(film);
 
-        film.setLikes(new HashSet<>());
         film.setGenres(new ArrayList<>());
         Integer id = filmStorage.addFilm(film);
 
         log.info("Добавлен фильм с Id: " + id);
+        Film addedFilm = filmStorage.getFilmById(id);
         log.info(film.toString());
         log.info("Количество фильмов теперь: " + filmStorage.getFilmsQuantity());
 
-        return film;
+        return addedFilm;
     }
 
     public Film updateFilm(final Film film) {
@@ -78,67 +78,59 @@ public class FilmService {
         addValidation(film);
         updateValidation(film);
 
-//        Так как не допускается передавать список лайков, при обновлении нужно сохранять его
-        Set<Integer> likes = filmStorage.getFilmById(film.getId()).getLikes();
-        film.setLikes(likes);
+        Film updatedFilm = filmStorage.updateFilm(film);
 
-        filmStorage.updateFilm(film);
-
-        log.info("Фильм обновлен: " + film);
+        log.info("Фильм обновлен: " + updatedFilm);
         log.info("Количество фильмов: " + filmStorage.getFilmsQuantity());
 
-        return film;
+        return updatedFilm;
     }
 
     public Film like(int filmId, int userId) {
         log.debug("FilmService - service.like()");
         likeValidation(filmId, userId);
 
-        Film film = filmStorage.getFilmById(filmId);
-        log.info("Количеств лайка в изначально:" + film.likeQuantity());
-        boolean result = film.like(userId);
+        log.info("Количеств лайка в изначально:" + likeStorage.getLikes(filmId));
+        boolean result = likeStorage.like(filmId, userId);
 
         String logMessage = result
                 ? "Лайк пользователя " + userId + " установлен для фильма " + filmId
                 : "Лайк уже поставлен";
 
         log.info(logMessage);
-        log.info("Количеств лайка теперь: " + film.likeQuantity());
+        log.info("Количеств лайка теперь: " + likeStorage.getLikes(filmId));
 
-        return film;
+        return filmStorage.getFilmById(filmId);
     }
 
-    public Film unlike(int filmId, int userId) {
+    public Film unlike(final int filmId, final int userId) {
         log.debug("FilmService - service.unlike()");
         likeValidation(filmId, userId);
 
-        Film film = filmStorage.getFilmById(filmId);
-        log.info("Количеств лайка в изначально:" + film.getLikes().size());
-        boolean result = film.unlike(userId);
+        log.info("Количеств лайка в изначально:" + likeStorage.getLikes(filmId));
+        boolean result = likeStorage.unlike(filmId, userId);
 
         String logMessage = result
                 ? "Лайк пользователя " + userId + " снят с фильма " + filmId
                 : "Лайк уже снят";
 
         log.info(logMessage);
-        log.info("Количеств лайка теперь: " + film.getLikes().size());
+        log.info("Количеств лайка теперь: " + likeStorage.getLikes(filmId));
 
-        return film;
+        return filmStorage.getFilmById(filmId);
     }
 
     public List<Film> getTop(int size) {
         log.debug("FilmService - service.getTop()");
 
-        List<Film> films = filmStorage.getFilms().stream()
-                .sorted(Comparator.comparing(Film::likeQuantity).reversed())
-                .limit(size)
-                .collect(Collectors.toList());
+        int filmsQuantity = filmStorage.getFilmsQuantity();
 
-        if (size > films.size())
-            size = films.size();
+        if (size > filmsQuantity)
+            size = filmsQuantity;
 
         log.info("Возвращен топ фильмов по лайкам в количестве: " + size);
-        return films;
+
+        return filmStorage.getTopFilms(size);
     }
 
     public boolean addValidation(final Film film) {

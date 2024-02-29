@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.Mpa.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ratings.MpaDbStorage;
 
@@ -22,7 +22,7 @@ public class MpaService {
         return ratingDbStorage.getAllMpa();
     }
 
-    public List<Mpa> getFilmMpa(int filmId) {
+    public Mpa getFilmMpa(int filmId) {
         log.debug("GenreService - service.getFilmRating()");
 
         String message = "Фильма нет с id :" + filmId;

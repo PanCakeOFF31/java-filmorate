@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.GenreId;
+import ru.yandex.practicum.filmorate.model.Genre.Genre;
+import ru.yandex.practicum.filmorate.model.Genre.GenreId;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,11 +19,13 @@ public class GenreDbStorage implements GenresStorage {
 
     @Override
     public void addFilmGenre(int filmId, int genreId) {
+        log.debug("GenreDbStorage - storage.addFilmGenre()");
 
     }
 
     @Override
     public void deleteFilmGenre(int filmId, int genreId) {
+        log.debug("GenreDbStorage - storage.deleteFilmGenre()");
 
     }
 
@@ -45,6 +47,7 @@ public class GenreDbStorage implements GenresStorage {
                 "WHERE film_id = ?) AS f\n" +
                 "JOIN\n" +
                 "genres AS g ON f.genre_id = g.id\n";
+
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeGenre(rs), filmId);
     }
 
@@ -63,12 +66,16 @@ public class GenreDbStorage implements GenresStorage {
     }
 
     public Genre makeGenre(ResultSet rs) throws SQLException {
+        log.debug("GenreDbStorage - storage.makeGenre()");
+
         int id = rs.getInt("id");
         String name = rs.getString("name");
         return new Genre(id, name);
     }
 
     public GenreId makeGenreId(ResultSet rs) throws SQLException {
+        log.debug("GenreDbStorage - storage.makeGenreId()");
+
         int id = rs.getInt("id");
         return new GenreId(id);
     }

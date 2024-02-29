@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.filmorate.model.Genre.GenreId;
+import ru.yandex.practicum.filmorate.model.Mpa.MpaId;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -29,22 +31,9 @@ public class Film {
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
+    private int rate;
     @NotNull
     private MpaId mpa;
     @Null
     private List<GenreId> genres;
-    @Null
-    private Set<Integer> likes;
-
-    public boolean like(int userId) {
-        return likes.add(userId);
-    }
-
-    public boolean unlike(int userId) {
-        return likes.remove(userId);
-    }
-
-    public int likeQuantity() {
-        return likes.size();
-    }
 }

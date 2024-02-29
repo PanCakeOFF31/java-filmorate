@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import jdk.jshell.spi.ExecutionControl;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -9,6 +11,11 @@ import java.util.*;
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
+    @Override
+    public List<Film> getTopFilms(int size) {
+        throw new NotYetImplementedException();
+    }
+
     private final Map<Integer, Film> films = new HashMap<>();
     private int generateId = 1;
 
@@ -26,7 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilms(int count) {
-        return null;
+        throw new NotYetImplementedException();
     }
 
     @Override

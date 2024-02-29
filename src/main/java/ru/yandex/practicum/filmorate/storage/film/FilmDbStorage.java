@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.GenreId;
-import ru.yandex.practicum.filmorate.model.MpaId;
+import ru.yandex.practicum.filmorate.model.Genre.GenreId;
+import ru.yandex.practicum.filmorate.model.Mpa.MpaId;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
 
@@ -78,9 +78,9 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("FilmDbStorage - getFilmById()");
 
         String sqlRequest = "SELECT * FROM films WHERE id = ?";
-        RowMapper<Film> userMapper = (rs, rowNum) -> makeFilm(rs);
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
 
-        return jdbcTemplate.queryForObject(sqlRequest, userMapper, id);
+        return jdbcTemplate.queryForObject(sqlRequest, filmMapper, id);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getMpa());
+                film.getMpa().getId());
 
         return getFilmId(film);
     }
@@ -120,8 +120,36 @@ public class FilmDbStorage implements FilmStorage {
     public Film updateFilm(Film film) {
         log.debug("FilmDbStorage - updateFilm()");
 
-        String sqlRequest = "";
-        return null;
+        String sqlRequest = "INSERT INTO films (id, name, description, release_date, duration, mpa)" +
+                "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO UPDATE";
+
+        jdbcTemplate.update(sqlRequest,
+                film.getId(),
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDescription(),
+                film.getMpa());
+
+        return getFilmById(film.getId());
+    }
+
+    public List<Film> getTopFilms(int size) {
+        log.debug("FilmDbStorage - storage.getTopFilms()");
+
+        String sqlRequest = "SELECT *\n" +
+                "FROM films\n" +
+                "WHERE id IN (\n" +
+                "   SELECT f.id\n" +
+                "   FROM films AS f\n" +
+                "   INNER JOIN likes AS l ON f.id = l.film_id \n" +
+                "   GROUP BY f.id\n" +
+                "   ORDER BY COUNT(l.user_id) DESC)\n" +
+                "LIMIT ?";
+
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
+
+        return jdbcTemplate.query(sqlRequest, filmMapper, size);
     }
 
     private int getFilmId(Film film) {
@@ -129,9 +157,9 @@ public class FilmDbStorage implements FilmStorage {
 
         String sqlRequest = "SELECT * FROM films WHERE name = ? AND description = ?";
         RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
-        Film filmFromDg = jdbcTemplate.queryForObject(sqlRequest, filmMapper, film.getName(), film.getDescription());
+        Film filmFromDb = jdbcTemplate.queryForObject(sqlRequest, filmMapper, film.getName(), film.getDescription());
 
-        return filmFromDg.getId();
+        return filmFromDb.getId();
     }
 
     public Film makeFilm(ResultSet rs) throws SQLException {
@@ -141,11 +169,11 @@ public class FilmDbStorage implements FilmStorage {
         String name = rs.getString("name");
         String description = rs.getString("description");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-        Duration duration = Duration.ofMinutes(rs.getInt("duration"));
+        Duration duration = Duration.ofSeconds(rs.getInt("duration"));
         MpaId mpa = new MpaId(rs.getInt("mpa"));
         List<GenreId> genres = genresStorage.getFilmGenreId(id);
-        Set<Integer> likes = likeStorage.getLikes(id);
+        int rate = likeStorage.getLikes(id);
 
-        return new Film(id, name, description, releaseDate, duration, mpa, genres, likes);
+        return new Film(id, name, description, releaseDate, duration, rate, mpa, genres);
     }
 }
