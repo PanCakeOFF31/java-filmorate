@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -23,27 +22,21 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public void addToFriend(int userId, int friendId) {
         String sqlRequest = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?), (?, ?)";
 
-        jdbcTemplate.update(sqlRequest,
-                userId, friendId,
-                friendId, userId);
+        jdbcTemplate.update(sqlRequest, userId, friendId);
     }
 
     @Override
     public void deleteFromFriend(int userId, int friendId) {
         String sqlRequest = "DELETE FROM friends WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
 
-        jdbcTemplate.update(sqlRequest,
-                userId, friendId,
-                friendId, userId);
+        jdbcTemplate.update(sqlRequest, userId, friendId);
     }
 
-    public Set<Integer> getUserFriendsAsId(int userId) {
+    public List<Integer> getUserFriendsAsId(int userId) {
         log.debug("FriendshipDao - getUserFriendsId()");
 
         String sqlRequest = "SELECT friend_id FROM friends WHERE user_id = ?";
-        List<Integer> friends = jdbcTemplate.query(sqlRequest, (rs, rowNum) -> rs.getInt("friend_id"), userId);
-
-        return new HashSet<>(friends);
+        return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> rs.getInt("friend_id"), userId);
     }
 
     @Override
@@ -87,8 +80,8 @@ public class FriendshipDbStorage implements FriendshipStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        Set<Integer> friends = getUserFriendsAsId(id);
+        List<Integer> friends = getUserFriendsAsId(id);
 
-        return new User(id, email, login, birthday, name, friends);
+        return new User(id, email, login, birthday, name, new HashSet<>(friends));
     }
 }

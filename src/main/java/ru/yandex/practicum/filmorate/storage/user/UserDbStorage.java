@@ -112,6 +112,7 @@ public class UserDbStorage implements UserStorage {
 
         String sqlRequest = "SELECT * FROM users WHERE id = ?;";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, id);
+
         return rowSet.next();
     }
 
@@ -152,8 +153,8 @@ public class UserDbStorage implements UserStorage {
         String login = rs.getString("login");
         String name = rs.getString("name");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
-        Set<Integer> friends = friendshipDao.getUserFriendsAsId(id);
+        List<Integer> friends = friendshipDao.getUserFriendsAsId(id);
 
-        return new User(id, email, login, birthday, name, friends);
+        return new User(id, email, login, birthday, name, new HashSet<>(friends));
     }
 }

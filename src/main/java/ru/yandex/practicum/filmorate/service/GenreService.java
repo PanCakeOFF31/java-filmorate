@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -18,12 +19,12 @@ public class GenreService {
     private final FilmStorage filmStorage;
 
 
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         log.debug("GenreService - service.getGenres()");
         return genresStorage.getAllGenres();
     }
 
-    public Set<Genre> getFilmGenres(int filmId) {
+    public List<Genre> getFilmGenres(int filmId) {
         log.debug("GenreService - service.getFilmGenres()");
 
         String message = "Фильма нет с id :" + filmId;

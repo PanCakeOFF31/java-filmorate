@@ -14,15 +14,15 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 public class DBUserControllerAdvice {
     private static final String CLASS_NAME = "DBUserControllerAdvice ";
 
-    @ExceptionHandler()
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRunTimeException(final RuntimeException exception) {
-        log.debug(CLASS_NAME + "- handleRunTimeException()");
-        log.warn(exception.getClass().toString());
-        return new ErrorResponse("RuntimeException",
-                "Не предвиденная ошибка, которую не предвидели.",
-                exception.getClass().toString());
-    }
+//    @ExceptionHandler()
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleRunTimeException(final RuntimeException exception) {
+//        log.debug(CLASS_NAME + "- handleRunTimeException()");
+//        log.warn(exception.getClass().toString());
+//        return new ErrorResponse("RuntimeException",
+//                "Не предвиденная ошибка, которую не предвидели.",
+//                exception.getClass().toString());
+//    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

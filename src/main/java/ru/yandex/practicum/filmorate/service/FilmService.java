@@ -9,13 +9,10 @@ import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationExcep
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.RatingDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
@@ -31,6 +28,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final LikeStorage likeStorage;
     private final GenresStorage genresStorage;
+
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
         int filmsQuantity = filmStorage.getFilmsQuantity();
@@ -43,14 +41,12 @@ public class FilmService {
         if (count > filmsQuantity)
             count = filmsQuantity;
 
-        List<Film> films = new ArrayList<>(filmStorage.getFilms());
-        Collections.shuffle(films);
+        List<Film> films = new ArrayList<>(filmStorage.getFilms(count));
+//        Collections.shuffle(films);
 
         log.info("Возвращен список фильмов в количестве: " + count);
 
-        return films.stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return films;
     }
 
     public Film receiveFilmById(int filmId) {
@@ -67,7 +63,7 @@ public class FilmService {
         addValidation(film);
 
         film.setLikes(new HashSet<>());
-        film.setGenres(new HashSet<>());
+        film.setGenres(new ArrayList<>());
         Integer id = filmStorage.addFilm(film);
 
         log.info("Добавлен фильм с Id: " + id);

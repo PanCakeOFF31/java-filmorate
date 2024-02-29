@@ -8,8 +8,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.GenreId;
+import ru.yandex.practicum.filmorate.model.MpaId;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
 
@@ -53,6 +53,15 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlRequest, userMapper);
     }
 
+    public List<Film> getFilms(int count) {
+        log.debug("FilmDbStorage - getFilms(int count)");
+
+        String sqlRequest = "SELECT * FROM films LIMIT ?;";
+        RowMapper<Film> userMapper = (rs, rowNum) -> makeFilm(rs);
+
+        return jdbcTemplate.query(sqlRequest, userMapper, count);
+    }
+
     @Override
     public Set<Integer> getAllRowId() {
         log.debug("FilmDbStorage - getAllRowId()");
@@ -68,8 +77,10 @@ public class FilmDbStorage implements FilmStorage {
     public Film getFilmById(int id) {
         log.debug("FilmDbStorage - getFilmById()");
 
-        String sqlRequest = "SELECT * FROM films WHERE id = ?;";
-        return null;
+        String sqlRequest = "SELECT * FROM films WHERE id = ?";
+        RowMapper<Film> userMapper = (rs, rowNum) -> makeFilm(rs);
+
+        return jdbcTemplate.queryForObject(sqlRequest, userMapper, id);
     }
 
     @Override
@@ -92,17 +103,17 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public boolean containsFilm(Film film) {
         log.debug("FilmDbStorage - containsFilm()");
-
-        String sqlRequest = "";
-        return false;
+        return containsById(film.getId());
     }
 
     @Override
     public boolean containsById(int id) {
         log.debug("FilmDbStorage - containsById()");
 
-        String sqlRequest = "";
-        return false;
+        String sqlRequest = "SELECT * FROM films WHERE id = ?;";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, id);
+
+        return rowSet.next();
     }
 
     @Override
@@ -129,10 +140,10 @@ public class FilmDbStorage implements FilmStorage {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
-        LocalDate releaseDate = rs.getDate("releaseDate").toLocalDate();
-        Duration duration = Duration.ofSeconds(rs.getInt("duration"));
-        Mpa mpa = rs.getObject("mpa", Mpa.class);
-        Set<Genre> genres = genresStorage.getFilmGenre(id);
+        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
+        Duration duration = Duration.ofMinutes(rs.getInt("duration"));
+        MpaId mpa = new MpaId(rs.getInt("mpa"));
+        List<GenreId> genres = genresStorage.getFilmGenreId(id);
         Set<Integer> likes = likeStorage.getLikes(id);
 
         return new Film(id, name, description, releaseDate, duration, mpa, genres, likes);

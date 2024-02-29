@@ -95,8 +95,7 @@ public class UserService {
         log.info(message);
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
-//        userStorage.getUserById(friendId).toFriend(userId);
-//        friendshipDao.addToFriend(userId, friendId);
+        friendshipDao.addToFriend(userId, friendId);
 
         return user;
     }
@@ -117,8 +116,7 @@ public class UserService {
         log.info(message);
         log.info("Количество друзей теперь: " + user.friendsQuantity());
 
-//        userStorage.getUserById(friendId).unfriend(userId);
-//        friendshipDao.deleteFromFriend(userId, friendId);
+        friendshipDao.deleteFromFriend(userId, friendId);
 
         return user;
     }

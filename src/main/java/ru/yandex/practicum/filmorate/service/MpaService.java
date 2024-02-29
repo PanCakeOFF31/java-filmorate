@@ -6,29 +6,29 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.RatingDbStorage;
+import ru.yandex.practicum.filmorate.storage.ratings.MpaDbStorage;
 
-import java.util.Set;
+import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class MpaService {
-    private final RatingDbStorage ratingDbStorage;
+    private final MpaDbStorage ratingDbStorage;
     private final FilmStorage filmStorage;
 
-    public Set<Mpa> getRatings() {
+    public List<Mpa> getMpas() {
         log.debug("GenreService - service.getRatings()");
-        return ratingDbStorage.getAllRating();
+        return ratingDbStorage.getAllMpa();
     }
 
-    public Set<Mpa> getFilmRating(int filmId) {
+    public List<Mpa> getFilmMpa(int filmId) {
         log.debug("GenreService - service.getFilmRating()");
 
         String message = "Фильма нет с id :" + filmId;
         filmIsExist(filmId, message);
 
-        return ratingDbStorage.getFilmRating(filmId);
+        return ratingDbStorage.getFilmMpa(filmId);
     }
 
     public boolean filmIsExist(int filmId, String message) {

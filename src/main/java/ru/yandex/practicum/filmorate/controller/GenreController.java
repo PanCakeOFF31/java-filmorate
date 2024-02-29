@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -20,13 +21,13 @@ public class GenreController {
     private final GenreService service;
 
     @GetMapping()
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         log.debug("/genres - GET: getGenres()");
         return service.getGenres();
     }
 
     @GetMapping(value = "{id}")
-    public Set<Genre> getFilmGenres(@PathVariable(name = "id") int filmId) {
+    public List<Genre> getFilmGenres(@PathVariable(name = "id") int filmId) {
         log.debug("/genres/{id} - GET: getFilmGenres()");
         return service.getFilmGenres(filmId);
     }

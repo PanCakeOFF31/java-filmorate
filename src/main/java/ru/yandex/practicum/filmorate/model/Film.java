@@ -11,6 +11,7 @@ import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,9 +30,9 @@ public class Film {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
     @NotNull
-    private Mpa mpa;
+    private MpaId mpa;
     @Null
-    private Set<Genre> genres;
+    private List<GenreId> genres;
     @Null
     private Set<Integer> likes;
 
