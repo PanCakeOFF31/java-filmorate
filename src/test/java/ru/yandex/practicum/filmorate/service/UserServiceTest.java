@@ -1,29 +1,29 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.users.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+@SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 class UserServiceTest {
-    private UserService service;
-    private UserStorage storage;
-    private User user = new User();
-
-    @BeforeEach
-    public void initialize() {
-        storage = new InMemoryUserStorage();
-        service = new UserService(storage, null);
-    }
+    private final UserService service;
+    private final UserStorage storage;
+    private User user;
 
     @Test
     public void test_T0010_PS01_updateValidation() {
@@ -34,7 +34,7 @@ class UserServiceTest {
         user.setEmail("mail@mail.ru");
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
-        service.createUser(user);
+        user = service.createUser(user);
         assertNotNull(user.getId());
 
         boolean actual = service.updateValidation(user);

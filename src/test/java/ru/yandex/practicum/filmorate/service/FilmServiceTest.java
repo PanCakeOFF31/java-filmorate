@@ -1,36 +1,36 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.films.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.users.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+@SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 class FilmServiceTest {
-    private FilmService service;
-    private FilmStorage filmStorage;
-    private UserStorage userStorage;
+    private final FilmService filmService;
+    private final UserService userService;
+    private final FilmStorage filmStorage;
     private Film film;
-
-    @BeforeEach
-    public void initialize() {
-        filmStorage = new InMemoryFilmStorage();
-        userStorage = new InMemoryUserStorage();
-//        service = new FilmService(filmStorage, userStorage);
-    }
 
     @Test
     public void test_T0020_PS01_addValidation() {
@@ -40,13 +40,15 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
-        boolean actual = service.addValidation(film);
+        boolean actual = filmService.addValidation(film);
         assertTrue(actual);
 
         assertEquals(0, filmStorage.getFilmsQuantity());
 
-        service.addFilm(film);
+        film = filmService.addFilm(film);
         assertNotNull(film.getId());
 
         assertEquals(1, filmStorage.getFilmsQuantity());
@@ -60,9 +62,11 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(1895, 12, 28));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
-        assertThrows(ValidationException.class, () -> service.addFilm(film));
+        assertThrows(ValidationException.class, () -> filmService.addFilm(film));
         assertEquals(0, filmStorage.getFilmsQuantity());
     }
 
@@ -74,9 +78,11 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2000, 12, 28));
         film.setDuration(Duration.ofMinutes(-90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
-        assertThrows(ValidationException.class, () -> service.addFilm(film));
+        assertThrows(ValidationException.class, () -> filmService.addFilm(film));
         assertEquals(0, filmStorage.getFilmsQuantity());
     }
 
@@ -88,11 +94,13 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
-        service.addFilm(film);
+        film = filmService.addFilm(film);
         assertNotNull(film.getId());
 
-        boolean actual = service.updateValidation(film);
+        boolean actual = filmService.updateValidation(film);
         assertTrue(actual);
     }
 
@@ -104,11 +112,13 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
         assertNull(film.getId());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
-        assertThrows(FilmNullValueValidationException.class, () -> service.updateFilm(film));
+        assertThrows(FilmNullValueValidationException.class, () -> filmService.updateFilm(film));
         assertEquals(0, filmStorage.getFilmsQuantity());
 
     }
@@ -121,11 +131,13 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
         film.setId(9999);
 
         assertEquals(0, filmStorage.getFilmsQuantity());
-        assertThrows(FilmNotFoundException.class, () -> service.updateFilm(film));
+        assertThrows(FilmNotFoundException.class, () -> filmService.updateFilm(film));
         assertEquals(0, filmStorage.getFilmsQuantity());
 
     }
@@ -140,6 +152,8 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
         User user = new User();
 
@@ -149,13 +163,13 @@ class FilmServiceTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
         user.setFriends(new HashSet<>());
 
-        Integer filmId = filmStorage.addFilm(film);
-        Integer userId = userStorage.addUser(user);
+        Integer filmId = filmService.addFilm(film).getId();
+        Integer userId = userService.createUser(user).getId();
 
-        service.like(filmId, userId);
+        filmService.like(filmId, userId);
 
         assertEquals(1, filmStorage.getFilmsQuantity());
-        assertEquals(1, film.getRate());
+        assertEquals(1, filmStorage.getFilmById(filmId).getRate());
     }
 
     @Test
@@ -170,9 +184,9 @@ class FilmServiceTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
         user.setFriends(new HashSet<>());
 
-        Integer userId = userStorage.addUser(user);
+        Integer userId = userService.createUser(user).getId();
 
-        assertThrows(FilmNotFoundException.class, () -> service.likeValidation(userId + 1, userId));
+        assertThrows(FilmNotFoundException.class, () -> filmService.likeValidation(9999, userId));
     }
 
     @Test
@@ -185,9 +199,11 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
+        film.setMpa(new Mpa(1, null));
+        film.setGenres(new ArrayList<>());
 
-        service.addFilm(film);
+        Integer filmId = filmService.addFilm(film).getId();
 
-        assertThrows(UserNotFoundException.class, () -> service.likeValidation(film.getId(), film.getId() + 1));
+        assertThrows(UserNotFoundException.class, () -> filmService.likeValidation(filmId, 999));
     }
 }

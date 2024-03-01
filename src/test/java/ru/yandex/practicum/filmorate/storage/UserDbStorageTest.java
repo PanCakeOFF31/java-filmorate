@@ -11,11 +11,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @JdbcTest
@@ -25,20 +27,27 @@ public class UserDbStorageTest {
 
     private final JdbcTemplate jdbcTemplate;
     private FriendshipStorage friendshipStorage;
+    private UserStorage userStorage;
 
     @BeforeEach
     public void beforeEach() {
         friendshipStorage = new FriendshipDbStorage(jdbcTemplate);
+        userStorage = new UserDbStorage(jdbcTemplate, friendshipStorage);
     }
 
     @Test
-    public void testFindUserById() {
-        User newUser = new User(1, "user@email.ru", "vanya123", LocalDate.of(1990, 1, 1), "Ivan Petrov", new HashSet<>());
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate, friendshipStorage);
-        userStorage.addUser(newUser);
+    public void test_T0010_PS01_getUserById() {
+        User newUser = new User(1,
+                "user@email.ru",
+                "vanya123",
+                LocalDate.of(1990, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
 
-        System.out.println(userStorage.getUsersQuantity());
-        System.out.println(userStorage.getUsers());
+        Integer addedUserId = userStorage.addUser(newUser);
+
+        assertNotNull(addedUserId);
+        assertTrue(addedUserId > 0);
 
         User savedUser = userStorage.getUserById(1);
 
@@ -49,19 +58,7 @@ public class UserDbStorageTest {
     }
 
     @Test
-    public void testFindUserById_1() {
-        User newUser = new User(1, "user@email.ru", "vanya123", LocalDate.of(1990, 1, 1), "Ivan Petrov", new HashSet<>());
-        UserDbStorage userStorage = new UserDbStorage(jdbcTemplate, friendshipStorage);
-        userStorage.addUser(newUser);
-
-        System.out.println(userStorage.getUsersQuantity());
-        System.out.println(userStorage.getUsers());
-
-        User savedUser = userStorage.getUserById(1);
-
-        assertThat(savedUser)
-                .isNotNull()
-                .usingRecursiveComparison()
-                .isEqualTo(newUser);
+    public void test_T0010_NS01_getUserById_unknownUser() {
+        assertThrows(org.springframework.dao.EmptyResultDataAccessException.class, () -> userStorage.getUserById(9999));
     }
 }
