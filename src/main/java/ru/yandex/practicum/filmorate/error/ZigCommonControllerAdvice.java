@@ -62,6 +62,7 @@ public class ZigCommonControllerAdvice {
                 "Mpa с указанным идентификатором отсутствует",
                 exception.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException exception) {
