@@ -9,6 +9,7 @@ public interface FilmStorage {
     int getFilmsQuantity();
 
     List<Film> getFilms();
+
     List<Film> getFilms(int count);
 
     Set<Integer> getAllRowId();
@@ -22,5 +23,6 @@ public interface FilmStorage {
     boolean containsById(int id);
 
     Film updateFilm(Film film);
+
     List<Film> getTopFilms(int size);
 }

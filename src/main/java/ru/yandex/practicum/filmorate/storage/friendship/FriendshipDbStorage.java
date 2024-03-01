@@ -92,7 +92,6 @@ public class FriendshipDbStorage implements FriendshipStorage {
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeUser(rs), userId, otherUserId);
     }
 
-    //    TODO: что-то с этим нужно сделать
     // Этот метод дублирует метод в UserDbStorage
     public User makeUser(ResultSet rs) throws SQLException {
         log.debug("UserDbStorage - makeUser()");

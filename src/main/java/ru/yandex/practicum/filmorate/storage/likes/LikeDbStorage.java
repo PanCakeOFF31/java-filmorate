@@ -44,7 +44,7 @@ public class LikeDbStorage implements LikeStorage {
                 "FROM likes\n" +
                 "WHERE film_id = ?";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest,filmId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, filmId);
 
         if (rowSet.next())
             return rowSet.getInt("rate");

@@ -32,4 +32,15 @@ public class Film {
     @NotNull
     private Mpa mpa;
     private List<Genre> genres;
+
+    public Film(Film otherFilm) {
+        this.id = otherFilm.getId();
+        this.name = otherFilm.getName();
+        this.description = otherFilm.getDescription();
+        this.releaseDate = otherFilm.getReleaseDate();
+        this.duration = otherFilm.getDuration();
+        this.rate = otherFilm.getRate();
+        this.mpa = otherFilm.getMpa();
+        this.genres = otherFilm.getGenres();
+    }
 }
