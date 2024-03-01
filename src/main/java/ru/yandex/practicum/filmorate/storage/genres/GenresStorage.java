@@ -14,5 +14,6 @@ public interface GenresStorage {
 
     List<Genre> getFilmGenre(int filmId);
     Genre getGenre(int genreId);
+    boolean containsById(int genreId);
 
 }

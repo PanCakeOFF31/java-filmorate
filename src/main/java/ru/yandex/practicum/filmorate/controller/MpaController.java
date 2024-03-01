@@ -27,6 +27,6 @@ public class MpaController {
     @GetMapping(value = "/{id}")
     public Mpa getFilmRating(@PathVariable(name = "id") int mpaId) {
         log.debug("/mpa/{id} - GET: getFilmRating()");
-        return service.getMpa(mpaId);
+        return service.getMpaById(mpaId);
     }
 }

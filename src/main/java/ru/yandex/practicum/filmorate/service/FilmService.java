@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
@@ -13,6 +15,7 @@ import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.Duration;
@@ -28,6 +31,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final LikeStorage likeStorage;
     private final GenresStorage genresStorage;
+    private final MpaStorage mpaStorage;
 
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
@@ -59,9 +63,9 @@ public class FilmService {
 
     public Film addFilm(final Film film) {
         log.debug("FilmService - service.addFilm()");
+        correctGenres(film);
         addValidation(film);
 
-        correctGenres(film);
         Integer id = filmStorage.addFilm(film);
 
         log.info("Добавлен фильм с Id: " + id);
@@ -153,6 +157,22 @@ public class FilmService {
             throw new FilmDurationValidationException(message);
         }
 
+        int mpaId = film.getMpa().getId();
+        if (!mpaStorage.containsById(mpaId)) {
+            String message = "Такого рейтинга с id = " + mpaId + " не существует в хранилище";
+            log.warn(message);
+            throw new MpaNotFoundException(message);
+        }
+
+        film.getGenres().forEach(genre -> {
+            int genreId = genre.getId();
+            if (!genresStorage.containsById(genreId)) {
+                String message = "Такого жанра с id = " + genreId + " не существует в хранилище";
+                log.warn(message);
+                throw new GenreNotFoundException(message);
+            }
+        });
+
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;
     }
@@ -190,7 +210,6 @@ public class FilmService {
 
     public boolean filmIsExist(int filmId, String message) {
         if (!filmStorage.containsById(filmId)) {
-            message = "Фильма нет с id :" + filmId;
             log.warn(message);
             throw new FilmNotFoundException(message);
         }

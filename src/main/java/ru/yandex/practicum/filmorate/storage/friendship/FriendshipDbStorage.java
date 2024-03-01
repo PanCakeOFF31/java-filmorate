@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Primary
 public class FriendshipDbStorage implements FriendshipStorage {
     private final JdbcTemplate jdbcTemplate;
 

@@ -140,7 +140,6 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
-        film.setLikes(new HashSet<>());
 
         User user = new User();
 
@@ -156,7 +155,7 @@ class FilmServiceTest {
         service.like(filmId, userId);
 
         assertEquals(1, filmStorage.getFilmsQuantity());
-        assertEquals(1, film.likeQuantity());
+        assertEquals(1, film.getRate());
     }
 
     @Test
@@ -186,7 +185,6 @@ class FilmServiceTest {
         film.setDescription("some description");
         film.setReleaseDate(LocalDate.of(2020, 12, 3));
         film.setDuration(Duration.ofMinutes(90));
-        film.setLikes(new HashSet<>());
 
         service.addFilm(film);
 

@@ -34,7 +34,6 @@ public class UserService {
             count = usersQuantity;
 
         List<User> users = new ArrayList<>(userStorage.getUsers(count));
-
         log.info("Возвращен список пользователей в количестве: " + count);
 
         return users;

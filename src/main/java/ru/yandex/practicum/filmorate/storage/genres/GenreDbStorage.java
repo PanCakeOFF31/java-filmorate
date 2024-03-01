@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.storage.genres;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
-import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
@@ -77,13 +75,7 @@ public class GenreDbStorage implements GenresStorage {
 
         String sqlRequest = "SELECT * FROM genres WHERE id = ?;";
 
-        try {
-            return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeGenre(rs), genreId);
-        } catch (DataAccessException e) {
-            String message = "Такого жанра с id = " + genreId + " не существует в хранилище";
-            log.warn(message);
-            throw new GenreNotFoundException(message);
-        }
+        return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeGenre(rs), genreId);
     }
 
     public Genre makeGenre(ResultSet rs) throws SQLException {
@@ -92,5 +84,15 @@ public class GenreDbStorage implements GenresStorage {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         return new Genre(id, name);
+    }
+
+    @Override
+    public boolean containsById(int genreId) {
+        log.debug("GenreDbStorage - storage.containsById()");
+
+        String sqlRequest = "SELECT * FROM genres WHERE id = ?;";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, genreId);
+
+        return rowSet.next();
     }
 }

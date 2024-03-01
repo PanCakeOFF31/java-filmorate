@@ -8,4 +8,5 @@ public interface MpaStorage {
     List<Mpa> getAllMpa();
     Mpa getFilmMpa(int filmId);
     Mpa getMpa(int mpaId);
+    boolean containsById(int mpaId);
 }

@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.storage.ratings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
@@ -33,13 +32,7 @@ public class MpaDbStorage implements MpaStorage {
 
         String sqlRequest = "SELECT * FROM ratings WHERE id = ?;";
 
-        try {
-            return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeMpa(rs), mpaId);
-        } catch (DataAccessException e) {
-            String message = "Такого рейтинга с id = " + mpaId + " не существует в хранилище";
-            log.warn(message);
-            throw new MpaNotFoundException(message);
-        }
+        return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeMpa(rs), mpaId);
     }
 
     @Override
@@ -58,5 +51,15 @@ public class MpaDbStorage implements MpaStorage {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         return new Mpa(id, name);
+    }
+
+    @Override
+    public boolean containsById(int mpaId) {
+        log.debug("MpaDbStorage - storage.containsById()");
+
+        String sqlRequest = "SELECT * FROM ratings WHERE id = ?;";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, mpaId);
+
+        return rowSet.next();
     }
 }
