@@ -9,6 +9,7 @@ public interface UserStorage {
     int getUsersQuantity();
 
     List<User> getUsers();
+
     List<User> getUsers(int count);
 
     Set<Integer> getAllRowId();
