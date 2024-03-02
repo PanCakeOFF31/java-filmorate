@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.likes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,14 @@ public class LikeDbStorage implements LikeStorage {
 
         String sqlRequest = "INSERT INTO likes (film_id, user_id)\n" +
                 "VALUES (?, ?)";
-        int inserted = jdbcTemplate.update(sqlRequest, filmId, userId);
 
-        return inserted > 0;
+        try {
+            jdbcTemplate.update(sqlRequest, filmId, userId);
+        } catch (DuplicateKeyException e) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

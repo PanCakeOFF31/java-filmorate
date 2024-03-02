@@ -2,10 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -72,15 +69,5 @@ public class UserController {
                                        @PathVariable(name = "otherId") int otherUserId) {
         log.debug("/users/{id}/friends/common/{otherId}} - GET: getCommonFriends()");
         return service.getCommonFriends(userId, otherUserId);
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception)  {
-        log.debug(CLASS_NAME + "handleMethodArgumentNotValidException");
-
-        return new ErrorResponse("Ошибка валидации тела запроса",
-                "Проблемы связаны с несоблюдением ограничение User объекта в теле запроса",
-                exception.getMessage());
     }
 }

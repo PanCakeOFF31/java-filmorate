@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,15 @@ public class FriendshipDbStorage implements FriendshipStorage {
         log.debug("FriendshipDbStorage - storage.addToFriend()");
 
         String sqlRequest = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
-        int added = jdbcTemplate.update(sqlRequest, userId, friendId);
 
-        return added > 0;
+        try {
+            jdbcTemplate.update(sqlRequest, userId, friendId);
+        } catch (DuplicateKeyException e) {
+            return false;
+        }
+
+        friendshipConfirmed(userId, friendId);
+        return true;
     }
 
     @Override
@@ -104,5 +111,22 @@ public class FriendshipDbStorage implements FriendshipStorage {
         List<Integer> friends = getUserFriendsAsId(id);
 
         return new User(id, email, login, birthday, name, new HashSet<>(friends));
+    }
+
+    private void friendshipConfirmed(int userId, int friendId) {
+        log.debug("FriendshipDao - friendshipIsConfirmed()");
+
+        String sqlRequestMutual = "SELECT COUNT(user_id) AS mutual FROM friendship WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequestMutual, userId, friendId, userId, friendId);
+        if (rowSet.next()) {
+            int mutual = rowSet.getInt("mutual");
+            log.info("Проверка на взаимную дружбу, mutual = " + mutual);
+
+            if (mutual > 1) {
+                String sqlRequestConfirmed = "UPDATE friendship SET is_confirmed = true WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
+                jdbcTemplate.update(sqlRequestConfirmed, userId, friendId, userId, friendId);
+                log.info("Дружба взаимна, поле в БД изменено на true");
+            }
+        }
     }
 }

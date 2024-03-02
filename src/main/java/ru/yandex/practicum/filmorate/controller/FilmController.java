@@ -2,10 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -63,14 +60,5 @@ public class FilmController {
     public List<Film> getTop(@RequestParam(name = "count", required = false, defaultValue = "10") int count) {
         log.debug("/films/popular - GET: getTop()");
         return service.getTop(count);
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
-        log.debug(CLASS_NAME + "handleMethodArgumentNotValidException");
-
-        return new ErrorResponse("Ошибка валидации тела запроса",
-                "Проблемы связаны с несоблюдением ограничение Film объекта в теле запроса", exception.getMessage());
     }
 }

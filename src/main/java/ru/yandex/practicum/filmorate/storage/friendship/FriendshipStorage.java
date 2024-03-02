@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.friendship;
 
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface FriendshipStorage {
