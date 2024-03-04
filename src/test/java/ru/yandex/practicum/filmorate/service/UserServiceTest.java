@@ -1,29 +1,29 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+@SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 class UserServiceTest {
-    private UserService service;
-    private UserStorage storage;
-    private User user = new User();
-
-    @BeforeEach
-    public void initialize() {
-        storage = new InMemoryUserStorage();
-        service = new UserService(storage);
-    }
+    private final UserService userService;
+    private final UserStorage userStorage;
+    private User user;
 
     @Test
     public void test_T0010_PS01_updateValidation() {
@@ -34,15 +34,15 @@ class UserServiceTest {
         user.setEmail("mail@mail.ru");
         user.setBirthday(LocalDate.of(1946, 8, 20));
 
-        service.createUser(user);
+        user = userService.createUser(user);
         assertNotNull(user.getId());
 
-        boolean actual = service.updateValidation(user);
+        boolean actual = userService.updateValidation(user);
         assertTrue(actual);
 
-        assertEquals(1, storage.getUsersQuantity());
-        service.updateUser(user);
-        assertEquals(1, storage.getUsersQuantity());
+        assertEquals(1, userStorage.getUsersQuantity());
+        userService.updateUser(user);
+        assertEquals(1, userStorage.getUsersQuantity());
     }
 
     @Test
@@ -56,9 +56,9 @@ class UserServiceTest {
 
         assertNull(user.getId());
 
-        assertEquals(0, storage.getUsersQuantity());
-        assertThrows(UserNullValueValidationException.class, () -> service.updateUser(user));
-        assertEquals(0, storage.getUsersQuantity());
+        assertEquals(0, userStorage.getUsersQuantity());
+        assertThrows(UserNullValueValidationException.class, () -> userService.updateUser(user));
+        assertEquals(0, userStorage.getUsersQuantity());
     }
 
     @Test
@@ -72,14 +72,14 @@ class UserServiceTest {
 
         user.setId(9999);
 
-        assertEquals(0, storage.getUsersQuantity());
-        assertThrows(UserNotFoundException.class, () -> service.updateUser(user));
-        assertEquals(0, storage.getUsersQuantity());
+        assertEquals(0, userStorage.getUsersQuantity());
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(user));
+        assertEquals(0, userStorage.getUsersQuantity());
     }
 
     @Test
     public void test_T0020_PS01_coupleUserValidation() {
-        assertEquals(0, storage.getUsersQuantity());
+        assertEquals(0, userStorage.getUsersQuantity());
 
         User user1 = new User();
 
@@ -89,28 +89,31 @@ class UserServiceTest {
         user1.setBirthday(LocalDate.of(1946, 8, 20));
         user1.setFriends(new HashSet<>());
 
-        service.createUser(user1);
-        assertNotNull(user1.getId());
+        user1 = userService.createUser(user1);
 
         User user2 = new User(user1);
-        service.createUser(user2);
-        assertNotNull(user2.getId());
+        user2.setLogin("dolore-2");
+        user2.setEmail("dolore-2@mail.ru");
+        user2 = userService.createUser(user2);
 
         Integer userId1 = user1.getId();
         Integer userId2 = user2.getId();
 
+        assertNotNull(userId1);
+        assertNotNull(userId2);
+
         assertNotEquals(userId1, userId2);
-        assertEquals(2, storage.getUsersQuantity());
+        assertEquals(2, userStorage.getUsersQuantity());
     }
 
     @Test
     public void test_T0020_NS01_coupleUserValidation_sameId() {
-        assertThrows(SameUserException.class, () -> service.coupleUserValidation(1, 1));
+        assertThrows(SameUserException.class, () -> userService.coupleUserValidation(1, 1));
     }
 
     @Test
     public void test_T0020_NS02_coupleUserValidation_noContainsUserId() {
-        assertEquals(0, storage.getUsersQuantity());
+        assertEquals(0, userStorage.getUsersQuantity());
 
         user = new User();
 
@@ -120,16 +123,16 @@ class UserServiceTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
         user.setFriends(new HashSet<>());
 
-        service.createUser(user);
-        assertNotNull(user.getId());
-
+        user = userService.createUser(user);
         Integer userId = user.getId();
-        assertThrows(UserNotFoundException.class, () -> service.coupleUserValidation(userId + 1, userId));
+
+        assertNotNull(userId);
+        assertThrows(UserNotFoundException.class, () -> userService.coupleUserValidation(userId + 1, userId));
     }
 
     @Test
     public void test_T0020_NS03_coupleUserValidation_notContainsOtherUserId() {
-        assertEquals(0, storage.getUsersQuantity());
+        assertEquals(0, userStorage.getUsersQuantity());
 
         user = new User();
 
@@ -139,10 +142,10 @@ class UserServiceTest {
         user.setBirthday(LocalDate.of(1946, 8, 20));
         user.setFriends(new HashSet<>());
 
-        service.createUser(user);
-        assertNotNull(user.getId());
-
+        user = userService.createUser(user);
         Integer userId = user.getId();
-        assertThrows(UserNotFoundException.class, () -> service.coupleUserValidation(userId, userId + 1));
+
+        assertNotNull(userId);
+        assertThrows(UserNotFoundException.class, () -> userService.coupleUserValidation(userId, userId + 1));
     }
 }

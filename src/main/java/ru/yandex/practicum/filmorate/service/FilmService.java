@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
@@ -10,25 +12,26 @@ import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationExc
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final LikeStorage likeStorage;
+    private final GenresStorage genresStorage;
+    private final MpaStorage mpaStorage;
 
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
@@ -42,17 +45,16 @@ public class FilmService {
         if (count > filmsQuantity)
             count = filmsQuantity;
 
-        List<Film> films = new ArrayList<>(filmStorage.getFilms());
-        Collections.shuffle(films);
+        List<Film> films = new ArrayList<>(filmStorage.getFilms(count));
 
         log.info("Возвращен список фильмов в количестве: " + count);
 
-        return films.stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return films;
     }
 
     public Film receiveFilmById(int filmId) {
+        log.debug("FilmService - service.receiveFilmById()");
+
         String message = "Фильма нет с id :" + filmId;
         filmIsExist(filmId, message);
 
@@ -61,84 +63,79 @@ public class FilmService {
 
     public Film addFilm(final Film film) {
         log.debug("FilmService - service.addFilm()");
+        correctGenres(film);
         addValidation(film);
 
         Integer id = filmStorage.addFilm(film);
-        film.setLikes(new HashSet<>());
 
         log.info("Добавлен фильм с Id: " + id);
+        Film addedFilm = filmStorage.getFilmById(id);
         log.info(film.toString());
         log.info("Количество фильмов теперь: " + filmStorage.getFilmsQuantity());
 
-        return film;
+        return addedFilm;
     }
 
     public Film updateFilm(final Film film) {
         log.debug("FilmService - service.updateFilm()");
-        addValidation(film);
+
+        correctGenres(film);
         updateValidation(film);
+        addValidation(film);
 
-//        Так как не допускается передавать список лайков, при обновлении нужно сохранять его
-        Set<Integer> likes = filmStorage.getFilmById(film.getId()).getLikes();
-        film.setLikes(likes);
+        Film updatedFilm = filmStorage.updateFilm(film);
 
-        filmStorage.updateFilm(film);
-
-        log.info("Фильм обновлен: " + film);
+        log.info("Фильм обновлен: " + updatedFilm);
         log.info("Количество фильмов: " + filmStorage.getFilmsQuantity());
 
-        return film;
+        return updatedFilm;
     }
 
     public Film like(int filmId, int userId) {
         log.debug("FilmService - service.like()");
         likeValidation(filmId, userId);
 
-        Film film = filmStorage.getFilmById(filmId);
-        log.info("Количеств лайка в изначально:" + film.likeQuantity());
-        boolean result = film.like(userId);
+        log.info("Количеств лайка в изначально:" + likeStorage.getLikes(filmId));
+        boolean result = likeStorage.like(filmId, userId);
 
         String logMessage = result
                 ? "Лайк пользователя " + userId + " установлен для фильма " + filmId
                 : "Лайк уже поставлен";
 
         log.info(logMessage);
-        log.info("Количеств лайка теперь: " + film.likeQuantity());
+        log.info("Количеств лайка теперь: " + likeStorage.getLikes(filmId));
 
-        return film;
+        return filmStorage.getFilmById(filmId);
     }
 
-    public Film unlike(int filmId, int userId) {
+    public Film unlike(final int filmId, final int userId) {
         log.debug("FilmService - service.unlike()");
         likeValidation(filmId, userId);
 
-        Film film = filmStorage.getFilmById(filmId);
-        log.info("Количеств лайка в изначально:" + film.getLikes().size());
-        boolean result = film.unlike(userId);
+        log.info("Количеств лайка в изначально:" + likeStorage.getLikes(filmId));
+        boolean result = likeStorage.unlike(filmId, userId);
 
         String logMessage = result
                 ? "Лайк пользователя " + userId + " снят с фильма " + filmId
                 : "Лайк уже снят";
 
         log.info(logMessage);
-        log.info("Количеств лайка теперь: " + film.getLikes().size());
+        log.info("Количеств лайка теперь: " + likeStorage.getLikes(filmId));
 
-        return film;
+        return filmStorage.getFilmById(filmId);
     }
 
     public List<Film> getTop(int size) {
         log.debug("FilmService - service.getTop()");
 
-        List<Film> films = filmStorage.getFilms().stream()
-                .sorted(Comparator.comparing(Film::likeQuantity).reversed())
-                .limit(size)
-                .collect(Collectors.toList());
+        int filmsQuantity = filmStorage.getFilmsQuantity();
 
-        if (size > films.size())
-            size = films.size();
+        if (size > filmsQuantity)
+            size = filmsQuantity;
 
         log.info("Возвращен топ фильмов по лайкам в количестве: " + size);
-        return films;
+
+        return filmStorage.getTopFilms(size);
     }
 
     public boolean addValidation(final Film film) {
@@ -159,6 +156,22 @@ public class FilmService {
             log.warn(message);
             throw new FilmDurationValidationException(message);
         }
+
+        int mpaId = film.getMpa().getId();
+        if (!mpaStorage.containsById(mpaId)) {
+            String message = "Такого рейтинга с id = " + mpaId + " не существует в хранилище";
+            log.warn(message);
+            throw new MpaNotFoundException(message);
+        }
+
+        film.getGenres().forEach(genre -> {
+            int genreId = genre.getId();
+            if (!genresStorage.containsById(genreId)) {
+                String message = "Такого жанра с id = " + genreId + " не существует в хранилище";
+                log.warn(message);
+                throw new GenreNotFoundException(message);
+            }
+        });
 
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;
@@ -197,7 +210,6 @@ public class FilmService {
 
     public boolean filmIsExist(int filmId, String message) {
         if (!filmStorage.containsById(filmId)) {
-            message = "Фильма нет с id :" + filmId;
             log.warn(message);
             throw new FilmNotFoundException(message);
         }
@@ -212,5 +224,16 @@ public class FilmService {
         }
 
         return true;
+    }
+
+    private void correctGenres(final Film film) {
+        log.debug("FilmService - service.correctGenres()");
+
+        if (film.getGenres() == null) {
+            film.setGenres(new ArrayList<>());
+            log.info("Жанры инициализированы пустым списком");
+        }
+
+        log.info("У фильма указаны лайки, коррекции не было");
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
+    private static final String CLASS_NAME = "UserController ";
     private final UserService service;
 
     @Autowired

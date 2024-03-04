@@ -1,6 +1,7 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.users;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -19,13 +20,18 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public List<User> getUsers(int count) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
     public List<User> getUsers() {
         log.debug("InMemoryUserStorage - users.getUsers()");
         return new ArrayList<>(users.values());
     }
 
     @Override
-    public Set<Integer> getKeys() {
+    public Set<Integer> getAllRowId() {
         log.debug("InMemoryUserStorage - users.getKeys()");
         return new HashSet<>(users.keySet());
     }

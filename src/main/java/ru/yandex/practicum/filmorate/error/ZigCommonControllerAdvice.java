@@ -1,27 +1,47 @@
 package ru.yandex.practicum.filmorate.error;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
+import java.sql.SQLException;
+
 @RestControllerAdvice(basePackages = "ru.yandex.practicum.filmorate")
 @Slf4j
 public class ZigCommonControllerAdvice {
-    private static final String CLASS_NAME = "GeneralControllerAdvice ";
+    private static final String CLASS_NAME = "CommonControllerAdvice ";
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRunTimeException(final RuntimeException exception) {
-        log.debug("GeneralControllerAdvice - handleRunTimeException()");
+        log.debug(CLASS_NAME + "- handleRunTimeException()");
         log.warn(exception.getClass().toString());
         return new ErrorResponse("RuntimeException",
-                "Не предвиденная ошибка, которую не предвидели.");
+                "Не предвиденная ошибка, которую не предвидели.",
+                exception.getClass().toString());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleSQLException(final SQLException exception) {
+        log.debug(CLASS_NAME + "- handleRunTimeException()");
+        log.warn(exception.getClass().toString());
+        return new ErrorResponse("RuntimeException",
+                "Не предвиденная SQL ошибка, которую не предвидели.",
+                exception.getClass().toString());
     }
 
     //    На тот случай, если где-то забуду реализовать @ExceptionHandler для ObjectNotFoundException
@@ -47,7 +67,70 @@ public class ZigCommonControllerAdvice {
     public ErrorResponse handleUserNotFoundException(final UserNotFoundException exception) {
         log.debug(CLASS_NAME + "UserNotFoundException");
         return new ErrorResponse("Ошибка существования пользователя",
-                "Фильм с указанным идентификатором отсутствует",
+                "Пользователь с указанным идентификатором отсутствует",
                 exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException exception) {
+        log.debug(CLASS_NAME + "MpaNotFoundException");
+        return new ErrorResponse("Ошибка существования mpa",
+                "Mpa с указанным идентификатором отсутствует",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException exception) {
+        log.debug(CLASS_NAME + "GenreNotFoundException");
+        return new ErrorResponse("Ошибка существования mpa",
+                "Genre с указанным идентификатором отсутствует",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
+        log.debug(CLASS_NAME + "handleMethodArgumentNotValidException");
+
+        return new ErrorResponse("Ошибка валидации тела SQL запроса",
+                "Проблемы связаны с несоблюдением ограничение объекта в теле запроса", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDuplicateKeyException(final DuplicateKeyException exception) {
+        log.debug(CLASS_NAME + "handleDuplicateKeyException");
+
+        return new ErrorResponse("Ошибка выполнения SQL запроса",
+                "Проблемы связаны с нарушением уникальности данных или первичным ключом. Возможно вы пытаетесь повторно добавить существующую запись.", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDataIntegrityViolationException(final DataIntegrityViolationException exception) {
+        log.debug(CLASS_NAME + "handleDataIntegrityViolationException");
+
+        return new ErrorResponse("Ошибка выполнения SQL запроса",
+                "Проблемы связаны с нарушением целостности данных. Возможно вы пытаетесь связать таблицы по несуществующей записи.", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleEmptyResultDataAccessException(final EmptyResultDataAccessException exception) {
+        log.debug(CLASS_NAME + "handleEmptyResultDataAccessException");
+
+        return new ErrorResponse("Ошибка выполнения SQL запроса",
+                "Проблемы связаны с пустым результатом запроса.", exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadSqlGrammarException(final BadSqlGrammarException exception) {
+        log.debug(CLASS_NAME + "handleBadSqlGrammarException");
+
+        return new ErrorResponse("Ошибка выполнения SQL запроса",
+                "Проблемы с синтаксической ошибкой в запросе.", exception.getMessage());
     }
 }

@@ -1,26 +1,25 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    private final FriendshipStorage friendshipDao;
 
     public List<User> receiveUsers(int count) {
         log.debug("UserService - service.receiveUsers()");
@@ -34,93 +33,81 @@ public class UserService {
         if (count > usersQuantity)
             count = usersQuantity;
 
-        List<User> users = new ArrayList<>(userStorage.getUsers());
-        Collections.shuffle(users);
-
+        List<User> users = new ArrayList<>(userStorage.getUsers(count));
         log.info("Возвращен список пользователей в количестве: " + count);
 
-        return users.stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return users;
     }
 
     public User receiveUserById(int userId) {
         String message = "Пользователя нет с id :" + userId;
         userIsExist(userId, message);
-
         return userStorage.getUserById(userId);
     }
 
     public User createUser(final User user) {
         log.debug("UserService - service.createUser()");
 
-        Integer id = userStorage.addUser(user);
-        user.setFriends(new HashSet<>());
         correctName(user);
+        correctFriends(user);
+
+        Integer id = userStorage.addUser(user);
 
         log.info("Пользователь добавлен с Id: " + id);
-        log.info(user.toString());
+        User addedUser = userStorage.getUserById(id);
+        log.info(addedUser.toString());
         log.info("Количество пользователей: " + userStorage.getUsersQuantity());
 
-        return user;
+        return addedUser;
     }
 
     public User updateUser(final User user) {
         log.debug("UserService - service.updateUser()");
+
+        correctFriends(user);
+        correctName(user);
         updateValidation(user);
 
-//        Так как не допускается передавать список друзей, при обновлении нужно сохранять его
-        Set<Integer> friends = userStorage.getUserById(user.getId()).getFriends();
-        user.setFriends(friends);
+        User updatedUser = userStorage.updateUser(user);
 
-        userStorage.updateUser(user);
-
-        log.info("Пользователь обновлен: " + user);
+        log.info("Пользователь обновлен: " + updatedUser);
         log.info("Количество пользователей: " + userStorage.getUsersQuantity());
 
-        return user;
+        return updatedUser;
     }
 
     public User addToFriend(int userId, int friendId) {
         log.debug("UserService - service.addToFriend()");
-
         coupleUserValidation(userId, friendId);
 
-        User user = userStorage.getUserById(userId);
-        log.info("Количеств друзей изначально:" + user.friendsQuantity());
-        boolean result = user.toFriend(friendId);
+        log.info("Количеств друзей изначально:" + friendshipDao.getUserFriendCounts(userId));
+        boolean result = friendshipDao.addToFriend(userId, friendId);
 
         String message = result
                 ? "Пользователь с " + userId + " добавил в друзья пользователя " + friendId
                 : ("Пользователь уже добавлен в друзья");
 
         log.info(message);
-        log.info("Количество друзей теперь: " + user.friendsQuantity());
+        log.info("Количество друзей теперь: " + friendshipDao.getUserFriendCounts(userId));
 
-        userStorage.getUserById(friendId).toFriend(userId);
-
-        return user;
+        return userStorage.getUserById(userId);
     }
 
     public User deleteFromFriend(int userId, int friendId) {
         log.debug("UserService - service.deleteFromFriend()");
-
         coupleUserValidation(userId, friendId);
 
-        User user = userStorage.getUserById(userId);
-        log.info("Количеств лайка в изначально:" + user.friendsQuantity());
-        boolean result = user.unfriend(friendId);
+        log.info("Количеств друзей изначально: " + friendshipDao.getUserFriendCounts(userId));
+        boolean result = friendshipDao.deleteFromFriend(userId, friendId);
 
         String message = result
                 ? ("Пользователь с " + userId + " удалил из друзей пользователя" + friendId)
                 : ("Пользователь уже удален из друзей");
 
         log.info(message);
-        log.info("Количество друзей теперь: " + user.friendsQuantity());
+        log.info("Количество друзей теперь: " + friendshipDao.getUserFriendCounts(userId));
 
-        userStorage.getUserById(friendId).unfriend(userId);
-
-        return user;
+        return userStorage.getUserById(userId);
     }
 
     public List<User> getUserFriends(int userId) {
@@ -129,10 +116,7 @@ public class UserService {
         String message = "Пользователя нет с id :" + userId;
         userIsExist(userId, message);
 
-        User user = userStorage.getUserById(userId);
-        List<User> userFriends = user.getFriends().stream()
-                .map(userStorage::getUserById)
-                .collect(Collectors.toList());
+        List<User> userFriends = friendshipDao.getUserFriendsAsUsers(userId);
 
         log.info("Для пользователя " + userId + " возвращены друзья в количестве " + userFriends.size());
         return userFriends;
@@ -143,15 +127,7 @@ public class UserService {
 
         coupleUserValidation(userId, otherUserId);
 
-        User user = userStorage.getUserById(userId);
-        User otherUser = userStorage.getUserById(otherUserId);
-
-        Set<Integer> otherUserFriends = otherUser.getFriends();
-        List<User> commonFriends =
-                user.getFriends().stream()
-                        .filter(otherUserFriends::contains)
-                        .map(userStorage::getUserById)
-                        .collect(Collectors.toList());
+        List<User> commonFriends = friendshipDao.getCommonFriendsAsUsers(userId, otherUserId);
 
         log.info("Для пользователя " + userId + " возвращены общие друзья с пользователем " + otherUserId);
         log.info("Количество общих друзей: " + commonFriends.size());
@@ -197,18 +173,36 @@ public class UserService {
     }
 
     private boolean userIsExist(int userId, String message) {
+        log.debug("UserService - service.userIsExist()");
+
         if (!userStorage.containsById(userId)) {
             log.warn(message);
             throw new UserNotFoundException(message);
         }
 
+        log.info("Пользователь с id = " + userId + " существует в хранилище");
         return true;
     }
 
     private void correctName(final User user) {
+        log.debug("UserService - service.correctName()");
+
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Имя пользователя скорректировано и указано в качестве логина");
         }
+
+        log.info("У пользователя есть имя, корректировать не понадобилось");
+    }
+
+    private void correctFriends(final User user) {
+        log.debug("UserService - service.correctFriends()");
+
+        if (user.getFriends() == null) {
+            user.setFriends(new HashSet<>());
+            log.info("Друзья инициализированы пустым множеством");
+        }
+
+        log.info("У пользователя указаны друзья, коррекции не было");
     }
 }

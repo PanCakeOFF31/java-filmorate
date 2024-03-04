@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.storage.users;
 
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -10,7 +10,9 @@ public interface UserStorage {
 
     List<User> getUsers();
 
-    Set<Integer> getKeys();
+    List<User> getUsers(int count);
+
+    Set<Integer> getAllRowId();
 
     User getUserById(int id);
 

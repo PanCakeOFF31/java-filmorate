@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.films;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -10,7 +10,9 @@ public interface FilmStorage {
 
     List<Film> getFilms();
 
-    Set<Integer> getKeys();
+    List<Film> getFilms(int count);
+
+    Set<Integer> getAllRowId();
 
     Film getFilmById(int id);
 
@@ -21,4 +23,6 @@ public interface FilmStorage {
     boolean containsById(int id);
 
     Film updateFilm(Film film);
+
+    List<Film> getTopFilms(int size);
 }

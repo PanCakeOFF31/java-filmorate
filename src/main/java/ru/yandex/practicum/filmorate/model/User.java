@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     private Integer id;
     @NotNull
@@ -20,7 +22,6 @@ public class User {
     @Past
     private LocalDate birthday;
     private String name;
-    @Null
     private Set<Integer> friends;
 
     public User(User otherUser) {
@@ -30,10 +31,6 @@ public class User {
         this.birthday = otherUser.birthday;
         this.name = otherUser.name;
         this.friends = otherUser.friends;
-    }
-
-    public boolean toFriend(int friendId) {
-        return friends.add(friendId);
     }
 
     public boolean unfriend(int friendId) {
