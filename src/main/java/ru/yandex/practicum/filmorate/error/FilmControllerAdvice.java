@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
@@ -55,6 +57,23 @@ public class FilmControllerAdvice {
 
         return new ErrorResponse("Ошибка null значение",
                 "Не должно быть указанного null значения.",
+                exception.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMpaNotFoundException(final MpaNotFoundException exception) {
+        log.debug(CLASS_NAME + "MpaNotFoundException");
+        return new ErrorResponse("Ошибка существования mpa",
+                "Mpa с указанным идентификатором отсутствует",
+                exception.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException exception) {
+        log.debug(CLASS_NAME + "GenreNotFoundException");
+        return new ErrorResponse("Ошибка существования mpa",
+                "Genre с указанным идентификатором отсутствует",
                 exception.getMessage());
     }
 }
