@@ -18,8 +18,6 @@ public interface UserStorage {
 
     Integer addUser(User user);
 
-    boolean containsUser(User user);
-
     boolean containsById(int id);
 
     User updateUser(User user);

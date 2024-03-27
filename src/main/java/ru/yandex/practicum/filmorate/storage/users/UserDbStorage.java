@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,9 +14,7 @@ import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Primary
@@ -78,43 +77,27 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.queryForObject(sqlRequest, userMapper, id);
     }
 
-    public User getUserByEmail(String email) {
-        log.debug("UserDbStorage - storage.getUserById()");
-
-        String sqlRequest = "SELECT * FROM users WHERE email = ?";
-        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
-
-        return jdbcTemplate.queryForObject(sqlRequest, userMapper, email);
-    }
-
-    public User getUserByLogin(String login) {
-        log.debug("UserDbStorage - storage.getUserById()");
-
-        String sqlRequest = "SELECT * FROM users WHERE login = ?";
-        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
-
-        return jdbcTemplate.queryForObject(sqlRequest, userMapper, login);
-    }
-
     @Override
     public Integer addUser(User user) {
         log.debug("UserDbStorage - storage.addUser()");
 
-        String sqlRequest = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?);";
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("users")
+                .usingGeneratedKeyColumns("id");
 
-        jdbcTemplate.update(sqlRequest,
-                user.getEmail(),
-                user.getLogin(),
-                user.getName(),
-                user.getBirthday());
+        Map<String, Object> params = new HashMap<>();
 
-        return getUserId(user);
-    }
+        params.put("email", user.getEmail());
+        params.put("login", user.getLogin());
+        params.put("name", user.getName());
+        params.put("birthday", user.getBirthday());
 
-    @Override
-    public boolean containsUser(User user) {
-        log.debug("UserDbStorage - storage.containsUser()");
-        return containsById(user.getId());
+        int userId = jdbcInsert.executeAndReturnKey(params).intValue();
+        user.setId(userId);
+
+        log.info("Занесен пользователь с id: {}", userId);
+
+        return userId;
     }
 
     @Override
@@ -146,16 +129,6 @@ public class UserDbStorage implements UserStorage {
                 user.getId());
 
         return getUserById(user.getId());
-    }
-
-    private int getUserId(User user) {
-        log.debug("UserDbStorage - storage.getUserId()");
-
-        String sqlRequest = "SELECT * FROM users WHERE email = ? AND login = ?";
-        RowMapper<User> userMapper = (rs, rowNum) -> makeUser(rs);
-        User userFromDb = jdbcTemplate.queryForObject(sqlRequest, userMapper, user.getEmail(), user.getLogin());
-
-        return userFromDb.getId();
     }
 
     // Этот метод дублирует метод в FriendshipDao

@@ -21,7 +21,9 @@ import ru.yandex.practicum.filmorate.storage.users.UserStorage;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,7 +55,7 @@ public class FilmService {
     }
 
     public Film receiveFilmById(int filmId) {
-        log.debug("FilmService - service.receiveFilmById()");
+        log.debug("FilmService - service.receiveFilmById({})", filmId);
 
         String message = "Фильма нет с id :" + filmId;
         filmIsExist(filmId, message);
@@ -234,6 +236,7 @@ public class FilmService {
             log.info("Жанры инициализированы пустым списком");
         }
 
-        log.info("У фильма указаны лайки, коррекции не было");
+        log.info("У фильма указаны жанры, коррекции не было");
+        film.setGenres(film.getGenres().stream().distinct().collect(Collectors.toList()));
     }
 }

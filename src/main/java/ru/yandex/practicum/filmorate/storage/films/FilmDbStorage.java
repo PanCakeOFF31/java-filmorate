@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,9 +19,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @Component
 @Primary
@@ -65,17 +67,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Set<Integer> getAllRowId() {
-        log.debug("FilmDbStorage - getAllRowId()");
-
-        String sqlRequest = "SELECT id FROM films;";
-        RowMapper<Integer> mapper = (rs, rowNum) -> rs.getInt("id");
-
-        List<Integer> films = jdbcTemplate.query(sqlRequest, mapper);
-        return new HashSet<>(films);
-    }
-
-    @Override
     public Film getFilmById(int id) {
         log.debug("FilmDbStorage - getFilmById()");
 
@@ -89,27 +80,28 @@ public class FilmDbStorage implements FilmStorage {
     public Integer addFilm(Film film) {
         log.debug("FilmDbStorage - addFilm()");
 
-        String sqlRequest = "INSERT INTO films (name, description, release_date, duration, mpa)\n" +
-                "VALUES (?, ?, ?, ?, ?);";
+        SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("films")
+                .usingGeneratedKeyColumns("id");
 
-        jdbcTemplate.update(sqlRequest,
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                film.getMpa().getId());
+        Map<String, Object> params = new HashMap<>();
+
+        params.put("name", film.getName());
+        params.put("description", film.getDescription());
+        params.put("release_date", film.getReleaseDate());
+        params.put("duration", film.getDuration());
+        params.put("mpa", film.getMpa().getId());
+
+        int filmId = jdbcInsert.executeAndReturnKey(params).intValue();
+        film.setId(filmId);
 
         List<Genre> genres = film.getGenres();
+        log.info("Занесен фильм с id: {}", filmId);
+
         if (!genres.isEmpty())
-            genres.forEach(genre -> genresStorage.addFilmGenre(getFilmId(film), genre.getId()));
+            genres.forEach(genre -> genresStorage.addFilmGenre(filmId, genre.getId()));
 
-        return getFilmId(film);
-    }
-
-    @Override
-    public boolean containsFilm(Film film) {
-        log.debug("FilmDbStorage - containsFilm()");
-        return containsById(film.getId());
+        return filmId;
     }
 
     @Override
@@ -165,16 +157,6 @@ public class FilmDbStorage implements FilmStorage {
         RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
 
         return jdbcTemplate.query(sqlRequest, filmMapper, size);
-    }
-
-    private int getFilmId(Film film) {
-        log.debug("FilmDbStorage - storage.getFilmId()");
-
-        String sqlRequest = "SELECT * FROM films WHERE name = ? AND description = ?";
-        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
-        Film filmFromDb = jdbcTemplate.queryForObject(sqlRequest, filmMapper, film.getName(), film.getDescription());
-
-        return filmFromDb.getId();
     }
 
     public Film makeFilm(ResultSet rs) throws SQLException {

@@ -57,10 +57,4 @@ public class LikeDbStorage implements LikeStorage {
 
         return 0;
     }
-
-    @Override
-    public Set<User> getLikesAsUsers(int filmId) {
-
-        return null;
     }
-}

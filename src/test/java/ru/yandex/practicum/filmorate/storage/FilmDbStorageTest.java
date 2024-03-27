@@ -149,25 +149,6 @@ public class FilmDbStorageTest {
     }
 
     @Test
-    public void test_T0040_NS01_addFilm_nameDescriptionUniqueConstraint() {
-        assertEquals(0, filmStorage.getFilmsQuantity());
-
-        Film film = new Film(1,
-                "Болотная чешуя",
-                "Описание фильма про водоем",
-                LocalDate.of(1990, 1, 1),
-                Duration.ofMinutes(150),
-                0,
-                new Mpa(1, "G"),
-                new ArrayList<>());
-
-
-        filmStorage.addFilm(film);
-
-        assertThrows(org.springframework.dao.DuplicateKeyException.class, () -> filmStorage.addFilm(film));
-    }
-
-    @Test
     public void test_T0040_NS02_addFilm_noMpaId() {
         assertEquals(0, filmStorage.getFilmsQuantity());
 
