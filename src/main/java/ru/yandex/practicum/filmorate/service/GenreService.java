@@ -51,7 +51,7 @@ public class GenreService {
     }
 
     private boolean genreIsExist(int genreId, String message) {
-        if (!mpaStorage.containsById(genreId)) {
+        if (!genresStorage.containsById(genreId)) {
             log.warn(message);
             throw new GenreNotFoundException(message);
         }
