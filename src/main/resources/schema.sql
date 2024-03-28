@@ -22,8 +22,7 @@ CREATE TABLE films (
     description varchar(1000) NOT NULL,
     release_date date NOT NULL CHECK (release_date > '1895-12-28'),
     duration int NOT NULL CHECK (duration > 0),
-    mpa int REFERENCES ratings(id),
-    UNIQUE(name, description)
+    mpa int REFERENCES ratings(id)
 );
 
 CREATE TABLE film_genre (

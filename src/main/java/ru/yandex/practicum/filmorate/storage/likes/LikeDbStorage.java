@@ -6,9 +6,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.User;
-
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -57,10 +54,4 @@ public class LikeDbStorage implements LikeStorage {
 
         return 0;
     }
-
-    @Override
-    public Set<User> getLikesAsUsers(int filmId) {
-
-        return null;
     }
-}

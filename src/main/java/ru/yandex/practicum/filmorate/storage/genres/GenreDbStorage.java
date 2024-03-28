@@ -28,16 +28,6 @@ public class GenreDbStorage implements GenresStorage {
     }
 
     @Override
-    public boolean deleteFilmGenre(int filmId, int genreId) {
-        log.debug("GenreDbStorage - storage.deleteFilmGenre()");
-
-        String sqlRequest = "DELETE FROM film_genre WHERE film_id = ? AND genre_id = ?;";
-        int deleted = jdbcTemplate.update(sqlRequest, filmId, genreId);
-
-        return deleted > 0;
-    }
-
-    @Override
     public boolean deleteAllFilmGenres(int filmId) {
         log.debug("GenreDbStorage - storage.deleteFilmGenre()");
 
