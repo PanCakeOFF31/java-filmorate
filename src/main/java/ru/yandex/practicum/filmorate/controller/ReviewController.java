@@ -83,5 +83,4 @@ public class ReviewController {
         log.debug("/reviews/{}/like/{} - PUT: undoDislikeReview()", reviewId, userId);
         throw new MethodNotImplemented("Метод удаления дизлайка к отзыву");
     }
-
 }
