@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
@@ -16,5 +14,5 @@ public class Event {
     private final EvenType eventType;
     private final Operation operation;
     @NotNull
-    private final int entityId;
+    private final int entityId; // Идентификатор сущности
 }

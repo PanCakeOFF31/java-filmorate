@@ -20,6 +20,6 @@ public class Review {
     private final int userId;
     @NotNull
     private final int filmId;
-//    Значение рассчитывается на основании суммы лайков и дизлайков из таблицы review_like
+    //    Значение рассчитывается на основании суммы лайков и дизлайков из таблицы review_like
     private final int useful;
 }

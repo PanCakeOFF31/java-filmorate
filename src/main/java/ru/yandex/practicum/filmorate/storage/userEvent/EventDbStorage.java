@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class EventDbStorage implements EventStorage{
+public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
 }

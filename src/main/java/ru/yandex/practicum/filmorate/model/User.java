@@ -35,12 +35,4 @@ public class User {
         this.name = otherUser.name;
         this.friends = otherUser.friends;
     }
-
-    public boolean unfriend(int friendId) {
-        return friends.remove(friendId);
-    }
-
-    public int friendsQuantity() {
-        return friends.size();
-    }
 }

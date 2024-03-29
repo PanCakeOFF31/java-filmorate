@@ -59,7 +59,7 @@ public class FilmController {
         return service.getTop(count);
     }
 
-    //    Здесь конфликт, при начале работ раскомментировать и удалить сверху!!!
+    //    Здесь конфликт, при начале работ раскомментировать и удалить метод сверху
     // TODO: Вывод самых популярных фильмов по жанру и годам 2 SP. Реализовать функциональность.
 //    @GetMapping(value = "/popular")
 //    public Film getFilmByGenreYear(@RequestParam(name = "limit") final int count,
@@ -79,8 +79,8 @@ public class FilmController {
     // TODO: Добавление режиссёров в фильм 4 SP. Реализовать функциональность.
     @GetMapping(value = "/director/{directorId}")
     public List<Film> getSortedDirectorFilmsDBy(@PathVariable int directorId, @RequestParam(defaultValue = "year") String sortBy) {
-        log.debug("/films/director/{} - GET: getSortedDirectorFilmsDBy", directorId);
-        throw new MethodNotImplemented("Метод получения отсортированного списка фильмов режиссера");
+        log.debug("/films/director/{}?sortBy={} - GET: getSortedDirectorFilmsDBy", directorId, sortBy);
+        throw new MethodNotImplemented("Метод получения отсортированного списка фильмов режиссера с сортировкой");
     }
 
     // TODO: Функциональность «Общие фильмы». 1 SP. Реализовать функциональность.
@@ -94,7 +94,7 @@ public class FilmController {
     // TODO: Функциональность «Поиск». 3SP. Реализовать функциональность.
     @GetMapping("/search")
     public List<Film> searchFilmsBySubstring(@RequestParam final String query,
-                                            @RequestParam final List<String> by) {
+                                             @RequestParam final List<String> by) {
         log.debug("/films/search?query={}&by={} - GET: searchFilmBySubstring()", query, by);
         throw new MethodNotImplemented("Метод получения списка фильмов с поиском по подстроке в режиссерах/фильмах");
     }

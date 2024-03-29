@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -45,10 +46,9 @@ public class ReviewController {
     }
 
     // TODO: Функциональность «Отзывы». 4 SP. Реализовать функциональность.
-//     Default 10
     @GetMapping
-    public Review getAllReviewsByFilmId(@RequestParam final int filmId,
-                                        @RequestParam(defaultValue = "10") final int count) {
+    public List<Review> getAllReviewsByFilmId(@RequestParam final int filmId,
+                                              @RequestParam(defaultValue = "10") final int count) {
         log.debug("/reviews?filmId={}&count={} - GET: getAllReviewsByFilmId()", filmId, count);
         throw new MethodNotImplemented("Метод получения всех отзывов по идентификатору фильма");
     }

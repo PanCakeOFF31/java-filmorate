@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 
 import java.sql.ResultSet;
@@ -174,6 +173,6 @@ public class FilmDbStorage implements FilmStorage {
         List<Genre> genres = genresStorage.getFilmGenre(id);
         List<Director> directors = directorStorage.getFilmDirector(id);
 
-        return new Film(id, name, description, releaseDate, duration, mpa, genres,directors);
+        return new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
     }
 }

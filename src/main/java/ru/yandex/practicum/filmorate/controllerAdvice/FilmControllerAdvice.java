@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
-import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
+import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 

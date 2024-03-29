@@ -1,4 +1,4 @@
 package ru.yandex.practicum.filmorate.storage.filmReview;
 
-public class ReviewDbStorage implements ReviewStorage{
+public class ReviewDbStorage implements ReviewStorage {
 }
