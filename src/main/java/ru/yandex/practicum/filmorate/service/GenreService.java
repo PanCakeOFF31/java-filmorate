@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 
 import java.util.List;
 

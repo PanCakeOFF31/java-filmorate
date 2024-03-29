@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -18,12 +15,15 @@ public class User {
     private Integer id;
     @NotNull
     @Email
+    @Size(max = 128)
     private String email;
     @NotBlank
+    @Size(max = 64)
     private String login;
     @NotNull
     @Past
     private LocalDate birthday;
+    @Size(max = 64)
     private String name;
     private Set<Integer> friends;
 

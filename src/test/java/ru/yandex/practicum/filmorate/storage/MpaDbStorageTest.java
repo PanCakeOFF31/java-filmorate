@@ -8,8 +8,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaDbStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 
 import java.util.List;
 

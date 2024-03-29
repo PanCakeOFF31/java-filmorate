@@ -29,6 +29,4 @@ public class GenreController {
         log.debug("/genres/{id} - GET: getFilmGenres()");
         return service.getGenre(genreId);
     }
-
-
 }

@@ -8,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
-import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
-import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.users.UserStorage;
+import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipDbStorage;
+import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;

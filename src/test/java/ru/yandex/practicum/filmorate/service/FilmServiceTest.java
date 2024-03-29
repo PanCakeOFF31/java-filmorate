@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -168,7 +168,7 @@ class FilmServiceTest {
         filmService.like(filmId, userId);
 
         assertEquals(1, filmStorage.getFilmsQuantity());
-        assertEquals(1, filmStorage.getFilmById(filmId).getRate());
+        assertEquals(1, filmStorage.getFilmById(filmId).getMpa().getId());
     }
 
     @Test

@@ -9,14 +9,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.films.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.genres.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.likes.LikeDbStorage;
-import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaDbStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.filmLike.LikeDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,7 +41,8 @@ public class FilmDbStorageTest {
         LikeStorage likeStorage = new LikeDbStorage(jdbcTemplate);
         GenresStorage genresStorage = new GenreDbStorage(jdbcTemplate);
         MpaStorage mpaStorage = new MpaDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate, likeStorage, genresStorage, mpaStorage);
+        DirectorStorage directorStorage = new DirectorDbStorage(jdbcTemplate);
+        filmStorage = new FilmDbStorage(jdbcTemplate, genresStorage, mpaStorage, directorStorage);
     }
 
     @Test
@@ -49,8 +52,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Integer addedFilmId = filmStorage.addFilm(film);
@@ -78,8 +81,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Film film2 = new Film(film1);
@@ -106,8 +109,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Film film2 = new Film(film1);
@@ -133,8 +136,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Integer addedId = filmStorage.addFilm(film);
@@ -157,8 +160,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(999, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> filmStorage.addFilm(film));
@@ -173,8 +176,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         filmStorage.addFilm(film);
@@ -185,8 +188,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(2, "PG"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Film updatedFilm = filmStorage.updateFilm(changedFilm);
@@ -207,8 +210,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         filmStorage.addFilm(film);
@@ -219,8 +222,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(-150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> filmStorage.updateFilm(changedFilm));
@@ -233,8 +236,8 @@ public class FilmDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         assertThrows(org.springframework.dao.EmptyResultDataAccessException.class, () -> filmStorage.updateFilm(film));

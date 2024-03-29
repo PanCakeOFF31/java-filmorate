@@ -10,18 +10,20 @@ import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.films.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
-import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
-import ru.yandex.practicum.filmorate.storage.genres.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.likes.LikeDbStorage;
-import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaDbStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.users.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.users.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipDbStorage;
+import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.filmLike.LikeDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -47,7 +49,8 @@ public class LikesDbStorageTest {
         userStorage = new UserDbStorage(jdbcTemplate, friendshipStorage);
         GenresStorage genresStorage = new GenreDbStorage(jdbcTemplate);
         MpaStorage mpaStorage = new MpaDbStorage(jdbcTemplate);
-        filmStorage = new FilmDbStorage(jdbcTemplate, likeStorage, genresStorage, mpaStorage);
+        DirectorStorage directorStorage = new DirectorDbStorage(jdbcTemplate);
+        filmStorage = new FilmDbStorage(jdbcTemplate, genresStorage, mpaStorage, directorStorage);
     }
 
     @Test
@@ -71,8 +74,8 @@ public class LikesDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Integer user1Id = userStorage.addUser(user1);
@@ -111,8 +114,8 @@ public class LikesDbStorageTest {
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
                 Duration.ofMinutes(150),
-                0,
                 new Mpa(1, "G"),
+                new ArrayList<>(),
                 new ArrayList<>());
 
         Integer user1Id = userStorage.addUser(user1);

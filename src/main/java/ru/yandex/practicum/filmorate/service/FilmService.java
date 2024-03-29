@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
-import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
@@ -12,11 +12,11 @@ import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationExc
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
-import ru.yandex.practicum.filmorate.storage.films.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.genres.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.likes.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.ratings.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.users.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -64,7 +64,9 @@ public class FilmService {
 
     public Film addFilm(final Film film) {
         log.debug("FilmService - service.addFilm()");
+
         correctGenres(film);
+//        TODO: добавить correctDirector()
         addValidation(film);
 
         Integer id = filmStorage.addFilm(film);
@@ -81,6 +83,7 @@ public class FilmService {
         log.debug("FilmService - service.updateFilm()");
 
         correctGenres(film);
+//        TODO: добавить correctDirector()
         updateValidation(film);
         addValidation(film);
 
@@ -174,6 +177,8 @@ public class FilmService {
             }
         });
 
+//        TODO: добавить проверку на режиссеров
+
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;
     }
@@ -233,9 +238,12 @@ public class FilmService {
         if (film.getGenres() == null) {
             film.setGenres(new ArrayList<>());
             log.info("Жанры инициализированы пустым списком");
+            return;
         }
 
         log.info("У фильма указаны жанры, коррекции не было");
         film.setGenres(film.getGenres().stream().distinct().collect(Collectors.toList()));
     }
+
+//    TODO: реализовать correctDirector
 }

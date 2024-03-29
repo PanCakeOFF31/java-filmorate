@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -11,15 +14,10 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    private static final String CLASS_NAME = "UserController ";
     private final UserService service;
-
-    @Autowired
-    public UserController(UserService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public List<User> receiveUsers(@RequestParam(defaultValue = "10") int count) {
@@ -69,5 +67,26 @@ public class UserController {
                                        @PathVariable(name = "otherId") int otherUserId) {
         log.debug("/users/{id}/friends/common/{otherId}} - GET: getCommonFriends()");
         return service.getCommonFriends(userId, otherUserId);
+    }
+
+    // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
+    @DeleteMapping(value = "/{id}")
+    public Film deleteUserById(@PathVariable(name = "id") int userId) {
+        log.debug("/users/{} - DELETE: deleteUserById()", userId);
+        throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
+    }
+
+    // TODO: Функциональность «Лента событий». 3 SP. Реализовать функциональность
+    @GetMapping("/{id}/feed")
+    public List<Event> getUserFeed(@PathVariable(name = "id") final int userId) {
+        log.debug("/users/{}/feed - GET: getUserFeed()", userId);
+        throw new MethodNotImplemented("Метод получения списка событий пользователя");
+    }
+
+    //    TODO: Функциональность «Рекомендации». 3 SP. Реализовать функциональность
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getReccomendations(@PathVariable(name = "id") final int userId) {
+        log.debug("/users/{}/recommendations - GET: getReccomendations()", userId);
+        throw new MethodNotImplemented("Метод возвращает рекомендации по фильмам для просмотра");
     }
 }
