@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService service;
+    private final DirectorService directorService;
 
     @GetMapping()
     public List<Film> receiveFilms(@RequestParam(defaultValue = "10") int count) {
@@ -79,7 +81,7 @@ public class FilmController {
     // TODO: Добавление режиссёров в фильм 4 SP. Реализовать функциональность.
     @GetMapping(value = "/director/{directorId}")
     public List<Film> receiveSortedDirectorFilmsDBy(@PathVariable int directorId, @RequestParam(defaultValue = "year") String sortBy) {
-        log.debug("/films/director/{}?sortBy={} - GET: getSortedDirectorFilmsDBy", directorId, sortBy);
+        log.debug("/films/director/{}?sortBy={} - GET: receiveSortedDirectorFilmsDBy", directorId, sortBy);
         throw new MethodNotImplemented("Метод получения отсортированного списка фильмов режиссера с сортировкой");
     }
 

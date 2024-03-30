@@ -171,7 +171,7 @@ public class FilmDbStorage implements FilmStorage {
         Duration duration = Duration.ofSeconds(rs.getInt("duration"));
         Mpa mpa = mpaStorage.getFilmMpa(id);
         List<Genre> genres = genresStorage.getFilmGenre(id);
-        List<Director> directors = directorStorage.getFilmDirector(id);
+        List<Director> directors = directorStorage.getFilmsDirector(id);
 
         return new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
     }
