@@ -20,6 +20,7 @@ public interface FilmStorage {
     Film updateFilm(Film film);
 
     List<Film> getTopFilms(int size);
+
     List<Film> getSortedDirectorFilmsBy(final int directorId, final String sortBy);
 
 }

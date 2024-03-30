@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.filmDirector;
 
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
@@ -23,6 +22,7 @@ public interface DirectorStorage {
     boolean containsById(final int directorId);
 
     boolean addFilmDirector(int filmId, int directorId);
+
     boolean deleteFilmDirector(int filmId, int directorId);
 
 }
