@@ -3,6 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.InvalidRequestParameterValue;
+import ru.yandex.practicum.filmorate.exception.director.DirectorNotFounException;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
@@ -11,6 +13,7 @@ import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
@@ -30,6 +33,7 @@ public class FilmService {
     private final GenresStorage genresStorage;
     private final MpaStorage mpaStorage;
     private final ExistChecker existChecker;
+    private final DirectorStorage directorStorage;
 
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
@@ -62,6 +66,7 @@ public class FilmService {
         log.debug("FilmService - service.addFilm()");
 
         correctGenres(film);
+        correctDirectors(film);
         addValidation(film);
 
         Integer id = filmStorage.addFilm(film);
@@ -78,6 +83,7 @@ public class FilmService {
         log.debug("FilmService - service.updateFilm()");
 
         correctGenres(film);
+        correctDirectors(film);
         updateValidation(film);
         addValidation(film);
 
@@ -171,6 +177,15 @@ public class FilmService {
             }
         });
 
+        film.getDirectors().forEach(director -> {
+            int directorId = director.getId();
+            if (!directorStorage.containsById(directorId)) {
+                String message = "Такого режиссера с id = " + directorId + " не существует в хранилище";
+                log.warn(message);
+                throw new DirectorNotFounException(message);
+            }
+        });
+
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;
     }
@@ -193,13 +208,41 @@ public class FilmService {
         return true;
     }
 
+    public List<Film> receiveSortedDirectorFilmsBy(final int directorId, final String sortBy) {
+        log.debug("DirectorService - service.receiveSortedDirectorFilmsBy()");
+
+        existChecker.directorIsExist(directorId);
+        checkRequestParam(sortBy);
+
+        List<Film> directorFilms = filmStorage.getSortedDirectorFilmsBy(directorId, sortBy);
+
+        log.info("Возвращен сортированный список по {} режиссера в количестве: {} шт",
+                sortBy,
+                directorFilms.size());
+
+        return directorFilms;
+    }
+
     public boolean likeValidation(int filmId, int userId) {
         log.debug("FilmService - service.likeValidation()");
 
         existChecker.filmIsExist(filmId);
         existChecker.userIsExist(userId);
-
         return true;
+    }
+
+    private void checkRequestParam(final String sortBy) {
+        log.debug("FilmService - service.checkRequestParam()");
+
+        String message = "Недопустимое значение параметра запроса " + sortBy;
+
+        switch (sortBy) {
+            case "year":
+            case "likes":
+                break;
+            default:
+                throw new InvalidRequestParameterValue(message);
+        }
     }
 
     private void correctGenres(final Film film) {
@@ -213,5 +256,18 @@ public class FilmService {
 
         log.info("У фильма указаны жанры, коррекции не было");
         film.setGenres(film.getGenres().stream().distinct().collect(Collectors.toList()));
+    }
+
+    private void correctDirectors(final Film film) {
+        log.debug("FilmService - service.correctDirectors()");
+
+        if (film.getDirectors() == null) {
+            film.setDirectors(new ArrayList<>());
+            log.info("Режиссеры инициализированы пустым списком");
+            return;
+        }
+
+        log.info("У фильма указаны режиссеры, коррекции не было");
+        film.setDirectors(film.getDirectors().stream().distinct().collect(Collectors.toList()));
     }
 }
