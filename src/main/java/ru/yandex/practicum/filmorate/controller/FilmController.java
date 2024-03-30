@@ -78,7 +78,7 @@ public class FilmController {
 
     // TODO: Добавление режиссёров в фильм 4 SP. Реализовать функциональность.
     @GetMapping(value = "/director/{directorId}")
-    public List<Film> getSortedDirectorFilmsDBy(@PathVariable int directorId, @RequestParam(defaultValue = "year") String sortBy) {
+    public List<Film> receiveSortedDirectorFilmsDBy(@PathVariable int directorId, @RequestParam(defaultValue = "year") String sortBy) {
         log.debug("/films/director/{}?sortBy={} - GET: getSortedDirectorFilmsDBy", directorId, sortBy);
         throw new MethodNotImplemented("Метод получения отсортированного списка фильмов режиссера с сортировкой");
     }

@@ -53,18 +53,18 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("FilmDbStorage - getFilms()");
 
         String sqlRequest = "SELECT * FROM film;";
-        RowMapper<Film> userMapper = (rs, rowNum) -> makeFilm(rs);
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
 
-        return jdbcTemplate.query(sqlRequest, userMapper);
+        return jdbcTemplate.query(sqlRequest, filmMapper);
     }
 
     public List<Film> getFilms(int count) {
         log.debug("FilmDbStorage - getFilms(int count)");
 
         String sqlRequest = "SELECT * FROM film LIMIT ?;";
-        RowMapper<Film> userMapper = (rs, rowNum) -> makeFilm(rs);
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
 
-        return jdbcTemplate.query(sqlRequest, userMapper, count);
+        return jdbcTemplate.query(sqlRequest, filmMapper, count);
     }
 
     @Override

@@ -9,8 +9,6 @@ import javax.validation.constraints.Size;
 @Data
 public class Director {
     private final int id;
-    @JsonIgnore
-    @JsonProperty
     @Size(max = 128)
     private final String name;
 }

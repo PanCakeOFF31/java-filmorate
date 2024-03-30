@@ -66,7 +66,6 @@ public class FilmService {
         log.debug("FilmService - service.addFilm()");
 
         correctGenres(film);
-//        TODO: добавить correctDirector()
         addValidation(film);
 
         Integer id = filmStorage.addFilm(film);
@@ -83,7 +82,6 @@ public class FilmService {
         log.debug("FilmService - service.updateFilm()");
 
         correctGenres(film);
-//        TODO: добавить correctDirector()
         updateValidation(film);
         addValidation(film);
 
@@ -177,8 +175,6 @@ public class FilmService {
             }
         });
 
-//        TODO: добавить проверку на режиссеров
-
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;
     }
@@ -244,6 +240,4 @@ public class FilmService {
         log.info("У фильма указаны жанры, коррекции не было");
         film.setGenres(film.getGenres().stream().distinct().collect(Collectors.toList()));
     }
-
-//    TODO: реализовать correctDirector
 }
