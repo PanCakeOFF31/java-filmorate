@@ -18,10 +18,11 @@ public interface DirectorStorage {
 
     List<Director> getDirectors();
 
-    List<Film> getSortedDirectorFilmsBy(final int directorId, final String sortBy);
-
     int getDirectorQuantity();
 
     boolean containsById(final int directorId);
+
+    boolean addFilmDirector(int filmId, int directorId);
+    boolean deleteFilmDirector(int filmId, int directorId);
 
 }

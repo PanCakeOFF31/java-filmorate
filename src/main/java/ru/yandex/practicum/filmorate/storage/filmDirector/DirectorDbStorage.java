@@ -27,7 +27,14 @@ public class DirectorDbStorage implements DirectorStorage {
     public List<Director> getFilmsDirector(int filmId) {
         log.debug("DirectorDbStorage - getFilmsDirector()");
 
-        return new ArrayList<>();
+        String sqlRequest = "SELECT d.id, d.name FROM\n" +
+                "(SELECT *\n" +
+                "FROM film_director\n" +
+                "WHERE film_id = ?) AS fd\n" +
+                "JOIN\n" +
+                "director AS d ON fd.director_id = d.id\n";
+
+        return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeDirector(rs), filmId);
     }
 
     @Override
@@ -92,12 +99,6 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
-        log.debug("DirectorDbStorage - getSortedDirectorFilmsBy()");
-        return null;
-    }
-
-    @Override
     public int getDirectorQuantity() {
         log.debug("DirectorDbStorage - getDirectorQuantity()");
 
@@ -118,6 +119,26 @@ public class DirectorDbStorage implements DirectorStorage {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, directorId);
 
         return rowSet.next();
+    }
+
+    @Override
+    public boolean addFilmDirector(int filmId, int directorId) {
+        log.debug("DirectorDbStorage - addFilmDirector()");
+
+        String sqlRequest = "INSERT INTO film_director (film_id, director_id) VALUES (?, ?);";
+        int added = jdbcTemplate.update(sqlRequest, filmId, directorId);
+
+        return added > 0;
+    }
+
+    @Override
+    public boolean deleteFilmDirector(int filmId, int directorId) {
+        log.debug("DirectorDbStorage - deleteFilmDirector()");
+
+        String sqlRequest = "DELETE FROM film_director WHERE film_id = ? AND director_id = ?;";
+        int deleted = jdbcTemplate.update(sqlRequest, filmId, directorId);
+
+        return deleted > 0;
     }
 
     private Director makeDirector(ResultSet rs) throws SQLException {

@@ -103,6 +103,11 @@ public class FilmDbStorage implements FilmStorage {
         if (!genres.isEmpty())
             genres.forEach(genre -> genresStorage.addFilmGenre(filmId, genre.getId()));
 
+        List<Director> directors = film.getDirectors();
+
+        if (!directors.isEmpty())
+            directors.forEach(director -> directorStorage.addFilmDirector(filmId, director.getId()));
+
         return filmId;
     }
 
@@ -140,6 +145,8 @@ public class FilmDbStorage implements FilmStorage {
         HashSet<Genre> nonDuplicate = new HashSet<>(film.getGenres());
         nonDuplicate.forEach(genre -> genresStorage.addFilmGenre(film.getId(), genre.getId()));
 
+//        TODO: реализовать обновление
+
         return getFilmById(film.getId());
     }
 
@@ -159,6 +166,33 @@ public class FilmDbStorage implements FilmStorage {
         RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
 
         return jdbcTemplate.query(sqlRequest, filmMapper, size);
+    }
+
+    @Override
+    public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
+        log.debug("DirectorDbStorage - getSortedDirectorFilmsBy()");
+
+        String sqlRequest;
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
+
+        if (sortBy.equals("year")) {
+            sqlRequest = "SELECT * FROM film\n" +
+                    "WHERE id IN " +
+                    "(SELECT film_id FROM film_director WHERE director_id = ?)\n" +
+                    "ORDER BY release_date DESC;";
+
+            return jdbcTemplate.query(sqlRequest, filmMapper, directorId);
+        }
+
+        sqlRequest = "SELECT * FROM (SELECT * FROM film\n" +
+                "WHERE id IN (SELECT film_id FROM film_director WHERE director_id = ?)) AS f\n" +
+                "LEFT JOIN\n" +
+                "(SELECT film_id, COUNT(user_id) AS likes FROM film_like\n" +
+                "WHERE film_id IN (SELECT film_id FROM film_director WHERE director_id = ?)\n" +
+                "GROUP BY film_id) AS l ON f.id = l.film_id\n" +
+                "ORDER BY likes DESC";
+
+        return jdbcTemplate.query(sqlRequest, filmMapper, directorId, directorId);
     }
 
     public Film makeFilm(ResultSet rs) throws SQLException {

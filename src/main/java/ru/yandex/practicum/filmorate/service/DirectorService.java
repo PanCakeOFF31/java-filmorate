@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.director.DirectorNotFounException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 
 import java.util.List;
@@ -15,7 +13,6 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class DirectorService {
-    private final JdbcTemplate jdbcTemplate;
     private final DirectorStorage directorStorage;
 
     public List<Director> receiveDirectors() {
@@ -70,31 +67,19 @@ public class DirectorService {
         log.debug("DirectorService - service.deleteDirectorById()");
 
         directorIsExist(directorId);
-
         log.info("Количество режиссеров до удаления: " + directorStorage.getDirectorQuantity());
 
         Director delletedDirector = directorStorage.deleteDirectorById(directorId);
-
-        log.info("Количество режиссеров теперь: " + directorStorage.getDirectorQuantity());
+        log.info("Количество режиссеров после удаления: " + directorStorage.getDirectorQuantity());
 
         return delletedDirector;
     }
 
-    public List<Film> receiveSortedDirectorFilmsBy(final int directorId, final String sortBy) {
-        log.debug("DirectorService - service.receiveSortedDirectorFilmsBy()");
-        return null;
-    }
-
-
-    private boolean directorIsExist(int directorId) {
-        String message = "Режиссера нет с id :" + directorId;
-
+    private void directorIsExist(int directorId) {
         if (!directorStorage.containsById(directorId)) {
+            String message = "Режиссера нет с id :" + directorId;
             log.warn(message);
             throw new DirectorNotFounException(message);
         }
-
-        return true;
     }
-
 }

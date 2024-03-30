@@ -82,7 +82,7 @@ public class FilmController {
     @GetMapping(value = "/director/{directorId}")
     public List<Film> receiveSortedDirectorFilmsDBy(@PathVariable int directorId, @RequestParam(defaultValue = "year") String sortBy) {
         log.debug("/films/director/{}?sortBy={} - GET: receiveSortedDirectorFilmsDBy", directorId, sortBy);
-        throw new MethodNotImplemented("Метод получения отсортированного списка фильмов режиссера с сортировкой");
+        return service.receiveSortedDirectorFilmsBy(directorId, sortBy);
     }
 
     // TODO: Функциональность «Общие фильмы». 1 SP. Реализовать функциональность.
