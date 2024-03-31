@@ -1,11 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.filmReview;
 
 public interface ReviewLikeStorage {
-
-    int getLikes(final int reviewId);
-
-    int getDislikes(final int reviewId);
-
     int getUseful(final int reviewId);
 
     boolean like(final int reviewId, final int userId);
