@@ -105,24 +105,4 @@ public class ReviewLikeDbStorage implements ReviewLikeStorage {
 
         return deleted > 0;
     }
-
-    @Override
-    public boolean containsByReviewId(int reviewId) {
-        log.debug("ReviewLikeDbStorage - containsByReviewId()");
-
-        String sqlRequest = "SELECT * FROM review_like WHERE review_id = ?;";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, reviewId);
-
-        return rowSet.next();
-    }
-
-    @Override
-    public boolean containsByReviewUserId(int reviewId, int userId) {
-        log.debug("ReviewLikeDbStorage - containsByReviewUserId()");
-
-        String sqlRequest = "SELECT * FROM review_like WHERE review_id = ? AND user_id = ?;";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, reviewId, userId);
-
-        return rowSet.next();
-    }
 }

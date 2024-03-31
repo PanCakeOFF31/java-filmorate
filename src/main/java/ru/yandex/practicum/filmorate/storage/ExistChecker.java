@@ -13,10 +13,11 @@ import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.filmRate.RateStorage;
-import ru.yandex.practicum.filmorate.storage.filmReview.ReviewLikeStorage;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.storage.userEvent.EventStorage;
+import ru.yandex.practicum.filmorate.storage.userEvent.event_type.EventTypeStorage;
+import ru.yandex.practicum.filmorate.storage.userEvent.operation.OperationStorage;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -27,11 +28,11 @@ public class ExistChecker {
     private final GenresStorage genresStorage;
     private final MpaStorage mpaStorage;
     private final ReviewStorage reviewStorage;
-    private final ReviewLikeStorage reviewLikeStorage;
     private final DirectorStorage directorStorage;
     private final RateStorage rateStorage;
     private final EventStorage eventStorage;
-
+    private final EventTypeStorage eventTypeStorage;
+    private final OperationStorage operationStorage;
 
     public void filmIsExist(int filmId) {
         log.debug("ExistChecker - service.filmIsExist()");
@@ -79,16 +80,6 @@ public class ExistChecker {
 
         if (!reviewStorage.containsById(reviewId)) {
             String message = "Такого отзыва с id = " + reviewId + " не существует в хранилище";
-            log.warn(message);
-            throw new ReviewNotFoundException(message);
-        }
-    }
-
-    public void reviewLikeIsExist(int reviewId, int userID) {
-        log.debug("ExistChecker - service.reviewIsExist()");
-
-        if (!reviewLikeStorage.containsByReviewUserId(reviewId, userID)) {
-            String message = "Реакции на отзыв id: " + reviewId + " от пользователя id: " + userID + " нет";
             log.warn(message);
             throw new ReviewNotFoundException(message);
         }

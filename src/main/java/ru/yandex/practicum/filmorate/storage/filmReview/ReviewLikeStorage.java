@@ -11,8 +11,4 @@ public interface ReviewLikeStorage {
 
     boolean undoDislike(final int reviewId, final int userId);
 
-    boolean containsByReviewId(final int reviewId);
-
-    boolean containsByReviewUserId(final int reviewId, final int userId);
-
 }
