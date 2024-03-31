@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.director.DirectorNotFounException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.storage.ExistChecker;
 import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DirectorService {
     private final DirectorStorage directorStorage;
+    private final ExistChecker existChecker;
 
     public List<Director> receiveDirectors() {
         log.debug("DirectorService - service.receiveDirectors()");
@@ -29,7 +30,7 @@ public class DirectorService {
     public Director receiveDirectorById(final int directorId) {
         log.debug("DirectorService - service.receiveDirectorById({})", directorId);
 
-        directorIsExist(directorId);
+        existChecker.directorIsExist(directorId);
 
         return directorStorage.getDirectorById(directorId);
     }
@@ -53,7 +54,7 @@ public class DirectorService {
         log.debug("DirectorService - service.changeDirector()");
 
         int directorId = director.getId();
-        directorIsExist(directorId);
+        existChecker.directorIsExist(directorId);
 
         log.info("Режиссер до обновления: {}", directorStorage.getDirectorById(directorId));
 
@@ -66,20 +67,12 @@ public class DirectorService {
     public Director deleteDirectorById(final int directorId) {
         log.debug("DirectorService - service.deleteDirectorById()");
 
-        directorIsExist(directorId);
+        existChecker.directorIsExist(directorId);
         log.info("Количество режиссеров до удаления: " + directorStorage.getDirectorQuantity());
 
         Director delletedDirector = directorStorage.deleteDirectorById(directorId);
         log.info("Количество режиссеров после удаления: " + directorStorage.getDirectorQuantity());
 
         return delletedDirector;
-    }
-
-    private void directorIsExist(int directorId) {
-        if (!directorStorage.containsById(directorId)) {
-            String message = "Режиссера нет с id :" + directorId;
-            log.warn(message);
-            throw new DirectorNotFounException(message);
-        }
     }
 }
