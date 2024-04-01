@@ -3,7 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.Valid;
@@ -15,23 +19,54 @@ import java.util.List;
 @RequestMapping("/reviews")
 public class ReviewController {
     private final ReviewService service;
+    private final EventService eventService;
 
     @PostMapping
     public Review createReview(@Valid @RequestBody final Review review) {
         log.debug("/reviews - POST: createReview()");
-        return service.createReview(review);
+
+        Review createdReview = service.createReview(review);
+
+        Event event = eventService.addEvent(createdReview.getUserId(),
+                createdReview.getFilmId(),
+                EventType.REVIEW,
+                Operation.ADD);
+
+        log.info("Событие создания отзыва к фильму зарегистрировано: {}", event);
+
+        return createdReview;
     }
 
     @PutMapping
     public Review updateReview(@Valid @RequestBody final Review review) {
         log.debug("/reviews - PUT: updateReview()");
-        return service.updateReview(review);
+
+        Review updatedReview = service.updateReview(review);
+
+        Event event = eventService.addEvent(updatedReview.getUserId(),
+                updatedReview.getFilmId(),
+                EventType.REVIEW,
+                Operation.UPDATE);
+
+        log.info("Событие создания отзыва к фильму зарегистрировано: {}", event);
+
+        return updatedReview;
     }
 
     @DeleteMapping("/{id}")
     public Review deleteReviewById(@PathVariable(name = "id") final int reviewId) {
         log.debug("/reviews/{} - DELETE: deleteReviewById()", reviewId);
-        return service.deleteReviewById(reviewId);
+
+        Review deletedReview = service.deleteReviewById(reviewId);
+
+        Event event = eventService.addEvent(deletedReview.getUserId(),
+                deletedReview.getFilmId(),
+                EventType.REVIEW,
+                Operation.REMOVE);
+
+        log.info("Событие создания отзыва к фильму зарегистрировано: {}", event);
+
+        return deletedReview;
     }
 
     @GetMapping("/{id}")
