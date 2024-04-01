@@ -29,7 +29,7 @@ public class ReviewDbStorage implements ReviewStorage {
         int userId = review.getUserId();
         int filmId = review.getFilmId();
         String content = review.getContent();
-        boolean isPositive = review.isPositive();
+        boolean isPositive = review.getIsPositive();
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film_review")
@@ -61,7 +61,7 @@ public class ReviewDbStorage implements ReviewStorage {
         int reviewId = review.getId();
 
         String sqlRequest = "UPDATE film_review SET content = ?, is_positive = ? WHERE id = ?";
-        jdbcTemplate.update(sqlRequest, review.getContent(), review.isPositive(), reviewId);
+        jdbcTemplate.update(sqlRequest, review.getContent(), review.getIsPositive(), reviewId);
 
         return getReviewById(reviewId);
     }
@@ -86,6 +86,16 @@ public class ReviewDbStorage implements ReviewStorage {
         RowMapper<Review> reviewMapper = (rs, rowNum) -> makeReview(rs);
 
         return jdbcTemplate.queryForObject(sqlRequest, reviewMapper, reviewId);
+    }
+
+    @Override
+    public List<Review> getAllReview(final int count) {
+        log.debug("ReviewDbStorage - getAllReview()");
+
+        String sqlRequest = "SELECT * FROM film_review LIMIT ?;";
+        RowMapper<Review> reviewMapper = (rs, rowNum) -> makeReview(rs);
+
+        return jdbcTemplate.query(sqlRequest, reviewMapper, count);
     }
 
     @Override

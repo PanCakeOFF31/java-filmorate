@@ -15,11 +15,11 @@ public class Review {
     @Size(max = 1000)
     private final String content;
     @NotNull
-    private final boolean isPositive;
+    private final Boolean isPositive;
     @NotNull
-    private final int userId;
+    private final Integer userId;
     @NotNull
-    private final int filmId;
+    private final Integer filmId;
     //    Значение рассчитывается на основании суммы лайков и дизлайков из таблицы review_like
     private final int useful;
 }

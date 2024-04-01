@@ -9,8 +9,10 @@ import ru.yandex.practicum.filmorate.storage.ExistChecker;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewLikeDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -78,13 +80,20 @@ public class ReviewService {
     public List<Review> getAllReviewsByFilmId(final int filmId,
                                               final int count) {
         log.debug("ReviewService - service.getAllReviewsByFilmId({}, {})", filmId, count);
+        List<Review> reviews;
 
-        existChecker.filmIsExist(filmId);
+        if (filmId < 0) {
+            reviews = reviewStorage.getAllReview(count);
+            log.info("Получены отзывы к в количестве {} шт", reviews.size());
+        } else {
+            existChecker.filmIsExist(filmId);
+            reviews = reviewStorage.getAllReviewsByFilmId(filmId, count);
+            log.info("Получены отзывы к фильму id: {} в количестве {} шт", filmId, reviews.size());
+        }
 
-        List<Review> reviews = reviewStorage.getAllReviewsByFilmId(filmId, count);
-        log.info("Получены отзывы к фильму id: {} в количестве {} шт", filmId, reviews.size());
-
-        return reviews;
+        return reviews.stream()
+                .sorted(Comparator.comparing(Review::getUseful).reversed())
+                .collect(Collectors.toList());
     }
 
     public Review likeReview(final int reviewId, final int userId) {
