@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
@@ -17,6 +21,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService service;
+    private final EventService eventService;
     private final DirectorService directorService;
 
     @GetMapping()
@@ -46,13 +51,25 @@ public class FilmController {
     @PutMapping(value = "/{id}/like/{userId}")
     public Film like(@PathVariable(name = "id") int filmId, @PathVariable int userId) {
         log.debug("/films/{id}/like/{userId} - PUT: like()");
-        return service.like(filmId, userId);
+
+        Film film = service.like(filmId, userId);
+
+        Event event = eventService.addEvent(userId, filmId, EventType.LIKE, Operation.ADD);
+        log.info("Событие лайк к фильму зарегистрировано: {}", event);
+
+        return film;
     }
 
     @DeleteMapping(value = "/{id}/like/{userId}")
     public Film unlike(@PathVariable(name = "id") int filmId, @PathVariable(name = "userId") int userId) {
         log.debug("/films/{id}/like/{userId} - DELETE: unlike()");
-        return service.unlike(filmId, userId);
+
+        Film film = service.unlike(filmId, userId);
+
+        Event event = eventService.addEvent(userId, filmId, EventType.LIKE, Operation.REMOVE);
+        log.info("Событие лайк к фильму зарегистрировано: {}", event);
+
+        return film;
     }
 
     @GetMapping(value = "/popular")
@@ -78,7 +95,6 @@ public class FilmController {
         throw new MethodNotImplemented("Метод удаления фильмов по идентификатору");
     }
 
-    // TODO: Добавление режиссёров в фильм 4 SP. Реализовать функциональность.
     @GetMapping(value = "/director/{directorId}")
     public List<Film> receiveSortedDirectorFilmsDBy(@PathVariable int directorId, @RequestParam(defaultValue = "year") String sortBy) {
         log.debug("/films/director/{}?sortBy={} - GET: receiveSortedDirectorFilmsDBy", directorId, sortBy);
