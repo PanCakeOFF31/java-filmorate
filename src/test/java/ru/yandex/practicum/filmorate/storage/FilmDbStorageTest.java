@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-//
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -52,6 +51,7 @@ public class FilmDbStorageTest {
                 new ArrayList<>());
 
         Integer addedFilmId = filmStorage.addFilm(film);
+        film.setId(addedFilmId);
 
         assertNotNull(addedFilmId);
         assertTrue(addedFilmId > 0);
@@ -136,6 +136,8 @@ public class FilmDbStorageTest {
                 new ArrayList<>());
 
         Integer addedId = filmStorage.addFilm(film);
+        film.setId(addedId);
+
         Film savedFilm = filmStorage.getFilmById(addedId);
 
         assertThat(savedFilm)

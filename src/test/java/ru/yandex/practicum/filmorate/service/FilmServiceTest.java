@@ -42,6 +42,8 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         boolean actual = filmService.addValidation(film);
         assertTrue(actual);

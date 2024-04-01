@@ -64,7 +64,7 @@ public class FilmService {
         correctGenres(film);
         addValidation(film);
 
-        Integer id = filmStorage.addFilm(film);
+        int id = filmStorage.addFilm(film);
 
         log.info("Добавлен фильм с Id: " + id);
         Film addedFilm = filmStorage.getFilmById(id);
