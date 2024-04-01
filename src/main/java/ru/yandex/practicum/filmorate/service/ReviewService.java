@@ -16,9 +16,9 @@ import java.util.function.BiFunction;
 @Slf4j
 @RequiredArgsConstructor
 public class ReviewService {
-    final private ReviewStorage reviewStorage;
-    final private ReviewLikeDbStorage reviewLikeDbStorage;
-    final private ExistChecker existChecker;
+    private final ReviewStorage reviewStorage;
+    private final ReviewLikeDbStorage reviewLikeDbStorage;
+    private final ExistChecker existChecker;
 
     public Review createReview(final Review review) {
         log.debug("ReviewService - service.createReview()");

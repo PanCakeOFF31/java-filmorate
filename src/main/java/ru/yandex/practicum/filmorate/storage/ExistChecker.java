@@ -9,15 +9,10 @@ import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.review.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.filmRate.RateStorage;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.storage.userEvent.EventStorage;
-import ru.yandex.practicum.filmorate.storage.userEvent.event_type.EventTypeStorage;
-import ru.yandex.practicum.filmorate.storage.userEvent.operation.OperationStorage;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -28,11 +23,6 @@ public class ExistChecker {
     private final GenresStorage genresStorage;
     private final MpaStorage mpaStorage;
     private final ReviewStorage reviewStorage;
-    private final DirectorStorage directorStorage;
-    private final RateStorage rateStorage;
-    private final EventStorage eventStorage;
-    private final EventTypeStorage eventTypeStorage;
-    private final OperationStorage operationStorage;
 
     public void filmIsExist(int filmId) {
         log.debug("ExistChecker - service.filmIsExist()");
@@ -45,11 +35,35 @@ public class ExistChecker {
         }
     }
 
+    public void filmIsExist(int filmId, String addition) {
+        log.debug("ExistChecker - service.filmIsExist()");
+
+        if (!filmStorage.containsById(filmId)) {
+            String message = "Такого фильма с id = " + filmId + " не существует в хранилище";
+            message += "\n" + addition;
+
+            log.warn(message);
+            throw new FilmNotFoundException(message);
+        }
+    }
+
     public void userIsExist(int userId) {
         log.debug("ExistChecker - service.userIsExist()");
 
         if (!userStorage.containsById(userId)) {
             String message = "Такого пользователя с id = " + userId + " не существует в хранилище";
+            log.warn(message);
+            throw new UserNotFoundException(message);
+        }
+    }
+
+    public void userIsExist(int userId, String addition) {
+        log.debug("ExistChecker - service.userIsExist()");
+
+        if (!userStorage.containsById(userId)) {
+            String message = "Такого пользователя с id = " + userId + " не существует в хранилище";
+            message += "\n" + addition;
+
             log.warn(message);
             throw new UserNotFoundException(message);
         }
