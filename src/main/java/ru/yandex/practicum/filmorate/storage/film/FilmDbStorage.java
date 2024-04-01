@@ -94,7 +94,6 @@ public class FilmDbStorage implements FilmStorage {
         params.put("mpa", film.getMpa().getId());
 
         int filmId = jdbcInsert.executeAndReturnKey(params).intValue();
-        film.setId(filmId);
 
         log.info("Занесен фильм с id: {}", filmId);
 
