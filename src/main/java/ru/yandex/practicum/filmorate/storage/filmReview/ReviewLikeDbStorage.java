@@ -44,9 +44,9 @@ public class ReviewLikeDbStorage implements ReviewLikeStorage {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, reviewId, userId);
             rowSet.next();
 
-            boolean is_like = rowSet.getBoolean("is_like");
+            boolean isLike = rowSet.getBoolean("is_like");
 
-            if (!is_like) {
+            if (!isLike) {
                 sqlRequest = "UPDATE review_like SET is_like = true WHERE review_id = ? AND user_id = ?";
                 jdbcTemplate.update(sqlRequest, reviewId, userId);
                 return true;
@@ -82,9 +82,9 @@ public class ReviewLikeDbStorage implements ReviewLikeStorage {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, reviewId, userId);
             rowSet.next();
 
-            boolean is_like = rowSet.getBoolean("is_like");
+            boolean isLike = rowSet.getBoolean("is_like");
 
-            if (is_like) {
+            if (isLike) {
                 sqlRequest = "UPDATE review_like SET is_like = false WHERE review_id = ? AND user_id = ?";
                 jdbcTemplate.update(sqlRequest, reviewId, userId);
                 return true;
