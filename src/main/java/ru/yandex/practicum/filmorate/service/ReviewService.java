@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.review.ReviewUpdateValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ExistChecker;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewLikeDbStorage;
@@ -47,7 +46,6 @@ public class ReviewService {
         existChecker.reviewIsExist(reviewId);
 
         createValidation(review);
-        updateValidation(review);
 
         log.info("Отзыв до обновления: {}", reviewStorage.getReviewById(reviewId));
 
@@ -154,30 +152,6 @@ public class ReviewService {
         existChecker.userIsExist(userId);
 
         log.info("Успешное окончание createValidation() валидации отзыва: " + review);
-    }
-
-    private void updateValidation(final Review review) {
-        log.debug("ReviewService - service.updateValidation()");
-
-        Review actualReview = reviewStorage.getReviewById(review.getId());
-
-        int actualUserId = actualReview.getId();
-        int actualFilmId = actualReview.getFilmId();
-
-        boolean userIdEquals = actualUserId == review.getUserId();
-        boolean filmIdEquals = actualFilmId == review.getFilmId();
-
-        if (!(userIdEquals && filmIdEquals)) {
-            log.warn("Актуальный отзыв: {}", actualReview);
-            log.warn("Обновляемый отзыв: {}", review);
-
-            String message = "Обновляемый отзыв не совпадает по идентификатору пользователя и фильма";
-            log.warn(message);
-
-            throw new ReviewUpdateValidationException(message);
-        }
-
-        log.info("Успешное окончание updateValidation() валидации отзыва: " + review);
     }
 
     private void likeValidation(final int reviewId, final int userId) {
