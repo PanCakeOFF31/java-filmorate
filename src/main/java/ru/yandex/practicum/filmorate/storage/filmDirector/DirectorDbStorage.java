@@ -130,11 +130,11 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean deleteFilmDirector(int filmId, int directorId) {
-        log.debug("DirectorDbStorage - deleteFilmDirector()");
+    public boolean deleteAllFilmDirectors(int filmId) {
+        log.debug("DirectorDbStorage - deleteAllFilmDirectors()");
 
-        String sqlRequest = "DELETE FROM film_director WHERE film_id = ? AND director_id = ?;";
-        int deleted = jdbcTemplate.update(sqlRequest, filmId, directorId);
+        String sqlRequest = "DELETE FROM film_director WHERE film_id = ?;";
+        int deleted = jdbcTemplate.update(sqlRequest, filmId);
 
         return deleted > 0;
     }

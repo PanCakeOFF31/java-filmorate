@@ -125,6 +125,8 @@ public class FilmDbStorage implements FilmStorage {
     public Film updateFilm(Film film) {
         log.debug("FilmDbStorage - updateFilm()");
 
+        int filmId = film.getId();
+
         String sqlRequest = "UPDATE film SET\n" +
                 "name = ?,\n" +
                 "description = ?,\n" +
@@ -139,15 +141,17 @@ public class FilmDbStorage implements FilmStorage {
                 film.getReleaseDate(),
                 film.getDuration(),
                 film.getMpa().getId(),
-                film.getId());
+                filmId);
 
-        genresStorage.deleteAllFilmGenres(film.getId());
-        HashSet<Genre> nonDuplicate = new HashSet<>(film.getGenres());
-        nonDuplicate.forEach(genre -> genresStorage.addFilmGenre(film.getId(), genre.getId()));
+        genresStorage.deleteAllFilmGenres(filmId);
+        HashSet<Genre> nonDuplicateGenre = new HashSet<>(film.getGenres());
+        nonDuplicateGenre.forEach(genre -> genresStorage.addFilmGenre(filmId, genre.getId()));
 
-//        TODO: реализовать обновление
+        directorStorage.deleteAllFilmDirectors(filmId);
+        HashSet<Director> nonDuplicateDirectors = new HashSet<>(film.getDirectors());
+        nonDuplicateDirectors.forEach(director -> directorStorage.addFilmDirector(filmId, director.getId()));
 
-        return getFilmById(film.getId());
+        return getFilmById(filmId);
     }
 
     public List<Film> getTopFilms(int size) {
@@ -179,7 +183,7 @@ public class FilmDbStorage implements FilmStorage {
             sqlRequest = "SELECT * FROM film\n" +
                     "WHERE id IN " +
                     "(SELECT film_id FROM film_director WHERE director_id = ?)\n" +
-                    "ORDER BY release_date DESC;";
+                    "ORDER BY release_date ASC;";
 
             return jdbcTemplate.query(sqlRequest, filmMapper, directorId);
         }

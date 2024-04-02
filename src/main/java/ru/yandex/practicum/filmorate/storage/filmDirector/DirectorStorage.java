@@ -23,6 +23,5 @@ public interface DirectorStorage {
 
     boolean addFilmDirector(int filmId, int directorId);
 
-    boolean deleteFilmDirector(int filmId, int directorId);
-
+    boolean deleteAllFilmDirectors(int filmId);
 }
