@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
+import ru.yandex.practicum.filmorate.storage.ExistChecker;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
@@ -37,6 +38,7 @@ public class FilmService {
     private final GenresStorage genresStorage;
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
+    private final ExistChecker existChecker;
 
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
@@ -60,8 +62,7 @@ public class FilmService {
     public Film receiveFilmById(int filmId) {
         log.debug("FilmService - service.receiveFilmById({})", filmId);
 
-        String message = "Фильма нет с id :" + filmId;
-        filmIsExist(filmId, message);
+        existChecker.filmIsExist(filmId);
 
         return filmStorage.getFilmById(filmId);
     }
@@ -206,7 +207,7 @@ public class FilmService {
         }
 
         message = "Валидация на существование фильма по id не пройдена: " + film;
-        filmIsExist(film.getId(), message);
+        existChecker.filmIsExist(film.getId(), message);
 
         log.info("Успешное окончание updateValidation() валидации фильма: " + film);
         return true;
