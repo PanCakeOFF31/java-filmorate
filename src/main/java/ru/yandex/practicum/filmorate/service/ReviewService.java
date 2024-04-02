@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.ExistChecker;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewLikeDbStorage;
+import ru.yandex.practicum.filmorate.storage.filmReview.ReviewLikeStorage;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
 
 import java.util.Comparator;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewStorage reviewStorage;
-    private final ReviewLikeDbStorage reviewLikeDbStorage;
+    private final ReviewLikeStorage reviewLikeStorage;
     private final ExistChecker existChecker;
 
     public Review createReview(final Review review) {
@@ -97,28 +97,28 @@ public class ReviewService {
     public Review likeReview(final int reviewId, final int userId) {
         log.debug("ReviewService - service.likeReview({}, {})", reviewId, userId);
 
-        return likeDislikeAlgorithm(reviewId, userId, reviewLikeDbStorage::like);
+        return likeDislikeAlgorithm(reviewId, userId, reviewLikeStorage::like);
     }
 
     public Review dislikeReview(final int reviewId,
                                 final int userId) {
         log.debug("ReviewService - service.dislikeReview({}, {})", reviewId, userId);
 
-        return likeDislikeAlgorithm(reviewId, userId, reviewLikeDbStorage::dislike);
+        return likeDislikeAlgorithm(reviewId, userId, reviewLikeStorage::dislike);
     }
 
     public Review undoLikeReview(final int reviewId,
                                  final int userId) {
         log.debug("ReviewService - service.undoLikeReview({}, {})", reviewId, userId);
 
-        return likeDislikeAlgorithm(reviewId, userId, reviewLikeDbStorage::undoLike);
+        return likeDislikeAlgorithm(reviewId, userId, reviewLikeStorage::undoLike);
     }
 
     public Review undoDislikeReview(final int reviewId,
                                     final int userId) {
         log.debug("ReviewService - service.ReviewService({}, {})", reviewId, userId);
 
-        return likeDislikeAlgorithm(reviewId, userId, reviewLikeDbStorage::undoDislike);
+        return likeDislikeAlgorithm(reviewId, userId, reviewLikeStorage::undoDislike);
     }
 
     private Review likeDislikeAlgorithm(final int reviewId,
@@ -128,7 +128,7 @@ public class ReviewService {
 
         likeValidation(reviewId, userId);
 
-        log.info("Полезность отзыва изначально: " + reviewLikeDbStorage.getUseful(reviewId));
+        log.info("Полезность отзыва изначально: " + reviewLikeStorage.getUseful(reviewId));
         boolean result = operator.apply(reviewId, userId);
 
         String logMessage = result
@@ -136,7 +136,7 @@ public class ReviewService {
                 : "Реакция пользователя id: " + userId + " уже установлен для отзыва id: " + reviewId;
 
         log.info(logMessage);
-        log.info("Полезность отзыва теперь: " + reviewLikeDbStorage.getUseful(reviewId));
+        log.info("Полезность отзыва теперь: " + reviewLikeStorage.getUseful(reviewId));
 
         return reviewStorage.getReviewById(reviewId);
     }

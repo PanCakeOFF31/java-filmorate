@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
-import ru.yandex.practicum.filmorate.storage.ExistChecker;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
