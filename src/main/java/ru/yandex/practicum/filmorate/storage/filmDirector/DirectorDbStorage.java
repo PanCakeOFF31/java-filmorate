@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -146,5 +147,16 @@ public class DirectorDbStorage implements DirectorStorage {
         String name = rs.getString("name");
 
         return new Director(id, name);
+    }
+
+    @Override
+    public List<Integer> getDirectorsIdBySubstringOnName(String condition) {
+        log.debug("DirectorDbStorage - getDirectorsIdByCondition()");
+
+        String sqlQuery = "SELECT id, name FROM director WHERE LOWER(name) LIKE LOWER(?)";
+
+        return jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> rs.getInt("id"),
+                "%" + condition + "%");
     }
 }

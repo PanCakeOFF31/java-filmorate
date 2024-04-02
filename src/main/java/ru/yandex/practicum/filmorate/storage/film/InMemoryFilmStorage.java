@@ -5,10 +5,7 @@ import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -83,6 +80,21 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByDirector(List<Integer> directors) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsBySubstringOnTitle(String condition) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByCondition(String condition) {
         return null;
     }
 }

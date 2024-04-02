@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationExc
 import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 import ru.yandex.practicum.filmorate.storage.ExistChecker;
@@ -214,7 +215,7 @@ public class FilmService {
     }
 
     public List<Film> receiveSortedDirectorFilmsBy(final int directorId, final String sortBy) {
-        log.debug("DirectorService - service.receiveSortedDirectorFilmsBy()");
+        log.debug("FilmService - service.receiveSortedDirectorFilmsBy()");
 
         directorIsExist(directorId);
         checkRequestParam(sortBy);
@@ -226,6 +227,33 @@ public class FilmService {
                 directorFilms.size());
 
         return directorFilms;
+    }
+
+    public List<Film> searchFilmByCondition(String query, List<String> by) {
+        log.debug("FilmService - searchFilmByCondition()");
+
+        if (by.size() == 1) {
+            if (by.contains("director")) {
+
+                List<Integer> directorsId = directorStorage.getDirectorsIdBySubstringOnName(query);
+
+                List<Film> listTopFilmByDirectors = new ArrayList<>();
+                if (!directorsId.isEmpty()) {
+                    listTopFilmByDirectors = filmStorage.getTopFilmsByDirector(directorsId);
+                }
+
+                return listTopFilmByDirectors;
+            }
+
+            if (by.contains("title")) {
+                return filmStorage.getTopFilmsBySubstringOnTitle(query);
+            }
+        }
+
+        if (by.contains("director") && by.contains("director") && by.size() == 2) {
+            return filmStorage.getTopFilmsByCondition(query);
+        }
+        return List.of();
     }
 
     public boolean likeValidation(int filmId, int userId) {

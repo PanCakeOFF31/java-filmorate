@@ -20,10 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Primary
@@ -212,5 +209,57 @@ public class FilmDbStorage implements FilmStorage {
         List<Director> directors = directorStorage.getFilmsDirector(id);
 
         return new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
+    }
+
+    @Override
+    public List<Film> getTopFilmsByDirector(List<Integer> directors) {
+        log.debug("FilmDbStorage - getFilmsByDirector()");
+
+        String placeholders = String.join(",", Collections.nCopies(directors.size(), "?"));
+
+        String sqlQuery = String.format("SELECT f.* FROM film AS f " +
+                "LEFT JOIN (SELECT film_id, COUNT(user_id) AS popularity " +
+                "            FROM film_like" +
+                "            GROUP BY film_id) AS fl ON fl.film_id = f.id " +
+                "INNER JOIN (SELECT film_id " +
+                "            FROM film_director " +
+                "            WHERE director_id IN (%s)) AS fd ON f.id = fd.film_id " +
+                "ORDER BY fl.popularity DESC", placeholders);
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), directors.toArray());
+    }
+
+    @Override
+    public List<Film> getTopFilmsBySubstringOnTitle(String condition) {
+        log.debug("FilmDbStorage - getFilmsBySubstringOnTitle()");
+
+        String sqlQuery = "SELECT f.* FROM film AS f " +
+                "LEFT JOIN (SELECT film_id, COUNT(user_id) AS popularity " +
+                "            FROM film_like" +
+                "            GROUP BY film_id) AS fl ON fl.film_id = f.id " +
+                "WHERE LOWER(f.name) LIKE LOWER(?) " +
+                "ORDER BY fl.popularity DESC";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), "%" + condition.toLowerCase() + "%");
+    }
+
+    @Override
+    public List<Film> getTopFilmsByCondition(String condition) {
+        log.debug("FilmDbStorage - getTopFilmsByCondition()");
+
+        String sqlQuery = "SELECT f.* FROM film AS f " +
+                "LEFT JOIN film_director AS fd ON f.id = fd.film_id " +
+                "LEFT JOIN director AS d ON fd.director_id = d.id " +
+                "LEFT JOIN (SELECT film_id, COUNT(user_id) AS popularity " +
+                "            FROM film_like GROUP BY film_id) AS fl " +
+                "ON fl.film_id = f.id " +
+                "WHERE LOWER(f.name) LIKE LOWER(?) OR LOWER(d.name) LIKE LOWER(?) " +
+                "ORDER BY popularity DESC";
+
+        String substring = "%" + condition.toLowerCase() + "%";
+
+        List<Film> films = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), substring, substring);
+
+        return films;
     }
 }

@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-<<<<<<< HEAD
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,31 +7,19 @@ import ru.yandex.practicum.filmorate.exception.director.DirectorNotFounException
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.exception.review.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.filmRate.RateStorage;
+import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.storage.userEvent.EventStorage;
 import ru.yandex.practicum.filmorate.storage.userEvent.event_type.EventTypeStorage;
 import ru.yandex.practicum.filmorate.storage.userEvent.operation.OperationStorage;
-=======
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
-import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
-import ru.yandex.practicum.filmorate.exception.review.ReviewNotFoundException;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
->>>>>>> add-reviews
+
 
 @RequiredArgsConstructor
 @Slf4j
@@ -96,6 +82,7 @@ public class ExistChecker {
             throw new UserNotFoundException(message);
         }
     }
+
     public void genreIsExist(int genreId) {
         log.debug("ExistChecker - service.genreIsExist()");
 
@@ -116,7 +103,6 @@ public class ExistChecker {
         }
     }
 
-<<<<<<< HEAD
     public void directorIsExist(int directorId) {
         log.debug("ExistChecker - service.directorIsExist()");
 
@@ -124,6 +110,8 @@ public class ExistChecker {
             String message = "Такого режиссера с id = " + directorId + " не существует в хранилище";
             log.warn(message);
             throw new DirectorNotFounException(message);
+        }
+    }
 
     public void reviewIsExist(int reviewId) {
         log.debug("ExistChecker - service.reviewIsExist()");
