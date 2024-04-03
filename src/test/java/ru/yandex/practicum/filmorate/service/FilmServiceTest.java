@@ -23,8 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @SpringBootTest
+@Sql(scripts = {"file:./src/test/resources/test-schema.sql",
+        "file:./src/test/resources/test-data.sql"}, executionPhase = BEFORE_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 class FilmServiceTest {
     private final FilmService filmService;
     private final UserService userService;

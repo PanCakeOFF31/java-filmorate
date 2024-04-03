@@ -6,12 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipDbStorage;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipDbStorage;
+import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -19,10 +18,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @JdbcTest
-@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorageTest {
 
@@ -45,12 +42,12 @@ public class UserDbStorageTest {
                 "Ivan Petrov",
                 new HashSet<>());
 
-        Integer addedUserId = userStorage.addUser(newUser);
+        int addedUserId = userStorage.addUser(newUser);
 
         assertNotNull(addedUserId);
         assertTrue(addedUserId > 0);
 
-        User savedUser = userStorage.getUserById(1);
+        User savedUser = userStorage.getUserById(addedUserId);
 
         assertThat(savedUser)
                 .isNotNull()
@@ -177,10 +174,10 @@ public class UserDbStorageTest {
                 "Ivan Petrov",
                 new HashSet<>());
 
-        userStorage.addUser(user);
+        int id = userStorage.addUser(user);
         assertEquals(1, userStorage.getUsersQuantity());
 
-        User changedUser = new User(1,
+        User changedUser = new User(id,
                 "user@email.ru",
                 "IVAN_123",
                 LocalDate.of(1995, 1, 1),
@@ -207,10 +204,10 @@ public class UserDbStorageTest {
                 "Ivan Petrov",
                 new HashSet<>());
 
-        userStorage.addUser(user);
+        int id = userStorage.addUser(user);
         assertEquals(1, userStorage.getUsersQuantity());
 
-        User changedUser = new User(1,
+        User changedUser = new User(id,
                 "user@email.ru",
                 "IVAN_123",
                 LocalDate.of(2999, 1, 1),
