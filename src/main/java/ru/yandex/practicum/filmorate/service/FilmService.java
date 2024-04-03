@@ -142,6 +142,31 @@ public class FilmService {
         return filmStorage.getTopFilms(size);
     }
 
+    public List<Film> searchFilmByCondition(String query, List<String> by) {
+        log.debug("FilmService - searchFilmByCondition()");
+
+        if (by.size() == 1) {
+            if (by.contains("director")) {
+                List<Integer> directorsId = directorStorage.getDirectorsIdBySubstringOnName(query);
+                List<Film> listTopFilmByDirectors = new ArrayList<>();
+
+                if (!directorsId.isEmpty()) {
+                    listTopFilmByDirectors = filmStorage.getTopFilmsByDirector(directorsId);
+                }
+                return listTopFilmByDirectors;
+            }
+            if (by.contains("title")) {
+                return filmStorage.getTopFilmsBySubstringOnTitle(query);
+            }
+        }
+
+        if (by.contains("director") && by.contains("title") && by.size() == 2) {
+            return filmStorage.getTopFilmsByCondition(query);
+        }
+
+        return List.of();
+    }
+
     public boolean addValidation(final Film film) {
         log.debug("FilmService - service.addValidation()");
         log.debug("Валидации фильма: " + film);

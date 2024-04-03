@@ -114,6 +114,6 @@ public class FilmController {
     public List<Film> searchFilmsBySubstring(@RequestParam final String query,
                                              @RequestParam final List<String> by) {
         log.debug("/films/search?query={}&by={} - GET: searchFilmBySubstring()", query, by);
-        throw new MethodNotImplemented("Метод получения списка фильмов с поиском по подстроке в режиссерах/фильмах");
+        return service.searchFilmByCondition(query, by);
     }
 }
