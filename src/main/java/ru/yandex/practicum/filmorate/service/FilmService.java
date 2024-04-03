@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationExc
 import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 import ru.yandex.practicum.filmorate.storage.ExistChecker;
@@ -183,14 +182,16 @@ public class FilmService {
             }
         });
 
-        film.getDirectors().forEach(director -> {
-            int directorId = director.getId();
-            if (!directorStorage.containsById(directorId)) {
-                String message = "Такого режиссера с id = " + directorId + " не существует в хранилище";
-                log.warn(message);
-                throw new DirectorNotFounException(message);
-            }
-        });
+        if (film.getDirectors() != null) {
+            film.getDirectors().forEach(director -> {
+                int directorId = director.getId();
+                if (!directorStorage.containsById(directorId)) {
+                    String message = "Такого режиссера с id = " + directorId + " не существует в хранилище";
+                    log.warn(message);
+                    throw new DirectorNotFounException(message);
+                }
+            });
+        }
 
         log.info("Успешное окончание addValidation() валидации фильма: " + film);
         return true;

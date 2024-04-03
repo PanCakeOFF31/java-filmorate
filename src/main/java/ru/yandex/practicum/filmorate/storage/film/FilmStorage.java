@@ -23,7 +23,7 @@ public interface FilmStorage {
 
     List<Film> getSortedDirectorFilmsBy(final int directorId, final String sortBy);
 
-    List <Film> getTopFilmsByDirector(List<Integer> directors);
+    List<Film> getTopFilmsByDirector(List<Integer> directors);
 
     List<Film> getTopFilmsBySubstringOnTitle(String condition);
 
