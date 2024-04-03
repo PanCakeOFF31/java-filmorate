@@ -42,6 +42,8 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         boolean actual = filmService.addValidation(film);
         assertTrue(actual);
@@ -64,6 +66,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmService.addFilm(film));
@@ -80,6 +83,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(-90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmService.addFilm(film));
@@ -96,6 +100,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         film = filmService.addFilm(film);
         assertNotNull(film.getId());
@@ -114,6 +119,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         assertNull(film.getId());
 
@@ -133,6 +139,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         film.setId(9999);
 
@@ -154,6 +161,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         User user = new User();
 
@@ -201,6 +209,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         Integer filmId = filmService.addFilm(film).getId();
 

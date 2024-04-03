@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.filmReview.ReviewLikeStorage;
-import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewLikeStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 
 import java.util.Comparator;
 import java.util.List;

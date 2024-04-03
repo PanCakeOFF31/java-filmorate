@@ -12,9 +12,9 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -103,6 +103,11 @@ public class FilmDbStorage implements FilmStorage {
         if (!genres.isEmpty())
             genres.forEach(genre -> genresStorage.addFilmGenre(filmId, genre.getId()));
 
+        List<Director> directors = film.getDirectors();
+
+        if (!directors.isEmpty())
+            directors.forEach(director -> directorStorage.addFilmDirector(filmId, director.getId()));
+
         return filmId;
     }
 
@@ -120,6 +125,8 @@ public class FilmDbStorage implements FilmStorage {
     public Film updateFilm(Film film) {
         log.debug("FilmDbStorage - updateFilm()");
 
+        int filmId = film.getId();
+
         String sqlRequest = "UPDATE film SET\n" +
                 "name = ?,\n" +
                 "description = ?,\n" +
@@ -134,13 +141,17 @@ public class FilmDbStorage implements FilmStorage {
                 film.getReleaseDate(),
                 film.getDuration(),
                 film.getMpa().getId(),
-                film.getId());
+                filmId);
 
-        genresStorage.deleteAllFilmGenres(film.getId());
-        HashSet<Genre> nonDuplicate = new HashSet<>(film.getGenres());
-        nonDuplicate.forEach(genre -> genresStorage.addFilmGenre(film.getId(), genre.getId()));
+        genresStorage.deleteAllFilmGenres(filmId);
+        HashSet<Genre> nonDuplicateGenre = new HashSet<>(film.getGenres());
+        nonDuplicateGenre.forEach(genre -> genresStorage.addFilmGenre(filmId, genre.getId()));
 
-        return getFilmById(film.getId());
+        directorStorage.deleteAllFilmDirectors(filmId);
+        HashSet<Director> nonDuplicateDirectors = new HashSet<>(film.getDirectors());
+        nonDuplicateDirectors.forEach(director -> directorStorage.addFilmDirector(filmId, director.getId()));
+
+        return getFilmById(filmId);
     }
 
     public List<Film> getTopFilms(int size) {
@@ -161,6 +172,33 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlRequest, filmMapper, size);
     }
 
+    @Override
+    public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
+        log.debug("DirectorDbStorage - getSortedDirectorFilmsBy()");
+
+        String sqlRequest;
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
+
+        if (sortBy.equals("year")) {
+            sqlRequest = "SELECT * FROM film\n" +
+                    "WHERE id IN " +
+                    "(SELECT film_id FROM film_director WHERE director_id = ?)\n" +
+                    "ORDER BY release_date ASC;";
+
+            return jdbcTemplate.query(sqlRequest, filmMapper, directorId);
+        }
+
+        sqlRequest = "SELECT * FROM (SELECT * FROM film\n" +
+                "WHERE id IN (SELECT film_id FROM film_director WHERE director_id = ?)) AS f\n" +
+                "LEFT JOIN\n" +
+                "(SELECT film_id, COUNT(user_id) AS likes FROM film_like\n" +
+                "WHERE film_id IN (SELECT film_id FROM film_director WHERE director_id = ?)\n" +
+                "GROUP BY film_id) AS l ON f.id = l.film_id\n" +
+                "ORDER BY likes DESC";
+
+        return jdbcTemplate.query(sqlRequest, filmMapper, directorId, directorId);
+    }
+
     public Film makeFilm(ResultSet rs) throws SQLException {
         log.debug("FilmDbStorage - makeFilm()");
 
@@ -171,7 +209,7 @@ public class FilmDbStorage implements FilmStorage {
         Duration duration = Duration.ofSeconds(rs.getInt("duration"));
         Mpa mpa = mpaStorage.getFilmMpa(id);
         List<Genre> genres = genresStorage.getFilmGenre(id);
-        List<Director> directors = directorStorage.getFilmDirector(id);
+        List<Director> directors = directorStorage.getFilmsDirector(id);
 
         return new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
     }

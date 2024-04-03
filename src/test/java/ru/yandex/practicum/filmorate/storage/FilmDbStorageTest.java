@@ -8,14 +8,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -24,7 +24,6 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-//
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -52,6 +51,7 @@ public class FilmDbStorageTest {
                 new ArrayList<>());
 
         Integer addedFilmId = filmStorage.addFilm(film);
+        film.setId(addedFilmId);
 
         assertNotNull(addedFilmId);
         assertTrue(addedFilmId > 0);
@@ -136,6 +136,8 @@ public class FilmDbStorageTest {
                 new ArrayList<>());
 
         Integer addedId = filmStorage.addFilm(film);
+        film.setId(addedId);
+
         Film savedFilm = filmStorage.getFilmById(addedId);
 
         assertThat(savedFilm)

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.filmReview;
+package ru.yandex.practicum.filmorate.storage.review;
 
 import ru.yandex.practicum.filmorate.model.Review;
 

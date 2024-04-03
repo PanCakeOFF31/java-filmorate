@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.userFriendship;
+package ru.yandex.practicum.filmorate.storage.friendship;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

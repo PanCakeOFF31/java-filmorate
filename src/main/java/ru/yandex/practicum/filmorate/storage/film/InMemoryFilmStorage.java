@@ -80,4 +80,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
         return this.generateId;
     }
+
+    @Override
+    public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
+        return null;
+    }
 }
