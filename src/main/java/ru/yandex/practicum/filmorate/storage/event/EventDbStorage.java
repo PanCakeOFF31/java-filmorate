@@ -1,14 +1,13 @@
-package ru.yandex.practicum.filmorate.storage.filmRate;
+package ru.yandex.practicum.filmorate.storage.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-// Будет использован для последнего задания после review
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RateDbStorage implements RateStorage {
+public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
 }

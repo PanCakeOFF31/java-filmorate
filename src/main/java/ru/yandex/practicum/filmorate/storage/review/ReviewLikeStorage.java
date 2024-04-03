@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.filmReview;
+package ru.yandex.practicum.filmorate.storage.review;
 
 public interface ReviewLikeStorage {
     int getUseful(final int reviewId);

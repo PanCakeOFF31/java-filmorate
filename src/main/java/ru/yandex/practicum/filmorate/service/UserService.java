@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.user.SameUserException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
 
 import java.util.ArrayList;
 import java.util.HashSet;

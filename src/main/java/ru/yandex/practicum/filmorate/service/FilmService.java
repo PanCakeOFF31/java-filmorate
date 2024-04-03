@@ -12,11 +12,11 @@ import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;

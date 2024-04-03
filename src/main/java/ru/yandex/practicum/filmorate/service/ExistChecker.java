@@ -9,11 +9,11 @@ import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
 import ru.yandex.practicum.filmorate.exception.review.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 @RequiredArgsConstructor

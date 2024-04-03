@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

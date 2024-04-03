@@ -12,9 +12,9 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
