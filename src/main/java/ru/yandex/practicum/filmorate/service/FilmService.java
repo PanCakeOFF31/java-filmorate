@@ -4,19 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.film.FilmDurationValidationException;
-import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmReleaseDateValidationException;
 import ru.yandex.practicum.filmorate.exception.genre.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.mpa.MpaNotFoundException;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.restriction.FilmRestriction;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
 import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -29,10 +26,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
     private final LikeStorage likeStorage;
     private final GenresStorage genresStorage;
     private final MpaStorage mpaStorage;
+    private final ExistChecker existChecker;
 
     public List<Film> receiveFilms(int count) {
         log.debug("FilmService - service.getFilms()");
@@ -56,8 +53,7 @@ public class FilmService {
     public Film receiveFilmById(int filmId) {
         log.debug("FilmService - service.receiveFilmById({})", filmId);
 
-        String message = "Фильма нет с id :" + filmId;
-        filmIsExist(filmId, message);
+        existChecker.filmIsExist(filmId);
 
         return filmStorage.getFilmById(filmId);
     }
@@ -191,7 +187,7 @@ public class FilmService {
         }
 
         message = "Валидация на существование фильма по id не пройдена: " + film;
-        filmIsExist(film.getId(), message);
+        existChecker.filmIsExist(film.getId(), message);
 
         log.info("Успешное окончание updateValidation() валидации фильма: " + film);
         return true;
@@ -199,31 +195,9 @@ public class FilmService {
 
     public boolean likeValidation(int filmId, int userId) {
         log.debug("FilmService - service.likeValidation()");
-        String message;
 
-        message = "Фильма нет с id :" + filmId;
-        filmIsExist(filmId, message);
-
-        message = "Пользователя нет с id :" + userId;
-        userIsExist(userId, message);
-
-        return true;
-    }
-
-    public boolean filmIsExist(int filmId, String message) {
-        if (!filmStorage.containsById(filmId)) {
-            log.warn(message);
-            throw new FilmNotFoundException(message);
-        }
-
-        return true;
-    }
-
-    private boolean userIsExist(int userId, String message) {
-        if (!userStorage.containsById(userId)) {
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
+        existChecker.filmIsExist(filmId);
+        existChecker.userIsExist(userId);
 
         return true;
     }

@@ -45,7 +45,7 @@ public class UserController {
     @PutMapping(value = "/{id}/friends/{friendId}")
     public User addToFriend(@PathVariable(name = "id") int userId,
                             @PathVariable int friendId) {
-        log.debug("/users/{id}/friends/{friendId}} - PUT: addToFriend()");
+        log.debug("/users/{}/friends/{}} - PUT: addToFriend()", userId, friendId);
         return service.addToFriend(userId, friendId);
     }
 

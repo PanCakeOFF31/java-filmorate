@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
@@ -15,8 +14,6 @@ import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmLike.LikeDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
 
@@ -27,10 +24,9 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
+//
 
 @JdbcTest
-@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
@@ -38,7 +34,6 @@ public class FilmDbStorageTest {
 
     @BeforeEach
     public void beforeEach() {
-        LikeStorage likeStorage = new LikeDbStorage(jdbcTemplate);
         GenresStorage genresStorage = new GenreDbStorage(jdbcTemplate);
         MpaStorage mpaStorage = new MpaDbStorage(jdbcTemplate);
         DirectorStorage directorStorage = new DirectorDbStorage(jdbcTemplate);
@@ -61,7 +56,7 @@ public class FilmDbStorageTest {
         assertNotNull(addedFilmId);
         assertTrue(addedFilmId > 0);
 
-        Film savedFilm = filmStorage.getFilmById(1);
+        Film savedFilm = filmStorage.getFilmById(addedFilmId);
 
         assertThat(savedFilm)
                 .isNotNull()
@@ -180,10 +175,10 @@ public class FilmDbStorageTest {
                 new ArrayList<>(),
                 new ArrayList<>());
 
-        filmStorage.addFilm(film);
+        int id = filmStorage.addFilm(film);
         assertEquals(1, filmStorage.getFilmsQuantity());
 
-        Film changedFilm = new Film(1,
+        Film changedFilm = new Film(id,
                 "Болотная чепуха",
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),
@@ -214,10 +209,10 @@ public class FilmDbStorageTest {
                 new ArrayList<>(),
                 new ArrayList<>());
 
-        filmStorage.addFilm(film);
+        int id = filmStorage.addFilm(film);
         assertEquals(1, filmStorage.getFilmsQuantity());
 
-        Film changedFilm = new Film(1,
+        Film changedFilm = new Film(id,
                 "Болотная чешуя",
                 "Описание фильма про водоем",
                 LocalDate.of(1990, 1, 1),

@@ -173,5 +173,4 @@ public class ZigCommonControllerAdvice {
         return new ErrorResponse("Ошибка выполнения запроса",
                 "Проблемы с корректностью допустимых значений параметров запроса, ", exception.getMessage());
     }
-
 }

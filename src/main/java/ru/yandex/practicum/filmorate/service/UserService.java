@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.user.SameUserException;
-import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.user.UserNullValueValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -20,6 +19,7 @@ import java.util.List;
 public class UserService {
     private final UserStorage userStorage;
     private final FriendshipStorage friendshipDao;
+    private final ExistChecker existChecker;
 
     public List<User> receiveUsers(int count) {
         log.debug("UserService - service.receiveUsers()");
@@ -41,7 +41,8 @@ public class UserService {
 
     public User receiveUserById(int userId) {
         String message = "Пользователя нет с id :" + userId;
-        userIsExist(userId, message);
+        existChecker.userIsExist(userId);
+
         return userStorage.getUserById(userId);
     }
 
@@ -113,8 +114,7 @@ public class UserService {
     public List<User> getUserFriends(int userId) {
         log.debug("UserService - service.getUserFriend()");
 
-        String message = "Пользователя нет с id :" + userId;
-        userIsExist(userId, message);
+        existChecker.userIsExist(userId);
 
         List<User> userFriends = friendshipDao.getUserFriendsAsUsers(userId);
 
@@ -146,7 +146,7 @@ public class UserService {
         }
 
         String message = "Валидация на существование пользователя по id не пройдена: " + user;
-        userIsExist(user.getId(), message);
+        existChecker.userIsExist(user.getId(), message);
 
         log.info("Успешное окончание updateValidation() валидации пользователя: " + user);
         return true;
@@ -163,24 +163,12 @@ public class UserService {
         }
 
         message = "Пользователя нет с id :" + userId;
-        userIsExist(userId, message);
+        existChecker.userIsExist(userId, message);
 
         message = "Второго пользователя нет с id :" + otherUserId;
-        userIsExist(otherUserId, message);
+        existChecker.userIsExist(otherUserId, message);
 
         log.info("Успешное окончание coupleUserValidation() валидации");
-        return true;
-    }
-
-    private boolean userIsExist(int userId, String message) {
-        log.debug("UserService - service.userIsExist()");
-
-        if (!userStorage.containsById(userId)) {
-            log.warn(message);
-            throw new UserNotFoundException(message);
-        }
-
-        log.info("Пользователь с id = " + userId + " существует в хранилище");
         return true;
     }
 
