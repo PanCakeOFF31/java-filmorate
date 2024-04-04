@@ -167,6 +167,22 @@ public class FilmService {
         return List.of();
     }
 
+    public List<Film> getTopFilmsByYearAndGenre(int count, int genreId, int year) {
+        log.debug("FilmService - getTopFilmsByYearAndGenre()");
+        existChecker.genreIsExist(genreId);
+        return filmStorage.getTopFilmsByYearAndGenre(count, genreId, year);
+    }
+
+    public List<Film> getTopFilmsByGenre(int count, int genreId) {
+        log.debug("FilmService - getTopFilmsByGenre()");
+        return filmStorage.getTopFilmsByGenre(count, genreId);
+    }
+
+    public List<Film> getTopFilmsByYear(int count, int year) {
+        log.debug("FilmService - getTopFilmsByYear()");
+        return filmStorage.getTopFilmsByYear(count, year);
+    }
+
     public boolean addValidation(final Film film) {
         log.debug("FilmService - service.addValidation()");
         log.debug("Валидации фильма: " + film);
