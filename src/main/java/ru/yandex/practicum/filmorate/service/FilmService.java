@@ -95,6 +95,17 @@ public class FilmService {
         return updatedFilm;
     }
 
+    public Film deleteFilmById(final int filmId) {
+        log.debug("FilmService - service.deleteFilm()");
+
+        Film deletedFilm = filmStorage.deleteFilmById(filmId);
+
+        log.info("Фильм удален: " + deletedFilm);
+        log.info("Количество фильмов: " + filmStorage.getFilmsQuantity());
+
+        return deletedFilm;
+    }
+
     public Film like(int filmId, int userId) {
         log.debug("FilmService - service.like()");
         likeValidation(filmId, userId);
@@ -140,6 +151,11 @@ public class FilmService {
         log.info("Возвращен топ фильмов по лайкам в количестве: " + size);
 
         return filmStorage.getTopFilms(size);
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        log.debug("FilmService - service.getCommonFilms()");
+        return filmStorage.getCommonFilms(userId, friendId);
     }
 
     public List<Film> searchFilmByCondition(String query, List<String> by) {

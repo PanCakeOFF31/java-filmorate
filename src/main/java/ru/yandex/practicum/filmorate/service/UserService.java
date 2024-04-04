@@ -77,6 +77,17 @@ public class UserService {
         return updatedUser;
     }
 
+    public User deleteUserById(final int userId) {
+        log.debug("UserService - service.deleteUser()");
+
+        User deletedUser = userStorage.deleteUserById(userId);
+
+        log.info("Пользователь удален: " + deletedUser);
+        log.info("Количество пользователей: " + userStorage.getUsersQuantity());
+
+        return deletedUser;
+    }
+
     public User addToFriend(int userId, int friendId) {
         log.debug("UserService - service.addToFriend()");
         coupleUserValidation(userId, friendId);

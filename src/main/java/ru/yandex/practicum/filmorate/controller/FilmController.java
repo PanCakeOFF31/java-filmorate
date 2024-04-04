@@ -88,11 +88,10 @@ public class FilmController {
 //        throw new MethodNotImplemented("Метод получения списка самых популярных фильмов указанного жанра за нужный год");
 //    }
 
-    // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
     public Film deleteFilmById(@PathVariable(name = "id") int filmId) {
         log.debug("/films/{} - DELETE: deleteFilmById", filmId);
-        throw new MethodNotImplemented("Метод удаления фильмов по идентификатору");
+        return service.deleteFilmById(filmId);
     }
 
     @GetMapping(value = "/director/{directorId}")
@@ -101,12 +100,11 @@ public class FilmController {
         return service.receiveSortedDirectorFilmsBy(directorId, sortBy);
     }
 
-    // TODO: Функциональность «Общие фильмы». 1 SP. Реализовать функциональность.
     @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam final int userId,
                                      @RequestParam final int friendId) {
         log.debug("/films/common?userId={}&friendId={} - GET: getCommonFilms()", userId, friendId);
-        throw new MethodNotImplemented("Метод получения списка общих с другом фильмов");
+        return service.getCommonFilms(userId, friendId);
     }
 
     // TODO: Функциональность «Поиск». 3SP. Реализовать функциональность.

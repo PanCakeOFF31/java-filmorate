@@ -6,5 +6,4 @@ public interface LikeStorage {
     boolean unlike(int filmId, int userId);
 
     int getLikes(int filmId);
-
 }

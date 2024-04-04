@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -150,6 +151,22 @@ public class FilmDbStorage implements FilmStorage {
         return getFilmById(filmId);
     }
 
+    @Override
+    public Film deleteFilmById(int id) {
+        log.debug("FilmDbStorage - deleteFilm()");
+        if (!containsById(id)) {
+            throw new FilmNotFoundException();
+        } else {
+            Film film = getFilmById(id);
+            String sqlRequest = "DELETE FROM film WHERE id = ?;";
+            if (jdbcTemplate.update(sqlRequest, id) > 0) {
+                return film;
+            } else {
+                throw new FilmNotFoundException();
+            }
+        }
+    }
+
     public List<Film> getTopFilms(int size) {
         log.debug("FilmDbStorage - storage.getTopFilms()");
 
@@ -166,6 +183,27 @@ public class FilmDbStorage implements FilmStorage {
         RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
 
         return jdbcTemplate.query(sqlRequest, filmMapper, size);
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        log.debug("FilmDbStorage - storage.getCommonFilms()");
+
+        String sqlRequest = "SELECT \n" +
+                "   f.id,\n" +
+                "   f.name,\n" +
+                "   f.description,\n" +
+                "   f.release_date,\n" +
+                "   f.duration,\n" +
+                "   f.mpa\n" +
+                "FROM film f\n" +
+                "INNER JOIN film_like fl1 ON f.id = fl1.film_id\n" +
+                "INNER JOIN film_like fl2 ON f.id = fl2.film_id\n" +
+                "WHERE\n" +
+                "   fl1.user_id = ? AND \n" +
+                "   fl2.user_id = ?;";
+
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
+        return jdbcTemplate.query(sqlRequest, filmMapper, userId, friendId);
     }
 
     @Override

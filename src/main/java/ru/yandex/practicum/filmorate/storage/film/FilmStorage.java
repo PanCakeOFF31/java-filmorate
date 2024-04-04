@@ -21,6 +21,8 @@ public interface FilmStorage {
 
     List<Film> getTopFilms(int size);
 
+    List<Film> getCommonFilms(int userId, int friendId);
+
     List<Film> getSortedDirectorFilmsBy(final int directorId, final String sortBy);
 
     List<Film> getTopFilmsBySubstringOnTitle(String condition);
@@ -28,4 +30,6 @@ public interface FilmStorage {
     List<Film> getTopFilmsByCondition(String condition);
 
     List<Film> getTopFilmsByDirector(List<Integer> directors);
+
+    Film deleteFilmById(int id);
 }
