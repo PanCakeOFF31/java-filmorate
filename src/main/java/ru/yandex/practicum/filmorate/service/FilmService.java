@@ -95,6 +95,17 @@ public class FilmService {
         return updatedFilm;
     }
 
+    public Film deleteFilmById(final int filmId) {
+        log.debug("FilmService - service.deleteFilm()");
+
+        Film deletedFilm = filmStorage.deleteFilmById(filmId);
+
+        log.info("Фильм удален: " + deletedFilm);
+        log.info("Количество фильмов: " + filmStorage.getFilmsQuantity());
+
+        return deletedFilm;
+    }
+
     public Film like(int filmId, int userId) {
         log.debug("FilmService - service.like()");
         likeValidation(filmId, userId);

@@ -3,12 +3,10 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -62,9 +60,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.put(key, film);
     }
 
-    public boolean containsFilm(Film film) {
-        log.debug("InMemoryFilmStorage - films.containsFilm().");
-        return films.containsKey(film.getId());
+    @Override
+    public Film deleteFilmById(int id) {
+        log.debug("InMemoryFilmStorage - films.deleteFilm().");
+        Film film = films.get(id);
+        if (film != null) {
+            return film;
+        } else {
+            throw new FilmNotFoundException();
+        }
     }
 
     @Override

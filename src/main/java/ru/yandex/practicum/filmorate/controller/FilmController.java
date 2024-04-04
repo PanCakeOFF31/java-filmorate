@@ -88,11 +88,10 @@ public class FilmController {
 //        throw new MethodNotImplemented("Метод получения списка самых популярных фильмов указанного жанра за нужный год");
 //    }
 
-    // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
     public Film deleteFilmById(@PathVariable(name = "id") int filmId) {
         log.debug("/films/{} - DELETE: deleteFilmById", filmId);
-        throw new MethodNotImplemented("Метод удаления фильмов по идентификатору");
+        return service.deleteFilmById(filmId);
     }
 
     @GetMapping(value = "/director/{directorId}")
