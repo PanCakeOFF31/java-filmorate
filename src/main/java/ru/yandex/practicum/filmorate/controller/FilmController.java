@@ -3,17 +3,18 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.InvalidRequestParameterValue;
 import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Operation;
-import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -22,9 +23,8 @@ import java.util.List;
 public class FilmController {
     private final FilmService service;
     private final EventService eventService;
-    private final DirectorService directorService;
 
-    @GetMapping()
+    @GetMapping
     public List<Film> receiveFilms(@RequestParam(defaultValue = "10") int count) {
         log.debug("/films - GET: getFilms()");
         return service.receiveFilms(count);
@@ -73,20 +73,40 @@ public class FilmController {
     }
 
     @GetMapping(value = "/popular")
-    public List<Film> getTop(@RequestParam(name = "count", required = false, defaultValue = "10") int count) {
-        log.debug("/films/popular - GET: getTop()");
-        return service.getTop(count);
-    }
+    public List<Film> getTop(@RequestParam(name = "count", required = false, defaultValue = "10") int count,
+                             @RequestParam Map<String, String> params) {
 
-    //    Здесь конфликт, при начале работ раскомментировать и удалить метод сверху
-    // TODO: Вывод самых популярных фильмов по жанру и годам 2 SP. Реализовать функциональность.
-//    @GetMapping(value = "/popular")
-//    public Film getFilmByGenreYear(@RequestParam(name = "limit") final int count,
-//                                   @RequestParam final int genreId,
-//                                   @RequestParam final int year) {
-//        log.debug("/films/popular?count={}&genreId={}&year={} - GET: getFilteredTopFilmByGenreYear", count, genreId, year);
-//        throw new MethodNotImplemented("Метод получения списка самых популярных фильмов указанного жанра за нужный год");
-//    }
+        if (!params.containsKey("genreId") && !params.containsKey("year")) {
+            log.debug("/films/popular - GET: getTop()");
+            return service.getTop(count);
+        }
+
+        if (params.containsKey("genreId") && params.containsKey("year")) {
+            int genreId = Integer.parseInt(params.get("genreId"));
+            int year = Integer.parseInt(params.get("year"));
+
+            log.debug("/films/popular?count={}&genreId={}&year={} - GET: getFilteredTopFilmByGenreYear", count,
+                    params.get("genreID"), params.get("year"));
+            return service.getTopFilmsByYearAndGenre(count, genreId, year);
+        }
+
+        if (params.size() == 1 && params.containsKey("genreId")) {
+            int genreId = Integer.parseInt(params.get("genreId"));
+            log.debug("/films/popular?count={}&genreId={} - GET: getFilteredTopFilmByGenreYear", count,
+                    genreId);
+            return service.getTopFilmsByGenre(count, genreId);
+        }
+
+        if (params.size() == 1 && params.containsKey("year")) {
+            int year = Integer.parseInt(params.get("year"));
+            log.debug("/films/popular?count={}&year={} - GET: getFilteredTopFilmByGenreYear", count,
+                    year);
+            return service.getTopFilmsByYear(count, year);
+        }
+
+        throw new InvalidRequestParameterValue("отсутствуют/неверные параметры " +
+                "запроса /popular?count={}&genreId={}&year={}");
+    }
 
     // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
@@ -109,7 +129,6 @@ public class FilmController {
         throw new MethodNotImplemented("Метод получения списка общих с другом фильмов");
     }
 
-    // TODO: Функциональность «Поиск». 3SP. Реализовать функциональность.
     @GetMapping("/search")
     public List<Film> searchFilmsBySubstring(@RequestParam final String query,
                                              @RequestParam final List<String> by) {
