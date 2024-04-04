@@ -97,6 +97,19 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    public List<Integer> getDirectorsIdBySubstringOnName(String condition) {
+        log.debug("DirectorDbStorage - getDirectorsIdByCondition()");
+
+        String sqlQuery = "SELECT id, name FROM director WHERE LOWER(name) LIKE LOWER(?)";
+
+        return jdbcTemplate.query(
+                sqlQuery,
+                (rs, rowNum) -> rs.getInt("id"),
+                "%" + condition + "%"
+        );
+    }
+
+    @Override
     public int getDirectorQuantity() {
         log.debug("DirectorDbStorage - getDirectorQuantity()");
 

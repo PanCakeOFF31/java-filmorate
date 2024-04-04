@@ -17,6 +17,8 @@ public interface DirectorStorage {
 
     List<Director> getDirectors();
 
+    List<Integer> getDirectorsIdBySubstringOnName(String condition);
+
     int getDirectorQuantity();
 
     boolean containsById(final int directorId);
