@@ -28,4 +28,6 @@ public interface FilmStorage {
     List<Film> getTopFilmsByCondition(String condition);
 
     List<Film> getTopFilmsByDirector(List<Integer> directors);
+
+    List<Film> getSelectedFilms(List<Integer> ids);
 }
