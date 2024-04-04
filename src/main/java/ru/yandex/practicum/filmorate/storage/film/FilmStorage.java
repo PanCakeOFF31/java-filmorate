@@ -25,11 +25,11 @@ public interface FilmStorage {
 
     List<Film> getSortedDirectorFilmsBy(final int directorId, final String sortBy);
 
+    Film deleteFilmById(int id);
+
     List<Film> getTopFilmsBySubstringOnTitle(String condition);
 
     List<Film> getTopFilmsByCondition(String condition);
 
     List<Film> getTopFilmsByDirector(List<Integer> directors);
-
-    Film deleteFilmById(int id);
 }
