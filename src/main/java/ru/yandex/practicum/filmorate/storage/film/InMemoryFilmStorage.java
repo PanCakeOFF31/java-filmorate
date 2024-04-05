@@ -18,6 +18,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         throw new NotYetImplementedException();
     }
 
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId)  {
+        throw new NotYetImplementedException();
+    }
+
     private final Map<Integer, Film> films = new HashMap<>();
     private int generateId = 1;
 

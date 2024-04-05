@@ -126,7 +126,8 @@ public class FilmController {
     public List<Film> getCommonFilms(@RequestParam final int userId,
                                      @RequestParam final int friendId) {
         log.debug("/films/common?userId={}&friendId={} - GET: getCommonFilms()", userId, friendId);
-        throw new MethodNotImplemented("Метод получения списка общих с другом фильмов");
+        return service.getCommonFilms(userId, friendId);
+        // throw new MethodNotImplemented("Метод получения списка общих с другом фильмов");
     }
 
     @GetMapping("/search")

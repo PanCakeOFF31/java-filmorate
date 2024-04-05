@@ -142,6 +142,11 @@ public class FilmService {
         return filmStorage.getTopFilms(size);
     }
 
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        log.debug("FilmService - service.getCommonFilms()");
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
+
     public List<Film> searchFilmByCondition(String query, List<String> by) {
         log.debug("FilmService - searchFilmByCondition()");
 

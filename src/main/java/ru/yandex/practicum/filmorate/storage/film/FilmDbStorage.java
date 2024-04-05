@@ -168,6 +168,27 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlRequest, filmMapper, size);
     }
 
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        log.debug("FilmDbStorage - storage.getCommonFilms()");
+
+        String sqlRequest = "SELECT \n" +
+                "   f.id,\n" +
+                "   f.name,\n" +
+                "   f.description,\n" +
+                "   f.release_date,\n" +
+                "   f.duration,\n" +
+                "   f.mpa\n" +
+                "FROM film f\n" +
+                "INNER JOIN film_like fl1 ON f.id = fl1.film_id\n" +
+                "INNER JOIN film_like fl2 ON f.id = fl2.film_id\n" +
+                "WHERE\n" +
+                "   fl1.user_id = ? AND \n" +
+                "   fl2.user_id = ?;";
+
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
+        return jdbcTemplate.query(sqlRequest, filmMapper, userId, friendId);
+    }
+
     @Override
     public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
         log.debug("DirectorDbStorage - getSortedDirectorFilmsBy()");
