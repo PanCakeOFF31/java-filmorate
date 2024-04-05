@@ -246,6 +246,51 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), directors.toArray());
     }
 
+    @Override
+    public List<Film> getTopFilmsByYearAndGenre(int count, int genreId, int year) {
+
+        String sqlQuery = "SELECT f.* FROM film AS f " +
+                "INNER JOIN film_genre AS fg ON f.id = fg.film_id " +
+                "LEFT JOIN (SELECT film_id, COUNT(user_id) AS like_mark " +
+                "           FROM film_like fl " +
+                "           GROUP BY film_id) AS mark ON f.id = mark.film_id " +
+                "WHERE EXTRACT(YEAR FROM release_date) = ? " +
+                "AND fg.genre_id = ? " +
+                "ORDER BY mark.like_mark DESC NULLS LAST " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), year, genreId, count);
+    }
+
+    @Override
+    public List<Film> getTopFilmsByYear(int count, int year) {
+
+        String sqlQuery = "SELECT f.* FROM film AS f " +
+                "LEFT JOIN (SELECT film_id, COUNT(user_id) AS like_mark " +
+                "           FROM film_like fl " +
+                "           GROUP BY film_id) AS mark ON f.id = mark.film_id " +
+                "WHERE EXTRACT(YEAR FROM release_date) = ? " +
+                "ORDER BY mark.like_mark DESC NULLS LAST " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), year, count);
+    }
+
+    @Override
+    public List<Film> getTopFilmsByGenre(int count, int genreId) {
+
+        String sqlQuery = "SELECT f.* FROM film AS f " +
+                "INNER JOIN film_genre AS fg ON f.id = fg.film_id " +
+                "LEFT JOIN (SELECT film_id, COUNT(user_id) AS like_mark " +
+                "           FROM film_like fl " +
+                "           GROUP BY film_id) AS mark ON f.id = mark.film_id " +
+                "WHERE fg.genre_id = ? " +
+                "ORDER BY mark.like_mark DESC NULLS LAST " +
+                "LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), genreId, count);
+    }
+
     public Film makeFilm(ResultSet rs) throws SQLException {
         log.debug("FilmDbStorage - makeFilm()");
 
