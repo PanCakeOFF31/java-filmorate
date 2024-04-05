@@ -93,10 +93,9 @@ public class UserController {
         return eventService.getUserFeed(userId);
     }
 
-    //    TODO: Функциональность «Рекомендации». 3 SP. Реализовать функциональность
     @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendations(@PathVariable(name = "id") final int userId) {
         log.debug("/users/{}/recommendations - GET: getRecommendations()", userId);
-        throw new MethodNotImplemented("Метод возвращает рекомендации по фильмам для просмотра");
+        return service.getRecommendations(userId);
     }
 }

@@ -7,6 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -53,5 +58,24 @@ public class LikeDbStorage implements LikeStorage {
             return rowSet.getInt("rate");
 
         return 0;
+    }
+
+    @Override
+    public Map<Integer, Set<Integer>> getUsersFavoriteFilms() {
+        Map<Integer, Set<Integer>> usersFavoriteFilms = new HashMap<>();
+
+        SqlRowSet connectionRows = jdbcTemplate.queryForRowSet("select * from film_like");
+        while (connectionRows.next()) {
+            Set<Integer> likes = new HashSet<>();
+            Integer userId = connectionRows.getInt("user_id");
+            Integer filmId = connectionRows.getInt("film_id");
+            if (!usersFavoriteFilms.isEmpty() && usersFavoriteFilms.containsKey(userId)) {
+                likes = usersFavoriteFilms.get(userId);
+            }
+            likes.add(filmId);
+            usersFavoriteFilms.put(userId, likes);
+        }
+
+        return usersFavoriteFilms;
     }
 }

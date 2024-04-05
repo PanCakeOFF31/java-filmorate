@@ -102,6 +102,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getSelectedFilms(List<Integer> ids) {
+        return null;
+    }
+
+    @Override
     public List<Film> getTopFilmsByYearAndGenre(int count, int genreId, int year) {
         return null;
     }

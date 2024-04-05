@@ -305,4 +305,21 @@ public class FilmDbStorage implements FilmStorage {
 
         return new Film(id, name, description, releaseDate, duration, mpa, genres, directors);
     }
+
+    @Override
+    public List<Film> getSelectedFilms(List<Integer> ids) {
+        log.debug("FilmDbStorage - getSelectedFilms(List<Integer> ids)");
+        String sqlParam = ids.get(0).toString();
+        if (ids.size() > 1) {
+            for (int i = 1; i < ids.size(); i++) {
+                sqlParam = sqlParam + ", " + ids.get(i).toString();
+            }
+        }
+
+        String sqlRequest = "SELECT * FROM film WHERE id IN (" + sqlParam + ");";
+        RowMapper<Film> filmMapper = (rs, rowNum) -> makeFilm(rs);
+
+
+        return jdbcTemplate.query(sqlRequest, filmMapper);
+    }
 }

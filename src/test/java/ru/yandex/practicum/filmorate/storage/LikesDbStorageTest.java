@@ -27,9 +27,9 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
@@ -131,5 +131,52 @@ public class LikesDbStorageTest {
     @Test
     void test_T0030_NS01_unlike_incorrectId() {
         assertFalse(likeStorage.unlike(9999, 9999));
+    }
+
+    @Test
+    void getUsersFavoriteFilms_ResultOk() {
+        User user1 = new User(1,
+                "user1@email.ru",
+                "vanya123",
+                LocalDate.of(1995, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
+
+        User user2 = new User(2,
+                "user2@email.ru",
+                "maxim123",
+                LocalDate.of(1990, 1, 1),
+                "Maxim Ivanov",
+                new HashSet<>());
+
+        Film film = new Film(1,
+                "Болотная чешуя",
+                "Описание фильма про водоем",
+                LocalDate.of(1990, 1, 1),
+                Duration.ofMinutes(150),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer user1Id = userStorage.addUser(user1);
+        Integer user2Id = userStorage.addUser(user2);
+        Integer filmId = filmStorage.addFilm(film);
+
+        likeStorage.like(filmId, user1Id);
+        likeStorage.like(filmId, user2Id);
+
+        Map<Integer, Set<Integer>> usersFilms = new HashMap<>();
+        Set<Integer> films = new HashSet<>();
+        films.add(filmId);
+
+        usersFilms.put(user1Id, films);
+        usersFilms.put(user2Id, films);
+
+        Map<Integer, Set<Integer>> savedUsersFilms = likeStorage.getUsersFavoriteFilms();
+
+        assertThat(savedUsersFilms)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(usersFilms);
     }
 }
