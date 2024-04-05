@@ -242,4 +242,58 @@ public class FilmDbStorageTest {
         assertThrows(org.springframework.dao.EmptyResultDataAccessException.class, () -> filmStorage.updateFilm(film));
 
     }
+
+    @Test
+    public void getSelectedFilms_ResultOk() {
+        Film film1 = new Film(1,
+                "Болотная чешуя",
+                "Описание фильма про водоем",
+                LocalDate.of(1990, 1, 1),
+                Duration.ofMinutes(150),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer addedId1 = filmStorage.addFilm(film1);
+        film1.setId(addedId1);
+
+        Film film2 = new Film(2,
+                "Болотная чешуя 2",
+                "Описание фильма про водоем 2",
+                LocalDate.of(1992, 2, 2),
+                Duration.ofMinutes(120),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer addedId2 = filmStorage.addFilm(film2);
+        film2.setId(addedId2);
+
+        Film film3 = new Film(3,
+                "Болотная чешуя 2",
+                "Описание фильма про водоем 2",
+                LocalDate.of(1993, 3, 3),
+                Duration.ofMinutes(130),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer addedId3 = filmStorage.addFilm(film3);
+        film3.setId(addedId3);
+
+        List<Film> films = new ArrayList<>();
+        films.add(film1);
+        films.add(film3);
+
+        List<Integer> filmsIds = new ArrayList<>();
+        filmsIds.add(addedId1);
+        filmsIds.add(addedId3);
+
+        List<Film> savedFilms = filmStorage.getSelectedFilms(filmsIds);
+
+        assertThat(savedFilms)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(films);
+    }
 }
