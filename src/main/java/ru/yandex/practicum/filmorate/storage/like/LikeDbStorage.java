@@ -6,7 +6,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,8 +72,8 @@ public class LikeDbStorage implements LikeStorage {
             if (!usersFavoriteFilms.isEmpty() && usersFavoriteFilms.containsKey(userId)) {
                 likes = usersFavoriteFilms.get(userId);
             }
-                likes.add(filmId);
-                usersFavoriteFilms.put(userId, likes);
+            likes.add(filmId);
+            usersFavoriteFilms.put(userId, likes);
         }
 
         return usersFavoriteFilms;

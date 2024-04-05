@@ -208,7 +208,6 @@ public class UserService {
         }
 
 
-
         // составляем матрицу (на основании всех лайков) Id пользователя - список Id понравившихся фильмов
         Map<Integer, Set<Integer>> usersFavoriteFilms = likeStorage.getUsersFavoriteFilms();
 
@@ -227,8 +226,8 @@ public class UserService {
         Integer maxAuthority = newFilmsRating.values().stream().max(Comparator.comparingInt((Integer val) -> val)).get();
 
         List<Integer> filmRecommendedIds = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry: newFilmsRating.entrySet()) {
-            if (entry.getValue().equals(maxAuthority)){
+        for (Map.Entry<Integer, Integer> entry : newFilmsRating.entrySet()) {
+            if (entry.getValue().equals(maxAuthority)) {
                 filmRecommendedIds.add(entry.getKey());
             }
         }
@@ -241,7 +240,7 @@ public class UserService {
 
         // собираем список со всеми фильмами пользователей со схожими вкусами
         List<Integer> films = new ArrayList<>();
-        for (Integer otherUserId: usersIdWithSameTastes) {
+        for (Integer otherUserId : usersIdWithSameTastes) {
             films.addAll(usersFavoriteFilms.get(otherUserId));
         }
 
@@ -249,8 +248,8 @@ public class UserService {
         films.removeAll(usersFavoriteFilms.get(userId));
 
         // собираем табличку Id фильма-вес
-        for (Integer filmId: films) {
-            if(!newFilmsRating.containsKey(filmId)) {
+        for (Integer filmId : films) {
+            if (!newFilmsRating.containsKey(filmId)) {
                 newFilmsRating.put(filmId, 1);
             } else {
                 newFilmsRating.put(filmId, newFilmsRating.get(filmId) + 1);
@@ -267,12 +266,12 @@ public class UserService {
 
         if (!usersFavoriteFilms.isEmpty() && usersFavoriteFilms.containsKey(userId)) {
             Set<Integer> userFilms = usersFavoriteFilms.get(userId);
-            for (Map.Entry<Integer, Set<Integer>> entry: usersFavoriteFilms.entrySet()) {
+            for (Map.Entry<Integer, Set<Integer>> entry : usersFavoriteFilms.entrySet()) {
                 if (!entry.getKey().equals(userId)) {
                     // считаем кол-во совпадений по лайкнутым фильмам
                     int sameCount = 0;
-                    for (Integer filmId: userFilms) {
-                        if (entry.getValue().contains(filmId)){
+                    for (Integer filmId : userFilms) {
+                        if (entry.getValue().contains(filmId)) {
                             sameCount++;
                         }
                     }
