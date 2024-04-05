@@ -82,9 +82,10 @@ public class UserController {
 
     // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
-    public Film deleteUserById(@PathVariable(name = "id") int userId) {
+    public User deleteUserById(@PathVariable(name = "id") int userId) {
         log.debug("/users/{} - DELETE: deleteUserById()", userId);
-        throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
+        return service.deleteUserById(userId);
+        // throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
     }
 
     @GetMapping("/{id}/feed")

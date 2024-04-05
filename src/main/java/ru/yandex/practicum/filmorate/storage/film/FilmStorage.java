@@ -36,4 +36,6 @@ public interface FilmStorage {
     List<Film> getTopFilmsByYear(int count, int year);
 
     List<Film> getTopFilmsByGenre(int count, int genreId);
+
+    Film deleteFilmById(int id);
 }

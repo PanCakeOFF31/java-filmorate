@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -60,6 +61,17 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.debug("InMemoryFilmStorage - films.updateFilm().");
         Integer key = film.getId();
         return films.put(key, film);
+    }
+
+    @Override
+    public Film deleteFilmById(int id) {
+        log.debug("InMemoryFilmStorage - films.deleteFilm().");
+        Film film = films.get(id);
+        if (film != null) {
+            return film;
+        } else {
+            throw new FilmNotFoundException();
+        }
     }
 
     public boolean containsFilm(Film film) {
