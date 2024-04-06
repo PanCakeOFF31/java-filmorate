@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.InvalidRequestParameterValue;
-import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -108,12 +107,10 @@ public class FilmController {
                 "запроса /popular?count={}&genreId={}&year={}");
     }
 
-    // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
     public Film deleteFilmById(@PathVariable(name = "id") int filmId) {
         log.debug("/films/{} - DELETE: deleteFilmById", filmId);
         return service.deleteFilmById(filmId);
-        // throw new MethodNotImplemented("Метод удаления фильмов по идентификатору");
     }
 
     @GetMapping(value = "/director/{directorId}")
@@ -122,13 +119,11 @@ public class FilmController {
         return service.receiveSortedDirectorFilmsBy(directorId, sortBy);
     }
 
-    // TODO: Функциональность «Общие фильмы». 1 SP. Реализовать функциональность.
     @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam final int userId,
                                      @RequestParam final int friendId) {
         log.debug("/films/common?userId={}&friendId={} - GET: getCommonFilms()", userId, friendId);
         return service.getCommonFilms(userId, friendId);
-        // throw new MethodNotImplemented("Метод получения списка общих с другом фильмов");
     }
 
     @GetMapping("/search")
