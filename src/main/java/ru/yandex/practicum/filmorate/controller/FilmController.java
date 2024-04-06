@@ -112,7 +112,8 @@ public class FilmController {
     @DeleteMapping(value = "/{id}")
     public Film deleteFilmById(@PathVariable(name = "id") int filmId) {
         log.debug("/films/{} - DELETE: deleteFilmById", filmId);
-        throw new MethodNotImplemented("Метод удаления фильмов по идентификатору");
+        return service.deleteFilmById(filmId);
+        // throw new MethodNotImplemented("Метод удаления фильмов по идентификатору");
     }
 
     @GetMapping(value = "/director/{directorId}")

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
@@ -229,5 +230,46 @@ public class UserDbStorageTest {
                 new HashSet<>());
 
         assertThrows(org.springframework.dao.EmptyResultDataAccessException.class, () -> userStorage.updateUser(user));
+    }
+
+    @Test
+    public void test_deleteUser() {
+        assertEquals(0, userStorage.getUsersQuantity());
+
+        User user = new User(1,
+                "user@email.ru",
+                "vanya123",
+                LocalDate.of(1990, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
+
+        int id = userStorage.addUser(user);
+        assertEquals(1, userStorage.getUsersQuantity());
+
+        assertEquals(user, userStorage.deleteUserById(id));
+        assertEquals(0, userStorage.getUsersQuantity());
+    }
+
+    @Test
+    public void test_deleteUser_unknownUserId() {
+        assertEquals(0, userStorage.getUsersQuantity());
+
+        User user = new User(1,
+                "user@email.ru",
+                "vanya123",
+                LocalDate.of(1990, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
+
+        userStorage.addUser(user);
+        assertEquals(1, userStorage.getUsersQuantity());
+        boolean exceptionThrown = false;
+        try {
+            userStorage.deleteUserById(7777);
+        } catch (UserNotFoundException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+        assertEquals(1, userStorage.getUsersQuantity());
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
@@ -367,5 +368,54 @@ public class FilmDbStorageTest {
 
         List<Film> commonFilms = filmStorage.getCommonFilms(user1.getId(), user2.getId());
         assertEquals(expectedFilms, commonFilms);
+    }
+
+    @Test
+    public void test_deleteFilm() {
+        assertEquals(0, filmStorage.getFilmsQuantity());
+
+        Film film = new Film(9999,
+                "Болотная чешуя",
+                "Описание фильма про водоем",
+                LocalDate.of(1990, 1, 1),
+                Duration.ofMinutes(150),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer addedId = filmStorage.addFilm(film);
+        film.setId(addedId);
+
+        assertEquals(1, filmStorage.getFilmsQuantity());
+
+        assertEquals(film, filmStorage.deleteFilmById(addedId));
+        assertEquals(0, filmStorage.getFilmsQuantity());
+    }
+
+    @Test
+    public void test_deleteFilm_unknownFilmId() {
+        assertEquals(0, filmStorage.getFilmsQuantity());
+
+        Film film = new Film(9999,
+                "Болотная чешуя",
+                "Описание фильма про водоем",
+                LocalDate.of(1990, 1, 1),
+                Duration.ofMinutes(150),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer addedId = filmStorage.addFilm(film);
+        film.setId(addedId);
+
+        assertEquals(1, filmStorage.getFilmsQuantity());
+        boolean exceptionThrown = false;
+        try {
+            filmStorage.deleteFilmById(7777);
+        } catch (FilmNotFoundException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+        assertEquals(1, filmStorage.getFilmsQuantity());
     }
 }
