@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -82,9 +81,10 @@ public class UserController {
 
     // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
-    public Film deleteUserById(@PathVariable(name = "id") int userId) {
+    public User deleteUserById(@PathVariable(name = "id") int userId) {
         log.debug("/users/{} - DELETE: deleteUserById()", userId);
-        throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
+        return service.deleteUserById(userId);
+        // throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
     }
 
     @GetMapping("/{id}/feed")

@@ -22,4 +22,5 @@ public interface UserStorage {
 
     User updateUser(User user);
 
+    User deleteUserById(int id);
 }

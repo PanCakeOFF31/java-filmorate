@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -148,6 +149,22 @@ public class FilmDbStorage implements FilmStorage {
         nonDuplicateDirectors.forEach(director -> directorStorage.addFilmDirector(filmId, director.getId()));
 
         return getFilmById(filmId);
+    }
+
+    @Override
+    public Film deleteFilmById(int id) {
+        log.debug("FilmDbStorage - deleteFilm()");
+        if (!containsById(id)) {
+            throw new FilmNotFoundException();
+        } else {
+            Film film = getFilmById(id);
+            String sqlRequest = "DELETE FROM film WHERE id = ?;";
+            if (jdbcTemplate.update(sqlRequest, id) > 0) {
+                return film;
+            } else {
+                throw new FilmNotFoundException();
+            }
+        }
     }
 
     public List<Film> getTopFilms(int size) {
