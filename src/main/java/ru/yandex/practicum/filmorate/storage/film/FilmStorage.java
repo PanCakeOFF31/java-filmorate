@@ -38,4 +38,6 @@ public interface FilmStorage {
     List<Film> getTopFilmsByGenre(int count, int genreId);
 
     Film deleteFilmById(int id);
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }

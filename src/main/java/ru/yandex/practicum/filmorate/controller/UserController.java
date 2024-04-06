@@ -79,12 +79,10 @@ public class UserController {
         return service.getCommonFriends(userId, otherUserId);
     }
 
-    // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
     public User deleteUserById(@PathVariable(name = "id") int userId) {
         log.debug("/users/{} - DELETE: deleteUserById()", userId);
         return service.deleteUserById(userId);
-        // throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
     }
 
     @GetMapping("/{id}/feed")
