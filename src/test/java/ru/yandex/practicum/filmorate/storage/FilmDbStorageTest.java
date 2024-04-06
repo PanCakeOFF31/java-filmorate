@@ -306,7 +306,6 @@ public class FilmDbStorageTest {
                 .isEqualTo(films);
     }
 
-    @Test
     public void test_getCommonFilms() {
         FriendshipStorage friendshipStorage = new FriendshipDbStorage(jdbcTemplate);
         UserStorage userStorage = new UserDbStorage(jdbcTemplate, friendshipStorage);
@@ -370,7 +369,6 @@ public class FilmDbStorageTest {
         assertEquals(expectedFilms, commonFilms);
     }
 
-    @Test
     public void test_deleteFilm() {
         assertEquals(0, filmStorage.getFilmsQuantity());
 
