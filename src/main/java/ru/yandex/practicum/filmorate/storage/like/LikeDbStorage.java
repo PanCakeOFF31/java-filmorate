@@ -64,12 +64,12 @@ public class LikeDbStorage implements LikeStorage {
     public Map<Integer, Set<Integer>> getUsersFavoriteFilms() {
         Map<Integer, Set<Integer>> usersFavoriteFilms = new HashMap<>();
 
-        SqlRowSet connectionRows = jdbcTemplate.queryForRowSet("select * from film_like");
-        while (connectionRows.next()) {
+        SqlRowSet sqlRequest = jdbcTemplate.queryForRowSet("select * from film_like");
+        while (sqlRequest.next()) {
             Set<Integer> likes = new HashSet<>();
-            Integer userId = connectionRows.getInt("user_id");
-            Integer filmId = connectionRows.getInt("film_id");
-            if (!usersFavoriteFilms.isEmpty() && usersFavoriteFilms.containsKey(userId)) {
+            Integer userId = sqlRequest.getInt("user_id");
+            Integer filmId = sqlRequest.getInt("film_id");
+            if (usersFavoriteFilms.containsKey(userId)) {
                 likes = usersFavoriteFilms.get(userId);
             }
             likes.add(filmId);

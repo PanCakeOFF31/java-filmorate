@@ -212,12 +212,7 @@ public class UserService {
     public List<Film> getRecommendations(final int userId) {
         log.debug("UserService - service.getRecommendations()");
 
-        User user = userStorage.getUserById(userId);
-
-        if (user == null) {
-            throw new UserNotFoundException("Такого пользователя с id = " + userId + " не существует в хранилище");
-        }
-
+        existChecker.userIsExist(userId);
 
         // составляем матрицу (на основании всех лайков) Id пользователя - список Id понравившихся фильмов
         Map<Integer, Set<Integer>> usersFavoriteFilms = likeStorage.getUsersFavoriteFilms();
