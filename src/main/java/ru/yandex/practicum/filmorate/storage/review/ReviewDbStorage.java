@@ -131,7 +131,7 @@ public class ReviewDbStorage implements ReviewStorage {
         return rowSet.next();
     }
 
-    public Review makeReview(ResultSet rs) throws SQLException {
+    private Review makeReview(ResultSet rs) throws SQLException {
         log.debug("ReviewDbStorage - makeReview()");
 
         final int id = rs.getInt("id");

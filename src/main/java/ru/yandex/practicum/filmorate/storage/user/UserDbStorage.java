@@ -148,8 +148,7 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
-    // Этот метод дублирует метод в FriendshipDao
-    public User makeUser(ResultSet rs) throws SQLException {
+    private User makeUser(ResultSet rs) throws SQLException {
         log.debug("UserDbStorage - makeUser()");
 
         int id = rs.getInt("id");

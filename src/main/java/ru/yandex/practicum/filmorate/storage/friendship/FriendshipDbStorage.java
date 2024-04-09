@@ -72,11 +72,10 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public List<User> getUserFriendsAsUsers(int userId) {
         log.debug("FriendshipDao - getUserFriends()");
 
-        String sqlRequest = "SELECT id, email, login, name, birthday \n" +
-                "FROM person\n" +
-                "INNER JOIN \n" +
-                "(SELECT friend_id FROM friendship WHERE user_id = ?)\n" +
-                "ON id = friend_id";
+        String sqlRequest = "SELECT p.id, p.email, p.login, p.name, p.birthday\n" +
+                "FROM friendship AS fs\n" +
+                "JOIN person AS p ON fs.friend_id = p.id\n" +
+                "WHERE fs.user_id = ?";
 
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeUser(rs), userId);
     }
@@ -85,22 +84,17 @@ public class FriendshipDbStorage implements FriendshipStorage {
     public List<User> getCommonFriendsAsUsers(int userId, int otherUserId) {
         log.debug("FriendshipDao - getCommonFriends()");
 
-        String sqlRequest = "SELECT * \n" +
-                "FROM person \n" +
-                "WHERE id IN (\n" +
-                "SELECT friend_id\n" +
-                "FROM friendship\n" +
-                "WHERE user_id = ?\n" +
-                "INTERSECT \n" +
-                "SELECT friend_id\n" +
-                "FROM friendship\n" +
-                "WHERE user_id = ?)";
+        String sqlRequest = "SELECT p.id, p.email, p.login, p.name, p.birthday\n" +
+                "FROM person AS p\n" +
+                "INNER JOIN friendship AS fs ON p.id = fs.friend_id\n" +
+                "WHERE user_id IN (?,?)\n" +
+                "GROUP BY p.id, p.email, p.login, p.name, p.birthday\n" +
+                "HAVING COUNT(id) = 2;";
 
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeUser(rs), userId, otherUserId);
     }
 
-    // Этот метод дублирует метод в UserDbStorage
-    public User makeUser(ResultSet rs) throws SQLException {
+    private User makeUser(ResultSet rs) throws SQLException {
         log.debug("UserDbStorage - makeUser()");
 
         int id = rs.getInt("id");
@@ -118,6 +112,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
 
         String sqlRequestMutual = "SELECT COUNT(user_id) AS mutual FROM friendship WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequestMutual, userId, friendId, userId, friendId);
+
         if (rowSet.next()) {
             int mutual = rowSet.getInt("mutual");
             log.info("Проверка на взаимную дружбу, mutual = " + mutual);

@@ -7,6 +7,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -17,17 +20,28 @@ public class ReviewLikeDbStorage implements ReviewLikeStorage {
     public int getUseful(final int reviewId) {
         log.debug("ReviewLikeDbStorage - getUseful()");
 
-        String sqlRequest = "SELECT\n" +
-                "(SELECT COUNT(*) FROM review_like WHERE review_id = ? AND is_like = true)\n" +
-                " -\n" +
-                "(SELECT COUNT(*) FROM review_like WHERE review_id = ? AND is_like = false) AS useful";
+        String sqlRequest = "SELECT review_like.is_like\n" +
+                "FROM review_like\n" +
+                "JOIN film_review ON review_like.review_id = film_review.id\n" +
+                "WHERE review_id = ?";
 
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, reviewId, reviewId);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlRequest, reviewId);
 
-        if (rowSet.next())
-            return rowSet.getInt("useful");
+        List<Boolean> useful = new ArrayList<>();
+        int likeCount = 0;
+        boolean isLike;
 
-        return 0;
+        while (rowSet.next()) {
+            isLike = rowSet.getBoolean("is_like");
+            useful.add(isLike);
+
+            if (isLike)
+                likeCount++;
+        }
+
+        int dislikeCount = useful.size() - likeCount;
+
+        return likeCount - dislikeCount;
     }
 
     @Override

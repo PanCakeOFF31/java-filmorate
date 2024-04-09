@@ -39,15 +39,15 @@ public class MpaDbStorage implements MpaStorage {
     public Mpa getFilmMpa(int filmId) {
         log.debug("MpaDbStorage - storage.getFilmMpa()");
 
-        String sqlRequest = "SELECT r.id, r.name FROM\n" +
-                "(SELECT * FROM film WHERE id = ?) AS f\n" +
-                "INNER JOIN \n" +
-                "mpa AS r ON f.mpa = r.id";
+        String sqlRequest = "SELECT mpa.id, mpa.name\n" +
+                "FROM mpa \n" +
+                "INNER JOIN film ON mpa.id = film.mpa\n" +
+                "WHERE film.id = ?";
 
         return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeMpa(rs), filmId);
     }
 
-    public Mpa makeMpa(ResultSet rs) throws SQLException {
+    private Mpa makeMpa(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         return new Mpa(id, name);

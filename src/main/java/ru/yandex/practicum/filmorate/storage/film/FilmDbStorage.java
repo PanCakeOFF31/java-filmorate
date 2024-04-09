@@ -329,7 +329,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), genreId, count);
     }
 
-    public Film makeFilm(ResultSet rs) throws SQLException {
+    private Film makeFilm(ResultSet rs) throws SQLException {
         log.debug("FilmDbStorage - makeFilm()");
 
         int id = rs.getInt("id");

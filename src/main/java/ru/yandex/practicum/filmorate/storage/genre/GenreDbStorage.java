@@ -49,12 +49,11 @@ public class GenreDbStorage implements GenresStorage {
     public List<Genre> getFilmGenre(int filmId) {
         log.debug("GenreDbStorage - storage.getFilmGenre()");
 
-        String sqlRequest = "SELECT g.id, g.name FROM\n" +
-                "(SELECT *\n" +
-                "FROM film_genre\n" +
-                "WHERE film_id = ?) AS f\n" +
-                "JOIN\n" +
-                "genre AS g ON f.genre_id = g.id\n";
+        String sqlRequest = "SELECT genre.id, genre.name\n" +
+                "FROM genre\n" +
+                "JOIN film_genre ON genre.id = film_genre.genre_id\n" +
+                "JOIN film ON film_genre.film_id = film.id\n" +
+                "WHERE film.id = ?";
 
         return jdbcTemplate.query(sqlRequest, (rs, rowNum) -> makeGenre(rs), filmId);
     }
@@ -68,7 +67,7 @@ public class GenreDbStorage implements GenresStorage {
         return jdbcTemplate.queryForObject(sqlRequest, (rs, rowNum) -> makeGenre(rs), genreId);
     }
 
-    public Genre makeGenre(ResultSet rs) throws SQLException {
+    private Genre makeGenre(ResultSet rs) throws SQLException {
         log.debug("GenreDbStorage - storage.makeGenre()");
 
         int id = rs.getInt("id");

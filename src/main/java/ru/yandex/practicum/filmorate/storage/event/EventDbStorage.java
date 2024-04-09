@@ -67,7 +67,7 @@ public class EventDbStorage implements EventStorage {
         return jdbcTemplate.queryForObject(sqlRequest, eventMapper, eventId);
     }
 
-    public Event makeEvent(ResultSet rs) throws SQLException {
+    private Event makeEvent(ResultSet rs) throws SQLException {
         log.debug("EventDbStorage - makeEvent())");
 
         int eventId = rs.getInt("id");
