@@ -6,10 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.ActiveProfiles;
+import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipDbStorage;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -19,10 +20,9 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @JdbcTest
-@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
+@ActiveProfiles("test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserDbStorageTest {
 
@@ -45,12 +45,12 @@ public class UserDbStorageTest {
                 "Ivan Petrov",
                 new HashSet<>());
 
-        Integer addedUserId = userStorage.addUser(newUser);
+        int addedUserId = userStorage.addUser(newUser);
 
         assertNotNull(addedUserId);
         assertTrue(addedUserId > 0);
 
-        User savedUser = userStorage.getUserById(1);
+        User savedUser = userStorage.getUserById(addedUserId);
 
         assertThat(savedUser)
                 .isNotNull()
@@ -177,10 +177,10 @@ public class UserDbStorageTest {
                 "Ivan Petrov",
                 new HashSet<>());
 
-        userStorage.addUser(user);
+        int id = userStorage.addUser(user);
         assertEquals(1, userStorage.getUsersQuantity());
 
-        User changedUser = new User(1,
+        User changedUser = new User(id,
                 "user@email.ru",
                 "IVAN_123",
                 LocalDate.of(1995, 1, 1),
@@ -207,10 +207,10 @@ public class UserDbStorageTest {
                 "Ivan Petrov",
                 new HashSet<>());
 
-        userStorage.addUser(user);
+        int id = userStorage.addUser(user);
         assertEquals(1, userStorage.getUsersQuantity());
 
-        User changedUser = new User(1,
+        User changedUser = new User(id,
                 "user@email.ru",
                 "IVAN_123",
                 LocalDate.of(2999, 1, 1),
@@ -230,5 +230,46 @@ public class UserDbStorageTest {
                 new HashSet<>());
 
         assertThrows(org.springframework.dao.EmptyResultDataAccessException.class, () -> userStorage.updateUser(user));
+    }
+
+    @Test
+    public void test_deleteUser() {
+        assertEquals(0, userStorage.getUsersQuantity());
+
+        User user = new User(1,
+                "user@email.ru",
+                "vanya123",
+                LocalDate.of(1990, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
+
+        int id = userStorage.addUser(user);
+        assertEquals(1, userStorage.getUsersQuantity());
+
+        assertEquals(user, userStorage.deleteUserById(id));
+        assertEquals(0, userStorage.getUsersQuantity());
+    }
+
+    @Test
+    public void test_deleteUser_unknownUserId() {
+        assertEquals(0, userStorage.getUsersQuantity());
+
+        User user = new User(1,
+                "user@email.ru",
+                "vanya123",
+                LocalDate.of(1990, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
+
+        userStorage.addUser(user);
+        assertEquals(1, userStorage.getUsersQuantity());
+        boolean exceptionThrown = false;
+        try {
+            userStorage.deleteUserById(7777);
+        } catch (UserNotFoundException e) {
+            exceptionThrown = true;
+        }
+        assertTrue(exceptionThrown);
+        assertEquals(1, userStorage.getUsersQuantity());
     }
 }

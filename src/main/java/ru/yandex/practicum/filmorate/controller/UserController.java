@@ -3,10 +3,8 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.MethodNotImplemented;
-import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -18,6 +16,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private final UserService service;
+    private final EventService eventService;
 
     @GetMapping
     public List<User> receiveUsers(@RequestParam(defaultValue = "10") int count) {
@@ -46,14 +45,25 @@ public class UserController {
     public User addToFriend(@PathVariable(name = "id") int userId,
                             @PathVariable int friendId) {
         log.debug("/users/{id}/friends/{friendId}} - PUT: addToFriend()");
-        return service.addToFriend(userId, friendId);
+
+        User user = service.addToFriend(userId, friendId);
+
+        Event event = eventService.addEvent(userId, friendId, EventType.FRIEND, Operation.ADD);
+        log.info("Событие добавления в друзья к пользователю зарегистрировано: {}", event);
+
+        return user;
     }
 
     @DeleteMapping(value = "/{id}/friends/{friendId}")
     public User deleteFromFriend(@PathVariable(name = "id") int userId,
                                  @PathVariable int friendId) {
         log.debug("/users/{id}/friends/{friendId}} - DELETE: deleteFromFriend()");
-        return service.deleteFromFriend(userId, friendId);
+        User user = service.deleteFromFriend(userId, friendId);
+
+        Event event = eventService.addEvent(userId, friendId, EventType.FRIEND, Operation.REMOVE);
+        log.info("Событие добавления в друзья к пользователю зарегистрировано: {}", event);
+
+        return user;
     }
 
     @GetMapping(value = "/{id}/friends")
@@ -69,24 +79,21 @@ public class UserController {
         return service.getCommonFriends(userId, otherUserId);
     }
 
-    // TODO: Удаление фильмов и пользователей 2 SP. Реализовать функциональность.
     @DeleteMapping(value = "/{id}")
-    public Film deleteUserById(@PathVariable(name = "id") int userId) {
+    public User deleteUserById(@PathVariable(name = "id") int userId) {
         log.debug("/users/{} - DELETE: deleteUserById()", userId);
-        throw new MethodNotImplemented("Метод удаления пользователей по идентификатору");
+        return service.deleteUserById(userId);
     }
 
-    // TODO: Функциональность «Лента событий». 3 SP. Реализовать функциональность
     @GetMapping("/{id}/feed")
     public List<Event> getUserFeed(@PathVariable(name = "id") final int userId) {
         log.debug("/users/{}/feed - GET: getUserFeed()", userId);
-        throw new MethodNotImplemented("Метод получения списка событий пользователя");
+        return eventService.getUserFeed(userId);
     }
 
-    //    TODO: Функциональность «Рекомендации». 3 SP. Реализовать функциональность
     @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendations(@PathVariable(name = "id") final int userId) {
         log.debug("/users/{}/recommendations - GET: getRecommendations()", userId);
-        throw new MethodNotImplemented("Метод возвращает рекомендации по фильмам для просмотра");
+        return service.getRecommendations(userId);
     }
 }

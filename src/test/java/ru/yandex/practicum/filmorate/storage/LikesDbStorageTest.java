@@ -6,35 +6,34 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmDirector.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipDbStorage;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenreDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmGenre.GenresStorage;
-import ru.yandex.practicum.filmorate.storage.filmLike.LikeDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmLike.LikeStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
-import ru.yandex.practicum.filmorate.storage.filmMpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenresStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeDbStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @JdbcTest
-@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
+@ActiveProfiles("test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class LikesDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
@@ -132,5 +131,52 @@ public class LikesDbStorageTest {
     @Test
     void test_T0030_NS01_unlike_incorrectId() {
         assertFalse(likeStorage.unlike(9999, 9999));
+    }
+
+    @Test
+    void getUsersFavoriteFilms_ResultOk() {
+        User user1 = new User(1,
+                "user1@email.ru",
+                "vanya123",
+                LocalDate.of(1995, 1, 1),
+                "Ivan Petrov",
+                new HashSet<>());
+
+        User user2 = new User(2,
+                "user2@email.ru",
+                "maxim123",
+                LocalDate.of(1990, 1, 1),
+                "Maxim Ivanov",
+                new HashSet<>());
+
+        Film film = new Film(1,
+                "Болотная чешуя",
+                "Описание фильма про водоем",
+                LocalDate.of(1990, 1, 1),
+                Duration.ofMinutes(150),
+                new Mpa(1, "G"),
+                new ArrayList<>(),
+                new ArrayList<>());
+
+        Integer user1Id = userStorage.addUser(user1);
+        Integer user2Id = userStorage.addUser(user2);
+        Integer filmId = filmStorage.addFilm(film);
+
+        likeStorage.like(filmId, user1Id);
+        likeStorage.like(filmId, user2Id);
+
+        Map<Integer, Set<Integer>> usersFilms = new HashMap<>();
+        Set<Integer> films = new HashSet<>();
+        films.add(filmId);
+
+        usersFilms.put(user1Id, films);
+        usersFilms.put(user2Id, films);
+
+        Map<Integer, Set<Integer>> savedUsersFilms = likeStorage.getUsersFavoriteFilms();
+
+        assertThat(savedUsersFilms)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(usersFilms);
     }
 }

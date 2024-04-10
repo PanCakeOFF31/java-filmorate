@@ -8,8 +8,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.userFriendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -131,8 +132,23 @@ public class UserDbStorage implements UserStorage {
         return getUserById(user.getId());
     }
 
-    // Этот метод дублирует метод в FriendshipDao
-    public User makeUser(ResultSet rs) throws SQLException {
+    @Override
+    public User deleteUserById(int id) {
+        log.debug("UserDbStorage - deleteUser()");
+        if (!containsById(id)) {
+            throw new UserNotFoundException();
+        } else {
+            User user = getUserById(id);
+            String sqlRequest = "DELETE FROM person WHERE id = ?;";
+            if (jdbcTemplate.update(sqlRequest, id) > 0) {
+                return user;
+            } else {
+                throw new UserNotFoundException();
+            }
+        }
+    }
+
+    private User makeUser(ResultSet rs) throws SQLException {
         log.debug("UserDbStorage - makeUser()");
 
         int id = rs.getInt("id");

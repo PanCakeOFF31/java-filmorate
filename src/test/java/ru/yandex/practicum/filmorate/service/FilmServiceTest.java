@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.film.FilmNullValueValidationException;
@@ -20,11 +22,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Sql(scripts = "file:./src/main/resources/schema.sql", executionPhase = BEFORE_TEST_METHOD)
 class FilmServiceTest {
     private final FilmService filmService;
     private final UserService userService;
@@ -41,6 +44,8 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         boolean actual = filmService.addValidation(film);
         assertTrue(actual);
@@ -63,6 +68,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmService.addFilm(film));
@@ -79,6 +85,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(-90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         assertEquals(0, filmStorage.getFilmsQuantity());
         assertThrows(ValidationException.class, () -> filmService.addFilm(film));
@@ -95,6 +102,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         film = filmService.addFilm(film);
         assertNotNull(film.getId());
@@ -113,6 +121,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         assertNull(film.getId());
 
@@ -132,6 +141,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         film.setId(9999);
 
@@ -153,6 +163,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         User user = new User();
 
@@ -200,6 +211,7 @@ class FilmServiceTest {
         film.setDuration(Duration.ofMinutes(90));
         film.setMpa(new Mpa(1, null));
         film.setGenres(new ArrayList<>());
+        film.setDirectors(new ArrayList<>());
 
         Integer filmId = filmService.addFilm(film).getId();
 

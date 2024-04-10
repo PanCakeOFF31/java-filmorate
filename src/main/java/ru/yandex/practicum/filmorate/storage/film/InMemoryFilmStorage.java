@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.film.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -15,6 +16,11 @@ import java.util.Map;
 public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public List<Film> getTopFilms(int size) {
+        throw new NotYetImplementedException();
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
         throw new NotYetImplementedException();
     }
 
@@ -62,6 +68,17 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.put(key, film);
     }
 
+    @Override
+    public Film deleteFilmById(int id) {
+        log.debug("InMemoryFilmStorage - films.deleteFilm().");
+        Film film = films.get(id);
+        if (film != null) {
+            return film;
+        } else {
+            throw new FilmNotFoundException();
+        }
+    }
+
     public boolean containsFilm(Film film) {
         log.debug("InMemoryFilmStorage - films.containsFilm().");
         return films.containsKey(film.getId());
@@ -79,5 +96,45 @@ public class InMemoryFilmStorage implements FilmStorage {
             ++generateId;
 
         return this.generateId;
+    }
+
+    @Override
+    public List<Film> getSortedDirectorFilmsBy(int directorId, String sortBy) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsBySubstringOnTitle(String condition) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByCondition(String condition) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByDirector(List<Integer> directors) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getSelectedFilms(List<Integer> ids) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByYearAndGenre(int count, int genreId, int year) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByYear(int count, int year) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getTopFilmsByGenre(int count, int genreId) {
+        return null;
     }
 }

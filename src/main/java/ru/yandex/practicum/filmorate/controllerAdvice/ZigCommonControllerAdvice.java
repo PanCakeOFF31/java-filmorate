@@ -159,7 +159,7 @@ public class ZigCommonControllerAdvice {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
     public ErrorResponse handleMethodNotImplemented(final MethodNotImplemented exception) {
-        log.debug(CLASS_NAME + "handleBadSqlGrammarException");
+        log.debug(CLASS_NAME + "handleMethodNotImplemented");
 
         return new ErrorResponse("Ошибка выполнения запроса",
                 "Проблемы реализацией endpoint, ", exception.getMessage());
@@ -173,5 +173,4 @@ public class ZigCommonControllerAdvice {
         return new ErrorResponse("Ошибка выполнения запроса",
                 "Проблемы с корректностью допустимых значений параметров запроса, ", exception.getMessage());
     }
-
 }

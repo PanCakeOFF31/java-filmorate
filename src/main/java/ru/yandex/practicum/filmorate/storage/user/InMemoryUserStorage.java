@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.user.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -65,6 +66,17 @@ public class InMemoryUserStorage implements UserStorage {
 
         Integer key = user.getId();
         return users.put(key, user);
+    }
+
+    @Override
+    public User deleteUserById(int id) {
+        log.debug("InMemoryUserStorage - users.deleteUser().");
+        User user = users.get(id);
+        if (user != null) {
+            return user;
+        } else {
+            throw new UserNotFoundException();
+        }
     }
 
     private int generateId() {
